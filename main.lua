@@ -6,35 +6,42 @@ SpaceCraft = require "spaceCraft"
 -- LOVE CALLBACKS -- 
 
 function love.load()
-	playerCraft = SpaceCraft:new {
-		imagePath="assets/pig.png", sizeX=100, sizeY=100, xPosition=0, yPosition=100,
-		xVelocity=10, yVelocity=0, speed=100
-	}
-
-	enemyCraft = SpaceCraft:new {
-		imagePath="assets/head.png", sizeX=100, sizeY=100, xPosition=300, yPosition=300,
-		xVelocity=0, yVelocity=0, speed=0
+	activeCrafts = {
+		playerCraft = SpaceCraft:new {
+			imagePath="assets/pig.png", sizeX=100, sizeY=100, xPosition=0, yPosition=100,
+			xVelocity=10, yVelocity=0, speed=100
+		},
+		SpaceCraft:new {
+			imagePath="assets/head.png", sizeX=100, sizeY=100, xPosition=300, yPosition=300,
+			xVelocity=0, yVelocity=0, speed=0
+		}
 	}
 end
 
 function love.update(dt)
-	playerCraft:update(dt)
-	enemyCraft:update(dt)
+	_.each(activeCrafts, function(craft)
+		craft:update(dt)
+	end)
 
-	-- collision detection
-	if CheckCollision(playerCraft.xPosition, playerCraft.yPosition, playerCraft.sizeX, playerCraft.sizeY, enemyCraft.xPosition, enemyCraft.yPosition, enemyCraft.sizeX, enemyCraft.sizeY) then
-		love.event.quit( )
-	end 
+	-- collision detection all enemies against the play craft
+	_.eachi(activeCrafts, function(enemyCraft)
+		if CheckCollision(activeCrafts.playerCraft.xPosition, activeCrafts.playerCraft.yPosition, activeCrafts.playerCraft.sizeX, activeCrafts.playerCraft.sizeY, 
+			enemyCraft.xPosition, enemyCraft.yPosition, enemyCraft.sizeX, enemyCraft.sizeY) then
+			
+			love.event.quit( )
+		end 
+	end)
 end
 
 function love.draw()
-	playerCraft:draw()
-	enemyCraft:draw()
+	_.each(activeCrafts, function(craft)
+		craft:draw()
+	end)
 end
 
 function love.mousepressed(x, y, button, istouch)
-	playerCraft.xPosition = x
-	playerCraft.yPosition = y
+	activeCrafts.playerCraft.xPosition = x
+	activeCrafts.playerCraft.yPosition = y
 end
 
 function love.mousereleased(x, y, button, istouch)
@@ -44,25 +51,25 @@ end
 
 function love.keypressed(key)
 	if key == 'up' then
-		playerCraft.yVelocity = -playerCraft.speed
+		activeCrafts.playerCraft.yVelocity = -activeCrafts.playerCraft.speed
 	elseif key == 'down' then
-		playerCraft.yVelocity = playerCraft.speed
+		activeCrafts.playerCraft.yVelocity = activeCrafts.playerCraft.speed
 	elseif key == 'right' then
-		playerCraft.xVelocity = playerCraft.speed
+		activeCrafts.playerCraft.xVelocity = activeCrafts.playerCraft.speed
 	elseif key == 'left' then
-		playerCraft.xVelocity = -playerCraft.speed
+		activeCrafts.playerCraft.xVelocity = -activeCrafts.playerCraft.speed
 	end
 end
 
 function love.keyreleased(key)
 	if key == 'up' then
-		playerCraft.yVelocity = 0
+		activeCrafts.playerCraft.yVelocity = 0
 	elseif key == 'down' then
-		playerCraft.yVelocity = 0
+		activeCrafts.playerCraft.yVelocity = 0
 	elseif key == 'right' then
-		playerCraft.xVelocity = 0
+		activeCrafts.playerCraft.xVelocity = 0
 	elseif key == 'left' then
-		playerCraft.xVelocity = 0
+		activeCrafts.playerCraft.xVelocity = 0
 	end
 end
 
