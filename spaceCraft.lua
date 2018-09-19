@@ -31,4 +31,13 @@ function SpaceCraft:new(options)
 	return spaceCraft 
 end 
 
+function SpaceCraft:update(dt)
+	self.xPosition = self.xPosition + (self.xVelocity * dt)
+	self.yPosition = self.yPosition + (self.yVelocity * dt)
+end
+
+function SpaceCraft:draw()
+	love.graphics.draw(self.image, self.xPosition, self.yPosition, 0, self.imgSX, self.imgSY)
+end
+
 return SpaceCraft

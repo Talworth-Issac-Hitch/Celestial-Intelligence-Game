@@ -18,8 +18,8 @@ function love.load()
 end
 
 function love.update(dt)
-	playerCraft.xPosition = playerCraft.xPosition + (playerCraft.xVelocity * dt)
-	playerCraft.yPosition = playerCraft.yPosition + (playerCraft.yVelocity * dt)
+	playerCraft:update(dt)
+	enemyCraft:update(dt)
 
 	-- collision detection
 	if CheckCollision(playerCraft.xPosition, playerCraft.yPosition, playerCraft.sizeX, playerCraft.sizeY, enemyCraft.xPosition, enemyCraft.yPosition, enemyCraft.sizeX, enemyCraft.sizeY) then
@@ -28,8 +28,8 @@ function love.update(dt)
 end
 
 function love.draw()
-	love.graphics.draw(playerCraft.image, playerCraft.xPosition, playerCraft.yPosition, 0, playerCraft.imgSX, playerCraft.imgSY)
-	love.graphics.draw(enemyCraft.image, enemyCraft.xPosition, enemyCraft.yPosition, 0, enemyCraft.imgSX, enemyCraft.imgSY)
+	playerCraft:draw()
+	enemyCraft:draw()
 end
 
 function love.mousepressed(x, y, button, istouch)
