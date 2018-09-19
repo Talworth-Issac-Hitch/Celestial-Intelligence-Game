@@ -16,6 +16,8 @@ function love.load()
 			xVelocity=0, yVelocity=0, speed=0
 		}
 	}
+
+	score = 0
 end
 
 function love.update(dt)
@@ -31,6 +33,16 @@ function love.update(dt)
 			love.event.quit( )
 		end 
 	end)
+
+	-- Spawn an enemy every second on the second
+	if(math.floor(score) < math.floor(score + dt)) then
+		table.insert(activeCrafts, SpaceCraft:new {
+			imagePath="assets/head.png", sizeX=100, sizeY=100, xPosition=score*50 + 100, yPosition=score*50,
+			xVelocity=0, yVelocity=0, speed=0
+		})
+	end
+
+	score = score + dt
 end
 
 function love.draw()
