@@ -9,11 +9,11 @@ function love.load()
 	activeCrafts = {
 		playerCraft = SpaceCraft:new {
 			imagePath="assets/pig.png", sizeX=100, sizeY=100, xPosition=0, yPosition=100,
-			xVelocity=10, yVelocity=0, speed=100
+			xVelocity=10, yVelocity=0, speed=100, age=2
 		},
 		SpaceCraft:new {
 			imagePath="assets/head.png", sizeX=100, sizeY=100, xPosition=300, yPosition=300,
-			xVelocity=0, yVelocity=0, speed=0
+			xVelocity=0, yVelocity=0, speed=0, age=2
 		}
 	}
 
@@ -27,7 +27,7 @@ function love.update(dt)
 
 	-- collision detection all enemies against the play craft
 	_.eachi(activeCrafts, function(enemyCraft)
-		if CheckCollision(activeCrafts.playerCraft.xPosition, activeCrafts.playerCraft.yPosition, activeCrafts.playerCraft.sizeX, activeCrafts.playerCraft.sizeY, 
+		if enemyCraft.age > 2 and CheckCollision(activeCrafts.playerCraft.xPosition, activeCrafts.playerCraft.yPosition, activeCrafts.playerCraft.sizeX, activeCrafts.playerCraft.sizeY, 
 			enemyCraft.xPosition, enemyCraft.yPosition, enemyCraft.sizeX, enemyCraft.sizeY) then
 			
 			love.event.quit( )

@@ -12,7 +12,8 @@ function SpaceCraft:new(options)
 		yPosition=0,
 		xVelocity=0, 
 		yVelocity=0, 
-		speed=0
+		speed=0,
+		age=0
 	}
 
 	setmetatable(spaceCraft,SpaceCraft)
@@ -34,10 +35,15 @@ end
 function SpaceCraft:update(dt)
 	self.xPosition = self.xPosition + (self.xVelocity * dt)
 	self.yPosition = self.yPosition + (self.yVelocity * dt)
+	self.age = self.age + dt
 end
 
 function SpaceCraft:draw()
-	love.graphics.draw(self.image, self.xPosition, self.yPosition, 0, self.imgSX, self.imgSY)
+	local blinkInterval = 7
+
+	if self.age > 2 or math.ceil(self.age * blinkInterval) % 2 == 0 then
+		love.graphics.draw(self.image, self.xPosition, self.yPosition, 0, self.imgSX, self.imgSY)
+	end
 end
 
 return SpaceCraft
