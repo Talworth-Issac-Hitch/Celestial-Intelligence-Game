@@ -46,9 +46,13 @@ function love.update(dt)
 end
 
 function love.draw()
+	-- Draw the objects
 	_.each(activeCrafts, function(craft)
 		craft:draw()
 	end)
+
+	-- Draw the score
+	love.graphics.print("Score : " .. math.ceil(score), 400, 50)
 end
 
 function love.mousepressed(x, y, button, istouch)
