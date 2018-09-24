@@ -3,6 +3,10 @@ _ = require "moses_min"
 SpaceCraft = require "spaceCraft"
 
 
+-- CONSTANTS -- 
+VIEWPORT_HEIGHT = 600
+VIEWPORT_WIDTH = 600
+
 -- LOVE CALLBACKS -- 
 
 function love.load()
@@ -37,7 +41,7 @@ function love.update(dt)
 	-- Spawn an enemy every second on the second
 	if(math.floor(score) < math.floor(score + dt)) then
 		table.insert(activeCrafts, SpaceCraft:new {
-			imagePath="assets/head.png", sizeX=100, sizeY=100, xPosition=score*50 + 100, yPosition=score*50,
+			imagePath="assets/head.png", sizeX=100, sizeY=100, xPosition=math.random(0,VIEWPORT_WIDTH), yPosition=math.random(0,VIEWPORT_HEIGHT),
 			xVelocity=0, yVelocity=0, speed=0
 		})
 	end
