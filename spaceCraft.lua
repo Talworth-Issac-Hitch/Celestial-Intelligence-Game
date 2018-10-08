@@ -32,9 +32,33 @@ function SpaceCraft:new(options)
 	return spaceCraft 
 end 
 
-function SpaceCraft:update(dt)
+-- TODO : Make bounds a bbox, rather than assuming 0,0 as p1
+function SpaceCraft:update(dt, bounds)
 	self.xPosition = self.xPosition + (self.xVelocity * dt)
 	self.yPosition = self.yPosition + (self.yVelocity * dt)
+
+	-- Ensure creature or player remains in the bounds of the level.
+
+	if self.xPosition + self.sizeX > bounds.width then 
+		self.xPosition = bounds.width - self.sizeX
+		self.xVelocity = 0
+	-- NOTE : With this statement as an elseifwe are currently assuming craftSize will always be less than the bounds size.
+	elseif self.xPosition < 0 then 
+		self.xPosition = 0
+		self.xVelocity = 0
+	end
+
+	if self.yPosition + self.sizeY > bounds.height then 
+		self.yPosition =  bounds.height - self.sizeY
+		self.yVelocity = 0
+	-- NOTE : With this statement as an elseifwe are currently assuming craftSize will always be less than the bounds size.
+	elseif self.yPosition < 0 then 
+		self.yPosition = 0
+		self.yVelocity = 0
+	end
+
+	-- TODO: Colliding with the edge results in a hard, inelastic stop.
+
 	self.age = self.age + dt
 end
 

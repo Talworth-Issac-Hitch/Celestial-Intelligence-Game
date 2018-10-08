@@ -4,8 +4,9 @@ SpaceCraft = require "spaceCraft"
 
 
 -- CONSTANTS -- 
+-- TODO: Actually set window size using these same constants
 VIEWPORT_HEIGHT = 600
-VIEWPORT_WIDTH = 600
+VIEWPORT_WIDTH = 800
 
 -- LOVE CALLBACKS -- 
 
@@ -14,10 +15,6 @@ function love.load()
 		playerCraft = SpaceCraft:new {
 			imagePath="assets/pig.png", sizeX=100, sizeY=100, xPosition=0, yPosition=100,
 			xVelocity=10, yVelocity=0, speed=100, age=2
-		},
-		SpaceCraft:new {
-			imagePath="assets/head.png", sizeX=100, sizeY=100, xPosition=300, yPosition=300,
-			xVelocity=0, yVelocity=0, speed=0, age=2
 		}
 	}
 
@@ -26,7 +23,7 @@ end
 
 function love.update(dt)
 	_.each(activeCrafts, function(craft)
-		craft:update(dt)
+		craft:update(dt, {height=VIEWPORT_HEIGHT, width=VIEWPORT_WIDTH})
 	end)
 
 	-- collision detection all enemies against the play craft
@@ -65,8 +62,8 @@ function love.mousepressed(x, y, button, istouch)
 end
 
 function love.mousereleased(x, y, button, istouch)
-	playerCraft.xPosition = x
-	playerCraft.yPosition = y
+	activeCrafts.playerCraft.xPosition = x
+	activeCrafts.playerCraft.yPosition = y
 end
 
 function love.keypressed(key)
