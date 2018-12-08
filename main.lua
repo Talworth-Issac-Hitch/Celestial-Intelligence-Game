@@ -33,7 +33,7 @@ function love.load()
 	-- TODO : Convert to physics objects
 	activeCrafts = {
 		playerCraft = SpaceCraft:new {
-			imagePath="assets/pig.png", sizeX=100, sizeY=100, xPosition=0, yPosition=0,
+			imagePath="assets/pig.png", sizeX=100, sizeY=100, xPosition=50, yPosition=50,
 			xVelocity=10, yVelocity=0, speed=100, age=2, aspects="player", world=physicsWorld
 		}
 	}
@@ -107,7 +107,7 @@ function love.update(dt)
 	-- Spawn an enemy every second on the second
 	if(math.floor(score) < math.floor(score + dt)) then
 		table.insert(activeCrafts, SpaceCraft:new {
-			imagePath="assets/head.png", sizeX=100, sizeY=100, xPosition=math.random(0, VIEWPORT_WIDTH - 100), yPosition=math.random(0, VIEWPORT_HEIGHT - 100),
+			imagePath="assets/head.png", sizeX=100, sizeY=100, xPosition=math.random(50, VIEWPORT_WIDTH - 50), yPosition=math.random(50, VIEWPORT_HEIGHT - 50),
 			xVelocity=0, yVelocity=0, speed=0, aspects="enemy", world=physicsWorld
 		})
 	end

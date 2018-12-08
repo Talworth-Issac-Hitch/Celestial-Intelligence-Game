@@ -39,7 +39,7 @@ function SpaceCraft:new(options)
 
 	-- Set up the space craft's Love2D Physics objects
 	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, bodyType)
-	spaceCraft.shape = love.physics.newRectangleShape(spaceCraft.xPosition  + (spaceCraft.sizeX / 2), spaceCraft.yPosition  + (spaceCraft.sizeY / 2), spaceCraft.sizeX, spaceCraft.sizeY)
+	spaceCraft.shape = love.physics.newRectangleShape(spaceCraft.sizeX, spaceCraft.sizeY)
 	spaceCraft.fixture = love.physics.newFixture(spaceCraft.body, spaceCraft.shape)
 	spaceCraft.fixture:setUserData(spaceCraft.aspects)
 
