@@ -15,148 +15,109 @@ PLAYABLE_AREA_WIDTH = 800
 
 function love.load()
 	-- Set background to blue
-	love.graphics.setBackgroundColor(0.41, 0.53, 0.97)
 	love.window.setMode(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
-
-	-- TODO : Convert to physics objects
-	activeCrafts = {
-		playerCraft = SpaceCraft:new {
-			imagePath="assets/pig.png", sizeX=100, sizeY=100, xPosition=0, yPosition=100,
-			xVelocity=10, yVelocity=0, speed=100, age=2
-		}
-	}
-
-	score = 0
 
 	-- Create Physics context 
 	-- Set the height of the meter in pixels to 64
 	love.physics.setMeter(64)
 
-	-- Create a world, with earth-like y-axis gravity, and no x-axis gravity.
-	world = love.physics.newWorld(0, 200, true)
+	-- Create a world, no gravity in either direction, because this is space damnit!
+	physicsWorld = love.physics.newWorld(0, 0, true)
 
 
 	-- Set collision callbacks to govern what happens for collisions
-	world:setCallbacks(beginContactHandler, endContactHandler, preSolveHandler, postSolveHandler)
-	text = ""
+	physicsWorld:setCallbacks(beginContactHandler, endContactHandler, preSolveHandler, postSolveHandler)
+	collisionDebugText = ""
 	persisting = 0
 
+	-- TODO : Convert to physics objects
+	activeCrafts = {
+		playerCraft = SpaceCraft:new {
+			imagePath="assets/pig.png", sizeX=100, sizeY=100, xPosition=0, yPosition=0,
+			xVelocity=10, yVelocity=0, speed=100, age=2, aspects="player", world=physicsWorld
+		}
+	}
 
-	phyObjects = {}
-
-	-- Create the "ground" / physical boundaries.
-	-- Bodies are bound by their center point.  Our floor has a height of 50
-	phyObjects.ground = {}
-	phyObjects.ground.body = love.physics.newBody(world, PLAYABLE_AREA_WIDTH / 2, PLAYABLE_AREA_HEIGHT - 50 / 2, "static")
-	phyObjects.ground.shape = love.physics.newRectangleShape(PLAYABLE_AREA_WIDTH, 50)
-	phyObjects.ground.fixture = love.physics.newFixture(phyObjects.ground.body, phyObjects.ground.shape)
-	phyObjects.ground.fixture:setUserData("Block")
-
-	-- Now let's create a bouncing ball.
-	phyObjects.ball = {}
-	phyObjects.ball.body = love.physics.newBody(world, PLAYABLE_AREA_WIDTH / 2, PLAYABLE_AREA_HEIGHT / 2, "dynamic")
-	phyObjects.ball.body:setMass(10)
-	phyObjects.ball.shape = love.physics.newCircleShape(50)
-	phyObjects.ball.fixture = love.physics.newFixture(phyObjects.ball.body, phyObjects.ball.shape)
-	phyObjects.ball.fixture:setRestitution(0.9)
-	phyObjects.ball.fixture:setUserData("Ball")
-
-	--[[
-	phyObjects.block1 = {}
-	phyObjects.block1.body = love.physics.newBody(world, 200, 550, "dynamic")
-	phyObjects.block1.shape = love.physics.newRectangleShape(0, 0, 50, 100)
-	phyObjects.block1.fixture = love.physics.newFixture(phyObjects.block1.body, phyObjects.block1.shape, 5)
-
-	phyObjects.block2 = {}
-	phyObjects.block2.body = love.physics.newBody(world, 200, 400, "dynamic")
-	phyObjects.block2.shape = love.physics.newRectangleShape(0, 0, 100, 50)
-	phyObjects.block2.fixture = love.physics.newFixture(phyObjects.block2.body, phyObjects.block2.shape, 2)
-	--]]
+	score = 0
 end
 
 function beginContactHandler(fixtureA, fixtureB, coll)
 	x,y = coll:getNormal()
-	text = text .. "\n" .. fixtureA:getUserData() .. " colliding with " .. fixtureB:getUserData() .. " with a vector normal of : " .. x .. ", " .. y
+	collisionDebugText = collisionDebugText .. "\n"
+	collisionDebugText = collisionDebugText .. fixtureA:getUserData() .. " colliding with "
+	collisionDebugText = collisionDebugText .. fixtureB:getUserData() .. " with a vector normal of : " 
+	collisionDebugText = collisionDebugText .. x .. ", "
+	collisionDebugText = collisionDebugText .. y
+
+	-- If the play collides, game over 
+	if fixtureA:getUserData() == "player" or fixtureB:getUserData() == "player" then
+		love.event.quit( )
+	end
 end
 
 function endContactHandler(fixtureA, fixtureB, coll)
 	persisting = 0
-	text = text .. "\n" .. fixtureA:getUserData() .. " uncolliding with " .. fixtureB:getUserData()
+	collisionDebugText = collisionDebugText .. "\n" .. fixtureA:getUserData() .. " uncolliding with " .. fixtureB:getUserData()
 end
 
 function preSolveHandler(fixtureA, fixtureB, coll)
 	if persisting == 0 then
-		text = text .. "\n" .. fixtureA:getUserData() .. " touching " .. fixtureB:getUserData()
+		collisionDebugText = collisionDebugText .. "\n" .. fixtureA:getUserData() .. " touching " .. fixtureB:getUserData()
 	elseif persisting < 20 then
-		text = text .. " " .. persisting
+		collisionDebugText = collisionDebugText .. " " .. persisting
 	end
 
 	persisting = persisting + 1
 end
 
 function postSolveHandler(fixtureA, fixtureB, coll, normalImpluse, tangentImpulse)
-
+	-- Unused 
 end
 
 
 function love.update(dt)
 	-- New Physics 
-	world:update(dt)
+	physicsWorld:update(dt)
 
-	if string.len(text) > 768 then    -- cleanup when 'text' gets too long
-        text = "" 
+	if string.len(collisionDebugText) > 768 then    -- cleanup when 'text' gets too long
+        collisionDebugText = "" 
     end
+
+    _.each(activeCrafts, function(craft)
+		craft:update(dt)
+	end)
 
 	-- User input affeccting new physocs
 	if love.keyboard.isDown("a") then
-		phyObjects.ball.body:applyForce(-400, 0)
-	elseif love.keyboard.isDown("d") then
-		phyObjects.ball.body:applyForce(400, 0)
-	elseif love.keyboard.isDown("w") then
-		phyObjects.ball.body:setPosition(PLAYABLE_AREA_WIDTH / 2, PLAYABLE_AREA_HEIGHT / 2)
-		phyObjects.ball.body:setLinearVelocity(0, 0) -- Must set veloticy to zero to prevent a potentially large velocity generated by the change in position 
+		activeCrafts.playerCraft.body:applyForce(-400, 0)
 	end
 
-	-- OLD PHYSICS
-	_.each(activeCrafts, function(craft)
-		craft:update(dt, {height = VIEWPORT_HEIGHT, width = VIEWPORT_WIDTH})
-	end)
+	if love.keyboard.isDown("d") then
+		activeCrafts.playerCraft.body:applyForce(400, 0)
+	end
 
-	-- collision detection all enemies against the play craft
-	_.eachi(activeCrafts, function(enemyCraft)
-		if enemyCraft.age > 2 and CheckCollision(activeCrafts.playerCraft.xPosition, activeCrafts.playerCraft.yPosition, activeCrafts.playerCraft.sizeX, activeCrafts.playerCraft.sizeY, 
-			enemyCraft.xPosition, enemyCraft.yPosition, enemyCraft.sizeX, enemyCraft.sizeY) then
-			
-			love.event.quit( )
-		end 
-	end)
+	if love.keyboard.isDown("w") then
+		activeCrafts.playerCraft.body:applyForce(0, -400)
+	end
 
-	--[[ Spawn an enemy every second on the second
+	if love.keyboard.isDown("s") then
+		activeCrafts.playerCraft.body:applyForce(0, 400)
+	end
+
+	-- Spawn an enemy every second on the second
 	if(math.floor(score) < math.floor(score + dt)) then
 		table.insert(activeCrafts, SpaceCraft:new {
-			imagePath="assets/head.png", sizeX=100, sizeY=100, xPosition=math.random(0,VIEWPORT_WIDTH), yPosition=math.random(0,VIEWPORT_HEIGHT),
-			xVelocity=0, yVelocity=0, speed=0
+			imagePath="assets/head.png", sizeX=100, sizeY=100, xPosition=math.random(0, VIEWPORT_WIDTH - 100), yPosition=math.random(0, VIEWPORT_HEIGHT - 100),
+			xVelocity=0, yVelocity=0, speed=0, aspects="enemy", world=physicsWorld
 		})
 	end
-	--]]
 
 	score = score + dt
 end
 
 function love.draw()
-	-- Draw our physics objects
-	love.graphics.setColor(0.28, 0.63, 0.05)
-	love.graphics.polygon("fill", phyObjects.ground.body:getWorldPoints(phyObjects.ground.shape:getPoints()))
-
-	love.graphics.setColor(0.76, 0.18, 0.05) --set the drawing color to red for the ball
-	love.graphics.circle("fill", phyObjects.ball.body:getX(), phyObjects.ball.body:getY(), phyObjects.ball.shape:getRadius())
- 
- 	love.graphics.print(text, 10, 10)
- 	--[[
-	love.graphics.setColor(0.20, 0.20, 0.20) -- set the drawing color to grey for the blocks
-	love.graphics.polygon("fill", phyObjects.block1.body:getWorldPoints(phyObjects.block1.shape:getPoints()))
-	love.graphics.polygon("fill", phyObjects.block2.body:getWorldPoints(phyObjects.block2.shape:getPoints()))
-	--]]
+	-- Print debug info on collisions 
+ 	love.graphics.print(collisionDebugText, 10, 10)
 
 	-- Draw our custom spacecraft objects
 	_.each(activeCrafts, function(craft)
@@ -165,45 +126,4 @@ function love.draw()
 
 	-- Draw the score
 	love.graphics.print("Score : " .. math.ceil(score), 400, 50)
-end
-
-function love.mousepressed(x, y, button, istouch)
-	activeCrafts.playerCraft.xPosition = x
-	activeCrafts.playerCraft.yPosition = y
-end
-
-function love.mousereleased(x, y, button, istouch)
-	activeCrafts.playerCraft.xPosition = x
-	activeCrafts.playerCraft.yPosition = y
-end
-
-function love.keypressed(key)
-	if key == 'up' then
-		activeCrafts.playerCraft.yVelocity = -activeCrafts.playerCraft.speed
-	elseif key == 'down' then
-		activeCrafts.playerCraft.yVelocity = activeCrafts.playerCraft.speed
-	elseif key == 'right' then
-		activeCrafts.playerCraft.xVelocity = activeCrafts.playerCraft.speed
-	elseif key == 'left' then
-		activeCrafts.playerCraft.xVelocity = -activeCrafts.playerCraft.speed
-	end
-end
-
-function love.keyreleased(key)
-	if key == 'up' then
-		activeCrafts.playerCraft.yVelocity = 0
-	elseif key == 'down' then
-		activeCrafts.playerCraft.yVelocity = 0
-	elseif key == 'right' then
-		activeCrafts.playerCraft.xVelocity = 0
-	elseif key == 'left' then
-		activeCrafts.playerCraft.xVelocity = 0
-	end
-end
-
-function CheckCollision(x1,y1,w1,h1, x2,y2,w2,h2)
-  return x1 < x2+w2 and
-         x2 < x1+w1 and
-         y1 < y2+h2 and
-         y2 < y1+h1
 end

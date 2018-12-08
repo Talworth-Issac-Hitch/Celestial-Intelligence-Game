@@ -13,7 +13,9 @@ function SpaceCraft:new(options)
 		xVelocity=0, 
 		yVelocity=0, 
 		speed=0,
-		age=0
+		age=0,
+		aspects="enemy",
+		world=nil
 	}
 
 	setmetatable(spaceCraft,SpaceCraft)
@@ -29,44 +31,33 @@ function SpaceCraft:new(options)
 	spaceCraft.imgSX = spaceCraft.sizeX / spaceCraft.image:getWidth()
 	spaceCraft.imgSY = spaceCraft.sizeY / spaceCraft.image:getHeight()
 
+	-- TODO: Better "aspect" logic
+	bodyType = "static"
+	if spaceCraft.aspects == "player" then
+		bodyType = "dynamic"
+	end
+
+	-- Set up the space craft's Love2D Physics objects
+	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, bodyType)
+	spaceCraft.shape = love.physics.newRectangleShape(spaceCraft.xPosition  + (spaceCraft.sizeX / 2), spaceCraft.yPosition  + (spaceCraft.sizeY / 2), spaceCraft.sizeX, spaceCraft.sizeY)
+	spaceCraft.fixture = love.physics.newFixture(spaceCraft.body, spaceCraft.shape)
+	spaceCraft.fixture:setUserData(spaceCraft.aspects)
+
 	return spaceCraft 
 end 
 
 -- TODO : Make bounds a bbox, rather than assuming 0,0 as p1
-function SpaceCraft:update(dt, bounds)
-	self.xPosition = self.xPosition + (self.xVelocity * dt)
-	self.yPosition = self.yPosition + (self.yVelocity * dt)
-
-	-- Ensure creature or player remains in the bounds of the level.
-
-	if self.xPosition + self.sizeX > bounds.width then 
-		self.xPosition = bounds.width - self.sizeX
-		self.xVelocity = 0
-	-- NOTE : With this statement as an elseifwe are currently assuming craftSize will always be less than the bounds size.
-	elseif self.xPosition < 0 then 
-		self.xPosition = 0
-		self.xVelocity = 0
-	end
-
-	if self.yPosition + self.sizeY > bounds.height then 
-		self.yPosition =  bounds.height - self.sizeY
-		self.yVelocity = 0
-	-- NOTE : With this statement as an elseifwe are currently assuming craftSize will always be less than the bounds size.
-	elseif self.yPosition < 0 then 
-		self.yPosition = 0
-		self.yVelocity = 0
-	end
-
-	-- TODO: Colliding with the edge results in a hard, inelastic stop.
-
+function SpaceCraft:update(dt)
 	self.age = self.age + dt
 end
 
 function SpaceCraft:draw()
 	local blinkInterval = 7
 
+	-- TODO : Need to re-fix enemies being collidable while blinking
 	if self.age > 2 or math.ceil(self.age * blinkInterval) % 2 == 0 then
-		love.graphics.draw(self.image, self.xPosition, self.yPosition, 0, self.imgSX, self.imgSY)
+		local drawX, drawY = self.body:getWorldPoints(self.shape:getPoints())
+		love.graphics.draw(self.image, drawX, drawY, 0, self.imgSX, self.imgSY)
 	end
 end
 
