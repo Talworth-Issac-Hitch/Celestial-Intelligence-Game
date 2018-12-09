@@ -65,12 +65,24 @@ function love.update(dt)
 			xVelocity = 0, 
 			yVelocity = 0, 
 			speed = 0, 
-			aspects = "enemy", 
+			aspects = "enemyStatic", 
 			world = worldPhysics:getWorld(), 
 			debug = DEBUG
 		})
-	end
 
+		if _.size(activeCrafts) % 5 == 0 then
+			table.insert(activeCrafts, SpaceCraft:new {
+				sizeX = 50, 
+				sizeY = 50, 
+				xPosition = math.random(50, VIEWPORT_WIDTH - 50), 
+				yPosition = math.random(50, VIEWPORT_HEIGHT - 50),
+				aspects = "enemyLinear", 
+				world = worldPhysics:getWorld(), 
+				debug = DEBUG
+			})
+		end
+	end
+	
 	score = score + dt
 end
 

@@ -17,7 +17,7 @@ function SpaceCraft:new(options)
 		yVelocity = 0, 
 		speed = 0,
 		age = 0,
-		aspects ="enemy",
+		aspects ="enemyStatic",
 		world = nil,
 		debug = false,
 		collisionDebugColor = {0.9, 0.05, 0.05}
@@ -26,6 +26,21 @@ function SpaceCraft:new(options)
 	setmetatable(spaceCraft, SpaceCraft)
 
 	_.extend(spaceCraft, options)	
+
+	-- TODO: Better "aspect" logic
+	bodyType = "dynamic"
+	if spaceCraft.aspects == "player" then	
+		spaceCraft.collisionDebugColor = {0.05, 0.9, 0.05}
+	elseif spaceCraft.aspects == "enemyStatic" then
+		bodyType = "static"
+	elseif spaceCraft.aspects == "enemyLinear" then
+		spaceCraft.imagePath = "assets/metor.jpg"
+		spaceCraft.speed = 500
+		local initAngle = math.random(0, 2 * math.pi)
+		
+		spaceCraft.xVelocity = math.sin(initAngle) * spaceCraft.speed
+		spaceCraft.yVelocity = math.cos(initAngle) * spaceCraft.speed
+	end
 
 	-- TODO: consider caching a table of images to avoid repeat loading in here
 	--       as more spaceCraft (potentially with the same image) are spawned during the game
@@ -36,15 +51,9 @@ function SpaceCraft:new(options)
 	spaceCraft.imgSX = spaceCraft.sizeX / spaceCraft.image:getWidth()
 	spaceCraft.imgSY = spaceCraft.sizeY / spaceCraft.image:getHeight()
 
-	-- TODO: Better "aspect" logic
-	bodyType = "static"
-	if spaceCraft.aspects == "player" then
-		bodyType = "dynamic"
-		spaceCraft.collisionDebugColor = {0.05, 0.9, 0.05}
-	end
-
 	-- Set up the space craft's Love2D Physics objects
 	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, bodyType)
+
 	spaceCraft.shape = love.physics.newRectangleShape(spaceCraft.sizeX, spaceCraft.sizeY)
 
 	return spaceCraft 
@@ -57,6 +66,13 @@ function SpaceCraft:update(dt)
 	if not self.finishedSpawn and self.age > 2 then
 		self.fixture = love.physics.newFixture(self.body, self.shape)
 		self.fixture:setUserData(self.aspects)
+
+		-- TODO: Get this outta here and into a specific module implementation.  You playing a dangerous game boi.
+		if self.aspects == "enemyLinear" then
+			self.body:setLinearVelocity(self.xVelocity, self.yVelocity)
+			self.fixture:setRestitution(1) 
+		end
+
 		self.finishedSpawn = true
 	end
 end
