@@ -78,30 +78,13 @@ function love.update(dt)
 	-- New Physics 
 	physicsWorld:update(dt)
 
-	if string.len(collisionDebugText) > 768 then    -- cleanup when 'text' gets too long
-        collisionDebugText = "" 
-    end
+	if string.len(collisionDebugText) > 768 then	-- cleanup when 'text' gets too long
+		collisionDebugText = "" 
+	end
 
-    _.each(activeCrafts, function(craft)
+	_.each(activeCrafts, function(craft)
 		craft:update(dt)
 	end)
-
-	-- User input affeccting new physocs
-	if love.keyboard.isDown("a") then
-		activeCrafts.playerCraft.body:applyForce(-400, 0)
-	end
-
-	if love.keyboard.isDown("d") then
-		activeCrafts.playerCraft.body:applyForce(400, 0)
-	end
-
-	if love.keyboard.isDown("w") then
-		activeCrafts.playerCraft.body:applyForce(0, -400)
-	end
-
-	if love.keyboard.isDown("s") then
-		activeCrafts.playerCraft.body:applyForce(0, 400)
-	end
 
 	-- Spawn an enemy every second on the second
 	if(math.floor(score) < math.floor(score + dt)) then
@@ -125,4 +108,35 @@ function love.draw()
 
 	-- Draw the score
 	love.graphics.print("Score : " .. math.ceil(score), 400, 50)
+end
+
+function love.keypressed(key)
+	-- TODO: Refactor in spaceCraft
+	-- User input affeccting new physics
+	local xVelocity, yVelocity = activeCrafts.playerCraft.body:getLinearVelocity()
+	
+	if key == 'up' then
+		yVelocity = -activeCrafts.playerCraft.speed
+	elseif key == 'down' then
+		yVelocity = activeCrafts.playerCraft.speed
+	elseif key == 'right' then
+		xVelocity = activeCrafts.playerCraft.speed
+	elseif key == 'left' then
+		xVelocity = -activeCrafts.playerCraft.speed
+	end
+
+	activeCrafts.playerCraft.body:setLinearVelocity(xVelocity, yVelocity)
+end
+
+function love.keyreleased(key)
+		-- User input affeccting new physics
+	local xVelocity, yVelocity = activeCrafts.playerCraft.body:getLinearVelocity()
+
+	if key == 'up' or key == 'down' then
+		yVelocity = 0
+	elseif key == 'right' or key == 'left' then
+		xVelocity = 0
+	end
+
+	activeCrafts.playerCraft.body:setLinearVelocity(xVelocity, yVelocity)
 end
