@@ -178,13 +178,33 @@ function love.keypressed(key)
 end
 
 function love.keyreleased(key)
-		-- User input affeccting new physics
+	-- User input affeccting playerCraft's movements
 	local xVelocity, yVelocity = activeCrafts.playerCraft.body:getLinearVelocity()
 
-	if key == 'up' or key == 'down' then
-		yVelocity = 0
-	elseif key == 'right' or key == 'left' then
-		xVelocity = 0
+	if key == 'up' then
+		if love.keyboard.isDown('down') then
+			yVelocity = activeCrafts.playerCraft.speed
+		else 
+			yVelocity = 0
+		end
+	elseif key == 'down' then
+		if love.keyboard.isDown('up') then
+			yVelocity = -activeCrafts.playerCraft.speed
+		else 
+			yVelocity = 0
+		end
+	elseif key == 'right' then
+		if love.keyboard.isDown('left') then
+			xVelocity = -activeCrafts.playerCraft.speed
+		else 
+			xVelocity = 0
+		end
+	elseif key == 'left' then
+		if love.keyboard.isDown('right') then
+			xVelocity = activeCrafts.playerCraft.speed
+		else 
+			xVelocity = 0
+		end
 	end
 
 	activeCrafts.playerCraft.body:setLinearVelocity(xVelocity, yVelocity)
