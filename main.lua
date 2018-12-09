@@ -24,7 +24,6 @@ function love.load()
 	-- Create a world, no gravity in either direction, because this is space damnit!
 	physicsWorld = love.physics.newWorld(0, 0, true)
 
-
 	-- Set collision callbacks to govern what happens for collisions
 	physicsWorld:setCallbacks(beginContactHandler, endContactHandler, preSolveHandler, postSolveHandler)
 	collisionDebugText = ""

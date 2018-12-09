@@ -40,22 +40,27 @@ function SpaceCraft:new(options)
 	-- Set up the space craft's Love2D Physics objects
 	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, bodyType)
 	spaceCraft.shape = love.physics.newRectangleShape(spaceCraft.sizeX, spaceCraft.sizeY)
-	spaceCraft.fixture = love.physics.newFixture(spaceCraft.body, spaceCraft.shape)
-	spaceCraft.fixture:setUserData(spaceCraft.aspects)
+
 
 	return spaceCraft 
 end 
 
--- TODO : Make bounds a bbox, rather than assuming 0,0 as p1
 function SpaceCraft:update(dt)
 	self.age = self.age + dt
+
+	-- Enemies should not be collidable until they have spawned, so we wait until then to add their world fixture.
+	if not self.finishedSpawn and self.age > 2 then
+		self.fixture = love.physics.newFixture(self.body, self.shape)
+		self.fixture:setUserData(self.aspects)
+		self.finishedSpawn = true
+	end
 end
 
 function SpaceCraft:draw()
 	local blinkInterval = 7
 
-	-- TODO : Need to re-fix enemies being collidable while blinking
-	if self.age > 2 or math.ceil(self.age * blinkInterval) % 2 == 0 then
+	-- Enemies blink before they are finished spawning
+	if self.finishedSpawn or math.ceil(self.age * blinkInterval) % 2 == 0 then
 		local drawX, drawY = self.body:getWorldPoints(self.shape:getPoints())
 		love.graphics.draw(self.image, drawX, drawY, 0, self.imgSX, self.imgSY)
 	end
