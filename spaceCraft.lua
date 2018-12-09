@@ -1,3 +1,6 @@
+-- IMPORTS --
+--_ = require "moses_min"
+
 -- CLASS DEFINITIONS --
 SpaceCraft = {}
 SpaceCraft.__index = SpaceCraft
@@ -18,7 +21,7 @@ function SpaceCraft:new(options)
 		world=nil
 	}
 
-	setmetatable(spaceCraft,SpaceCraft)
+	setmetatable(spaceCraft, SpaceCraft)
 
 	_.extend(spaceCraft, options)	
 
@@ -40,7 +43,6 @@ function SpaceCraft:new(options)
 	-- Set up the space craft's Love2D Physics objects
 	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, bodyType)
 	spaceCraft.shape = love.physics.newRectangleShape(spaceCraft.sizeX, spaceCraft.sizeY)
-
 
 	return spaceCraft 
 end 
