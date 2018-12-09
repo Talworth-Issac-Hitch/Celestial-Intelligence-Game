@@ -7,10 +7,10 @@ WorldPhysics.__index = WorldPhysics
 
 function WorldPhysics:new(options)
 	local worldPhysics = {
-		worldWidth=800,
-		worldHeight=600,
-		world=nil,
-		debug=false
+		worldWidth = 800,
+		worldHeight = 600,
+		world = nil,
+		debug = false
 	}
 
 	setmetatable(worldPhysics, WorldPhysics)
@@ -73,16 +73,11 @@ function WorldPhysics:draw()
 	if self.debug then
 		love.graphics.print(self.collisionDebugText, 10, 10)
 
-		love.graphics.setColor(0.28, 0.63, 0.05)
-		love.graphics.polygon("fill", self.leftWall.body:getWorldPoints(self.leftWall.shape:getPoints()))
-
+		-- TODO: Make a map of collision types to visual colors
 		love.graphics.setColor(0.28, 0.05, 0.63)
+		love.graphics.polygon("fill", self.leftWall.body:getWorldPoints(self.leftWall.shape:getPoints()))
 		love.graphics.polygon("fill", self.rightWall.body:getWorldPoints(self.rightWall.shape:getPoints()))
-
-		love.graphics.setColor(0.63, 0.05, 0.28)
 		love.graphics.polygon("fill", self.topWall.body:getWorldPoints(self.topWall.shape:getPoints()))
-
-		love.graphics.setColor(0.63, 0.63, 0.28)
 		love.graphics.polygon("fill", self.bottomWall.body:getWorldPoints(self.bottomWall.shape:getPoints()))
 
 		love.graphics.reset()

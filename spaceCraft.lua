@@ -8,17 +8,19 @@ SpaceCraft.__index = SpaceCraft
 function SpaceCraft:new(options)
 	-- Initialize our spaceCraft with defaults
 	local spaceCraft = {
-		imagePath="assets/unknown.png", 
-		sizeX=100, 
-		sizeY=100, 
-		xPosition=0, 
-		yPosition=0,
-		xVelocity=0, 
-		yVelocity=0, 
-		speed=0,
-		age=0,
-		aspects="enemy",
-		world=nil
+		imagePath = "assets/unknown.png", 
+		sizeX = 100, 
+		sizeY = 100, 
+		xPosition = 0, 
+		yPosition = 0,
+		xVelocity = 0, 
+		yVelocity = 0, 
+		speed = 0,
+		age = 0,
+		aspects ="enemy",
+		world = nil,
+		debug = false,
+		collisionDebugColor = {0.9, 0.05, 0.05}
 	}
 
 	setmetatable(spaceCraft, SpaceCraft)
@@ -38,6 +40,7 @@ function SpaceCraft:new(options)
 	bodyType = "static"
 	if spaceCraft.aspects == "player" then
 		bodyType = "dynamic"
+		spaceCraft.collisionDebugColor = {0.05, 0.9, 0.05}
 	end
 
 	-- Set up the space craft's Love2D Physics objects
@@ -65,6 +68,13 @@ function SpaceCraft:draw()
 	if self.finishedSpawn or math.ceil(self.age * blinkInterval) % 2 == 0 then
 		local drawX, drawY = self.body:getWorldPoints(self.shape:getPoints())
 		love.graphics.draw(self.image, drawX, drawY, 0, self.imgSX, self.imgSY)
+	end
+
+	-- If we're debugging, draw collision board. Color of boarder indicates collsion type.
+	if self.debug and self.finishedSpawn then
+		love.graphics.setColor(self.collisionDebugColor)
+		love.graphics.polygon("line", self.body:getWorldPoints(self.shape:getPoints()))
+		love.graphics.reset()
 	end
 end
 
