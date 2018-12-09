@@ -11,6 +11,8 @@ VIEWPORT_WIDTH = 1200
 PLAYABLE_AREA_HEIGHT = 600
 PLAYABLE_AREA_WIDTH = 800
 
+DEBUG = true
+
 -- LOVE CALLBACKS -- 
 
 function love.load()
@@ -18,6 +20,7 @@ function love.load()
 	love.window.setMode(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
 
 	-- Create Physics context 
+	-- TODO - Make this its own module / file
 	-- Set the height of the meter in pixels to 64
 	love.physics.setMeter(64)
 
@@ -29,11 +32,38 @@ function love.load()
 	collisionDebugText = ""
 	persisting = 0
 
+	-- Create us some boundaries
+
+	-- Bodies are bound by their center point.  Our floor has a height of 50
+	leftWall = {}
+	leftWall.body = love.physics.newBody(physicsWorld, 0, VIEWPORT_HEIGHT / 2, "static")
+	leftWall.shape = love.physics.newRectangleShape(1, VIEWPORT_HEIGHT)
+	leftWall.fixture = love.physics.newFixture(leftWall.body, leftWall.shape)
+	leftWall.fixture:setUserData("wall")
+
+	rightWall = {}
+	rightWall.body = love.physics.newBody(physicsWorld, VIEWPORT_WIDTH, VIEWPORT_HEIGHT / 2, "static")
+	rightWall.shape = love.physics.newRectangleShape(1, VIEWPORT_HEIGHT)
+	rightWall.fixture = love.physics.newFixture(rightWall.body, rightWall.shape)
+	rightWall.fixture:setUserData("wall")
+
+	topWall = {}
+	topWall.body = love.physics.newBody(physicsWorld, VIEWPORT_WIDTH / 2, 0, "static")
+	topWall.shape = love.physics.newRectangleShape(VIEWPORT_WIDTH, 1)
+	topWall.fixture = love.physics.newFixture(topWall.body, topWall.shape)
+	topWall.fixture:setUserData("wall")
+
+	bottomWall = {}
+	bottomWall.body = love.physics.newBody(physicsWorld, VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT, "static")
+	bottomWall.shape = love.physics.newRectangleShape(VIEWPORT_WIDTH, 1)
+	bottomWall.fixture = love.physics.newFixture(bottomWall.body, bottomWall.shape)
+	bottomWall.fixture:setUserData("wall")
+
 	-- TODO : Convert to physics objects
 	activeCrafts = {
 		playerCraft = SpaceCraft:new {
-			imagePath="assets/pig.png", sizeX=100, sizeY=100, xPosition=50, yPosition=50,
-			xVelocity=10, yVelocity=0, speed=100, age=2, aspects="player", world=physicsWorld
+			imagePath="assets/pig.png", sizeX=100, sizeY=100, xPosition=75, yPosition=75,
+			xVelocity=10, yVelocity=0, speed=400, age=2, aspects="player", world=physicsWorld
 		}
 	}
 
@@ -48,8 +78,11 @@ function beginContactHandler(fixtureA, fixtureB, coll)
 	collisionDebugText = collisionDebugText .. x .. ", "
 	collisionDebugText = collisionDebugText .. y
 
+	local aType = fixtureA:getUserData()
+	local bType = fixtureB:getUserData()
+
 	-- If the play collides, game over 
-	if fixtureA:getUserData() == "player" or fixtureB:getUserData() == "player" then
+	if  (aType == "player" and bType ~= "wall") or (bType == "player" and aType ~= "wall") then 
 		love.event.quit( )
 	end
 end
@@ -98,8 +131,24 @@ function love.update(dt)
 end
 
 function love.draw()
-	-- Print debug info on collisions 
- 	love.graphics.print(collisionDebugText, 10, 10)
+	-- Print debug info on collisions and game boundaries
+	if DEBUG == true then
+		love.graphics.print(collisionDebugText, 10, 10)
+
+		love.graphics.setColor(0.28, 0.63, 0.05)
+		love.graphics.polygon("fill", leftWall.body:getWorldPoints(leftWall.shape:getPoints()))
+
+		love.graphics.setColor(0.28, 0.05, 0.63)
+		love.graphics.polygon("fill", rightWall.body:getWorldPoints(rightWall.shape:getPoints()))
+
+		love.graphics.setColor(0.63, 0.05, 0.28)
+		love.graphics.polygon("fill", topWall.body:getWorldPoints(topWall.shape:getPoints()))
+
+		love.graphics.setColor(0.63, 0.63, 0.28)
+		love.graphics.polygon("fill", bottomWall.body:getWorldPoints(bottomWall.shape:getPoints()))
+
+		love.graphics.reset()
+	end 
 
 	-- Draw our custom spacecraft objects
 	_.each(activeCrafts, function(craft)
@@ -107,7 +156,7 @@ function love.draw()
 	end)
 
 	-- Draw the score
-	love.graphics.print("Score : " .. math.ceil(score), 400, 50)
+	love.graphics.print("Score : " .. math.ceil(score), VIEWPORT_WIDTH / 2, 50)
 end
 
 function love.keypressed(key)
