@@ -31,8 +31,8 @@ function love.load()
 			imagePath ="assets/pig.png", 
 			sizeX = 100, 
 			sizeY = 100, 
-			xPosition = 75, 
-			yPosition = 75,
+			xPosition = 50, 
+			yPosition = 50,
 			xVelocity = 10, 
 			yVelocity = 0, 
 			speed = 400, 
@@ -82,7 +82,7 @@ function love.update(dt)
 			})
 		end
 	end
-	
+
 	score = score + dt
 end
 

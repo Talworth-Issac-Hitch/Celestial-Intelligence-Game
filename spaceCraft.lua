@@ -54,7 +54,11 @@ function SpaceCraft:new(options)
 	-- Set up the space craft's Love2D Physics objects
 	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, bodyType)
 
-	spaceCraft.shape = love.physics.newRectangleShape(spaceCraft.sizeX, spaceCraft.sizeY)
+	if spaceCraft.aspects == "enemyLinear" then
+		spaceCraft.shape = love.physics.newCircleShape(spaceCraft.sizeX / 2, spaceCraft.sizeY / 2, spaceCraft.sizeX / 2)
+	else 
+		spaceCraft.shape = love.physics.newRectangleShape(spaceCraft.sizeX, spaceCraft.sizeY)
+	end
 
 	return spaceCraft 
 end 
@@ -82,14 +86,36 @@ function SpaceCraft:draw()
 
 	-- Enemies blink before they are finished spawning
 	if self.finishedSpawn or math.ceil(self.age * blinkInterval) % 2 == 0 then
-		local drawX, drawY = self.body:getWorldPoints(self.shape:getPoints())
+		local drawX, drawY
+		if self.aspects == "enemyLinear" then
+			drawX, drawY = self.body:getWorldPoints(self.shape:getPoint())
+			-- Compensate for the fact that circular collision when drawing square images
+			-- Unlike square collision shapes that perfectly fit square images, circles on have their center point.
+			drawX = drawX - (self.sizeX / 2)
+			drawY = drawY - (self.sizeY / 2)
+		else 
+			drawX, drawY = self.body:getWorldPoints(self.shape:getPoints())
+		end
+
 		love.graphics.draw(self.image, drawX, drawY, 0, self.imgSX, self.imgSY)
 	end
 
 	-- If we're debugging, draw collision board. Color of boarder indicates collsion type.
 	if self.debug and self.finishedSpawn then
 		love.graphics.setColor(self.collisionDebugColor)
-		love.graphics.polygon("line", self.body:getWorldPoints(self.shape:getPoints()))
+
+		if self.aspects == "enemyLinear" then
+			local debugX, debugY = self.body:getWorldPoints(self.shape:getPoint())
+			love.graphics.circle("line", debugX, debugY, self.sizeX / 2)
+
+			-- Additionally, draw a velocity indicator line
+			local velocityX, velocityY = self.body:getLinearVelocity()
+			love.graphics.setColor(0.7, 0.7, 0.05)
+			love.graphics.line(debugX, debugY, debugX + velocityX / 5, debugY + velocityY / 5)
+		else 
+			love.graphics.polygon("line", self.body:getWorldPoints(self.shape:getPoints()))
+		end
+
 		love.graphics.reset()
 	end
 end
