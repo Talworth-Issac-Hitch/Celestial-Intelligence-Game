@@ -35,7 +35,7 @@ function SpaceCraft:new(options)
 		bodyType = "static"
 	elseif spaceCraft.aspects == "enemyLinear" then
 		spaceCraft.imagePath = "assets/metor.jpg"
-		spaceCraft.speed = 500
+		spaceCraft.speed = 250
 		local initAngle = math.random(0, 2 * math.pi)
 		
 		spaceCraft.xVelocity = math.sin(initAngle) * spaceCraft.speed
@@ -74,7 +74,12 @@ function SpaceCraft:update(dt)
 		-- TODO: Get this outta here and into a specific module implementation.  You playing a dangerous game boi.
 		if self.aspects == "enemyLinear" then
 			self.body:setLinearVelocity(self.xVelocity, self.yVelocity)
+
+			-- preserve all linear momentum for now.  Set restitution to 1 since perfect elasticity 
+			-- conservers momentum in a head-on collision, and friction to 0 to prevent linear velocity
+			-- becoming angular velocity.
 			self.fixture:setRestitution(1) 
+			self.fixture:setFriction(0) 
 		end
 
 		self.finishedSpawn = true
