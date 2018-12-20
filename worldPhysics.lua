@@ -15,7 +15,7 @@ function WorldPhysics:new(options)
 
 	setmetatable(worldPhysics, WorldPhysics)
 
-	_.extend(worldPhysics, options)
+	worldPhysics = _.extend(worldPhysics, options)
 
 	-- Create Physics context 
 	-- TODO - Make this its own module / file

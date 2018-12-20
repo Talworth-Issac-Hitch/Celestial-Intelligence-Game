@@ -14,11 +14,37 @@ PLAYABLE_AREA_WIDTH = 800
 DEBUG = true
 
 -- TODO: Probably make these into tables
-SPAWN_INTERVAL_ENEMY_1 = 15
-SPAWN_INTERVAL_ENEMY_2 = 7
-SPAWN_COUNTER_ENEMY_1 = 10
-SPAWN_COUNTER_ENEMY_2 = 5
+-- TODO: Load this from a file / server.  File could either be user made (manually or in an 'admin' interace), or Machine Learning generated.
+EnemySpawnTable = {
+	{
+		interval = 15,
+		counter = 10,
+		enemyObj = { -- TODO: Create more simple constructor for enemies.  Aspects only?
+			imagePath = "assets/head.png", 
+			sizeX = 100, 
+			sizeY = 100, 
+			xVelocity = 0, 
+			yVelocity = 0, 
+			speed = 0, 
+			aspects = "enemyStatic", 
+			debug = DEBUG
+		}
+	},
+	{
+		interval = 7,
+		counter = 5,
+		enemyObj = { -- TODO: Create more simple constructor for enemies.  Aspects only?
+			sizeX = 25, 
+			sizeY = 25, 
+			aspects = "enemyLinear", 
+			debug = DEBUG
+		}
+	}
+}
 
+-- TODO: Add Amps to the interval table.
+-- TODO: Create multiple types of Amps.
+-- TODO: Make Amps configurable.
 AMP_INTERVAL = 30
 
 AMP_COUNTER = 0
@@ -35,7 +61,6 @@ function love.load()
 		debug=DEBUG
 	}
 
-	-- TODO : Convert to physics objects
 	activeCrafts = {
 		playerCraft = SpaceCraft:new {
 			imagePath ="assets/pig.png", 
@@ -64,49 +89,37 @@ function love.update(dt)
 		craft:update(dt)
 	end)
 
-	SPAWN_COUNTER_ENEMY_1 = SPAWN_COUNTER_ENEMY_1 + dt
-	SPAWN_COUNTER_ENEMY_2 = SPAWN_COUNTER_ENEMY_2 + dt
+	-- Update our Amp counter, and apply a global hazard effect if it is time.
 	AMP_COUNTER = AMP_COUNTER + dt
 
 	if AMP_COUNTER > AMP_INTERVAL then
+		-- The 'Amp' currently spawns a burst of all types of enemies.
 		-- TODO: Make more ways the game can 'AMP'
-		SPAWN_COUNTER_ENEMY_1 = SPAWN_COUNTER_ENEMY_1 + 25
-		SPAWN_COUNTER_ENEMY_2 = SPAWN_COUNTER_ENEMY_2 + 25
+		_.each(EnemySpawnTable, function(spawnParameters)
+			spawnParameters.counter = spawnParameters.counter + 25
+		end)
+
 		AMP_COUNTER = AMP_COUNTER - AMP_INTERVAL
 	end 
 
-	-- Spawn an enemy every second on the second
-	if SPAWN_COUNTER_ENEMY_1 > SPAWN_INTERVAL_ENEMY_1 then
-		table.insert(activeCrafts, SpaceCraft:new {
-			imagePath = "assets/head.png", 
-			sizeX = 100, 
-			sizeY = 100, 
-			xPosition = math.random(50, VIEWPORT_WIDTH - 50), 
-			yPosition = math.random(50, VIEWPORT_HEIGHT - 50),
-			xVelocity = 0, 
-			yVelocity = 0, 
-			speed = 0, 
-			aspects = "enemyStatic", 
-			world = worldPhysics:getWorld(), 
-			debug = DEBUG
-		})
+		-- Update each spawn interval, spawning an enemy if it's time
+	_.each(EnemySpawnTable, function(spawnParameters)
+		spawnParameters.counter = spawnParameters.counter + dt
 
-		SPAWN_COUNTER_ENEMY_1 = SPAWN_COUNTER_ENEMY_1 - SPAWN_INTERVAL_ENEMY_1
-	end 
+		if spawnParameters.counter > spawnParameters.interval then
+			local newEnemyInstanceParameters = {
+				xPosition = math.random(50, VIEWPORT_WIDTH - 50), 
+				yPosition = math.random(50, VIEWPORT_HEIGHT - 50),
+				world = worldPhysics:getWorld()
+			}
 
-	if SPAWN_COUNTER_ENEMY_2 > SPAWN_INTERVAL_ENEMY_2 then
-		table.insert(activeCrafts, SpaceCraft:new {
-			sizeX = 25, 
-			sizeY = 25, 
-			xPosition = math.random(50, VIEWPORT_WIDTH - 50), 
-			yPosition = math.random(50, VIEWPORT_HEIGHT - 50),
-			aspects = "enemyLinear", 
-			world = worldPhysics:getWorld(), 
-			debug = DEBUG
-		})
+			newEnemyInstanceParameters = _.extend(newEnemyInstanceParameters, spawnParameters.enemyObj)
 
-		SPAWN_COUNTER_ENEMY_2 = SPAWN_COUNTER_ENEMY_2 - SPAWN_INTERVAL_ENEMY_2
-	end
+			table.insert(activeCrafts, SpaceCraft:new(newEnemyInstanceParameters) )
+
+			spawnParameters.counter = spawnParameters.counter - spawnParameters.interval
+		end
+	end)
 
 	score = score + dt
 end
@@ -124,7 +137,7 @@ function love.draw()
 end
 
 function love.keypressed(key)
-	-- TODO: Refactor in player spaceCraft
+	-- TODO: Refactor key handlders into player spaceCraft
 	-- TODO: Make Debug View toggable at a key press
 	-- User input affeccting new physics
 	local xVelocity, yVelocity = activeCrafts.playerCraft.body:getLinearVelocity()
@@ -143,6 +156,7 @@ function love.keypressed(key)
 end
 
 function love.keyreleased(key)
+	-- TODO: Refactor key handlders into player spaceCraft
 	-- User input affeccting playerCraft's movements
 	local xVelocity, yVelocity = activeCrafts.playerCraft.body:getLinearVelocity()
 

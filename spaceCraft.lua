@@ -25,7 +25,7 @@ function SpaceCraft:new(options)
 
 	setmetatable(spaceCraft, SpaceCraft)
 
-	_.extend(spaceCraft, options)	
+	spaceCraft = _.extend(spaceCraft, options)	
 
 	-- TODO: Better "aspect" logic
 	bodyType = "dynamic"
