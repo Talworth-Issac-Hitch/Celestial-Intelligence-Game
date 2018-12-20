@@ -105,6 +105,7 @@ function love.update(dt)
 
 		if spawnParameters.counter > spawnParameters.interval then
 			local newEnemyInstanceParameters = {
+				-- TODO: This random calculation likely belongs in the SpaceCraft, provided we can get stage width from World
 				xPosition = love.math.random(50, VIEWPORT_WIDTH - 50), 
 				yPosition = love.math.random(50, VIEWPORT_HEIGHT - 50),
 				world = worldPhysics:getWorld()
@@ -133,55 +134,19 @@ function love.draw()
 	love.graphics.print("Game Seed : " .. seed .. "\nScore : " .. math.ceil(score), VIEWPORT_WIDTH / 2, 50)
 end
 
+-- TODO : Make an enemy that reacts to your key presses :3
 function love.keypressed(key)
-	-- TODO: Refactor key handlders into player spaceCraft
-	-- TODO: Make Debug View toggable at a key press
-	-- User input affeccting new physics
-	local xVelocity, yVelocity = activeCrafts.playerCraft.body:getLinearVelocity()
-	
-	if key == 'up' or key == 'w' then
-		yVelocity = -activeCrafts.playerCraft.speed
-	elseif key == 'down' or key == 's' then
-		yVelocity = activeCrafts.playerCraft.speed
-	elseif key == 'right' or key == 'd' then
-		xVelocity = activeCrafts.playerCraft.speed
-	elseif key == 'left' or key == 'a' then
-		xVelocity = -activeCrafts.playerCraft.speed
-	end
-
-	activeCrafts.playerCraft.body:setLinearVelocity(xVelocity, yVelocity)
+	_.each(activeCrafts, function(craft)
+		if _.has(craft, "onKeyPressed") then
+			craft:onKeyPressed(key)
+		end
+	end)
 end
 
 function love.keyreleased(key)
-	-- TODO: Refactor key handlders into player spaceCraft
-	-- User input affeccting playerCraft's movements
-	local xVelocity, yVelocity = activeCrafts.playerCraft.body:getLinearVelocity()
-
-	if key == 'up' or key == 'w' then
-		if love.keyboard.isDown('down') then
-			yVelocity = activeCrafts.playerCraft.speed
-		else 
-			yVelocity = 0
+	_.each(activeCrafts, function(craft)
+		if _.has(craft, "onKeyReleased") then
+			craft:onKeyReleased(key)
 		end
-	elseif key == 'down' or key == 's' then
-		if love.keyboard.isDown('up') then
-			yVelocity = -activeCrafts.playerCraft.speed
-		else 
-			yVelocity = 0
-		end
-	elseif key == 'right' or key == 'd' then
-		if love.keyboard.isDown('left') then
-			xVelocity = -activeCrafts.playerCraft.speed
-		else 
-			xVelocity = 0
-		end
-	elseif key == 'left' or key == 'a' then
-		if love.keyboard.isDown('right') then
-			xVelocity = activeCrafts.playerCraft.speed
-		else 
-			xVelocity = 0
-		end
-	end
-
-	activeCrafts.playerCraft.body:setLinearVelocity(xVelocity, yVelocity)
+	end)
 end
