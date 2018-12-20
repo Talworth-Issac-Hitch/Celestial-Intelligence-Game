@@ -105,7 +105,7 @@ function love.update(dt)
 
 		if spawnParameters.counter > spawnParameters.interval then
 			local newEnemyInstanceParameters = {
-				-- TODO: This random calculation likely belongs in the SpaceCraft, provided we can get stage width from World
+				-- New enemies are randomly places in valid bounds in the world
 				xPosition = love.math.random(50, VIEWPORT_WIDTH - 50), 
 				yPosition = love.math.random(50, VIEWPORT_HEIGHT - 50),
 				world = worldPhysics:getWorld()

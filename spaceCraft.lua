@@ -1,6 +1,7 @@
 -- IMPORTS --
 _ = require "moses_min"
 SpaceCraftAspectDefinitions = require "spaceCraftAspectRegistry"
+
 -- CLASS DEFINITIONS --
 SpaceCraft = {}
 SpaceCraft.__index = SpaceCraft
