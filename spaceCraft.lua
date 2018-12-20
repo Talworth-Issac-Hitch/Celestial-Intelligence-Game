@@ -34,6 +34,38 @@ SpaceCraftAspectDefinitions = {
 		speed = 250,
 		initializeShape = function(self) 
 			return love.physics.newCircleShape(self.sizeX / 2, self.sizeY / 2, self.sizeX / 2)
+		end,
+		onSpawnFinished = function(self)
+			-- NOTE : We could do this in the pre-spawn phase to give the player some indication of the direction
+			--         that the enemy will move, we just currently do not.
+			local initAngle = love.math.random(0, 2 * math.pi)
+		
+			self.xVelocity = math.sin(initAngle) * self.speed
+			self.yVelocity = math.cos(initAngle) * self.speed
+
+			self.body:setLinearVelocity(self.xVelocity, self.yVelocity)
+
+			-- preserve all linear momentum for now.  Set restitution to 1 since perfect elasticity 
+			-- conservers momentum in a head-on collision, and friction to 0 to prevent linear velocity
+			-- becoming angular velocity.
+			self.fixture:setRestitution(1) 
+			self.fixture:setFriction(0) 
+		end,
+		drawImage = function(self)
+			local drawX, drawY = self:getCenterPoint()
+
+			-- Compensate for the fact that circular collision when drawing square images
+			-- Unlike square collision shapes that perfectly fit square images, circles on have their center point.
+			drawX = drawX - (self.sizeX / 2)
+			drawY = drawY - (self.sizeY / 2)
+
+			love.graphics.draw(self.image, drawX, drawY, 0, self.imgSX, self.imgSY)
+		end,
+		debugDrawCollisionBorder = function(self)
+			love.graphics.setColor(self.collisionDebugColor)
+			local debugX, debugY = self:getCenterPoint()
+			love.graphics.circle("line", debugX, debugY, self.sizeX / 2)
+			love.graphics.reset()
 		end
 	}
 }
@@ -72,15 +104,6 @@ function SpaceCraft:new(options)
 			spaceCraft[aspectPropertyName] = aspectPropertyValue
 		end)
 	end)
-	
-
-	if _.has(spaceCraft.aspects, "enemyLinear") then
-		-- TODO: We'll figure you in second...
-		local initAngle = love.math.random(0, 2 * math.pi)
-		
-		spaceCraft.xVelocity = math.sin(initAngle) * spaceCraft.speed
-		spaceCraft.yVelocity = math.cos(initAngle) * spaceCraft.speed
-	end
 
 	-- TODO: consider caching a table of images to avoid repeat loading in here
 	--       as more spaceCraft (potentially with the same image) are spawned during the game
@@ -108,16 +131,7 @@ function SpaceCraft:update(dt)
 		-- TODO: Make collision data into Table / Set to enable more info for more different types of collisions.
 		self.fixture:setUserData(self.collisionData)
 
-		-- TODO: Get this outta here and into a specific module implementation.  You playing a dangerous game boi.
-		if _.has(self.aspects, "enemyLinear") then
-			self.body:setLinearVelocity(self.xVelocity, self.yVelocity)
-
-			-- preserve all linear momentum for now.  Set restitution to 1 since perfect elasticity 
-			-- conservers momentum in a head-on collision, and friction to 0 to prevent linear velocity
-			-- becoming angular velocity.
-			self.fixture:setRestitution(1) 
-			self.fixture:setFriction(0) 
-		end
+		self:onSpawnFinished()
 
 		self.finishedSpawn = true
 	end
@@ -128,43 +142,54 @@ function SpaceCraft:draw()
 
 	-- Enemies blink before they are finished spawning
 	if self.finishedSpawn or math.ceil(self.age * blinkInterval) % 2 == 0 then
-		local drawX, drawY
-		if _.has(self.aspects, "enemyLinear") then
-			drawX, drawY = self.body:getWorldPoints(self.shape:getPoint())
-			-- Compensate for the fact that circular collision when drawing square images
-			-- Unlike square collision shapes that perfectly fit square images, circles on have their center point.
-			drawX = drawX - (self.sizeX / 2)
-			drawY = drawY - (self.sizeY / 2)
-		else 
-			drawX, drawY = self.body:getWorldPoints(self.shape:getPoints())
-		end
-
-		love.graphics.draw(self.image, drawX, drawY, 0, self.imgSX, self.imgSY)
+		self:drawImage()
 	end
 
 	-- If we're debugging, draw collision board. Color of boarder indicates collsion type.
 	if self.debug and self.finishedSpawn then
-		love.graphics.setColor(self.collisionDebugColor)
+		self:debugDrawCollisionBorder()
 
-		-- Should be dependent on having speed / velocity, not aspects...
-		if _.has(self.aspects, "enemyLinear") then
-			local debugX, debugY = self.body:getWorldPoints(self.shape:getPoint())
-			love.graphics.circle("line", debugX, debugY, self.sizeX / 2)
-
-			-- Additionally, draw a velocity indicator line
-			local velocityX, velocityY = self.body:getLinearVelocity()
-			love.graphics.setColor(0.7, 0.7, 0.05)
-			love.graphics.line(debugX, debugY, debugX + velocityX / 5, debugY + velocityY / 5)
-		else 
-			love.graphics.polygon("line", self.body:getWorldPoints(self.shape:getPoints()))
+		-- Additionally if the craft currently has a velocity. draw a velocity indicator line
+		if self.speed > 0 then
+			self:debugDrawVelocityIndicator()
 		end
-
-		love.graphics.reset()
 	end
 end
 
+-- Initializes the SpaceCrafts shape for the purposes of physics and collisions.
 function SpaceCraft:initializeShape()
 	return love.physics.newRectangleShape(self.sizeX, self.sizeY)
+end
+
+function SpaceCraft:getCenterPoint()
+	return self.body:getPosition()
+end
+
+-- A hook for any SpaceCraft Behavior that should occur on spawn.
+function SpaceCraft:onSpawnFinished()
+	-- Do nothing by default
+end
+
+-- Draw the spaceCraft's image, if one exists.
+function SpaceCraft:drawImage()
+	local drawX, drawY = self.body:getWorldPoints(self.shape:getPoints())
+	love.graphics.draw(self.image, drawX, drawY, 0, self.imgSX, self.imgSY)
+end
+
+-- Draws the shape that the Spacecraft is considered for collisions
+function SpaceCraft:debugDrawCollisionBorder()
+	love.graphics.setColor(self.collisionDebugColor)
+	love.graphics.polygon("line", self.body:getWorldPoints(self.shape:getPoints()))
+	love.graphics.reset()
+end
+
+function SpaceCraft:debugDrawVelocityIndicator()
+	local centerX, centerY = self:getCenterPoint()
+
+	local velocityX, velocityY = self.body:getLinearVelocity()
+	love.graphics.setColor(0.7, 0.7, 0.05)
+	love.graphics.line(centerX, centerY, centerX + velocityX / 5, centerY + velocityY / 5)
+	love.graphics.reset()
 end
 
 return SpaceCraft
