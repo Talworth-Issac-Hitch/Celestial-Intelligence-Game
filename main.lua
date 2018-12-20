@@ -36,10 +36,18 @@ EnemySpawnTable = {
 		interval = 7,
 		counter = 5,
 		enemyObj = {
-			aspects = Set{"enemyLinear"}, 
+			aspects = Set{"enemyLinear", "circular"}, 
 			debug = DEBUG
 		}
-	}
+	},
+	{
+		interval = 15,
+		counter = 5,
+		enemyObj = { 
+			aspects = Set{"circular", "enemyStatic"}, 
+			debug = DEBUG
+		}
+	},
 }
 
 -- TODO: Add Amps to the interval table.

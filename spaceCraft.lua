@@ -84,6 +84,8 @@ function SpaceCraft:draw()
 
 	-- If we're debugging, draw collision board. Color of boarder indicates collsion type.
 	if self.debug and self.finishedSpawn then
+		self:debugDrawCenter()
+
 		self:debugDrawCollisionBorder()
 
 		-- Additionally if the craft currently has a velocity. draw a velocity indicator line
@@ -111,6 +113,16 @@ end
 function SpaceCraft:drawImage()
 	local drawX, drawY = self.body:getWorldPoints(self.shape:getPoints())
 	love.graphics.draw(self.image, drawX, drawY, 0, self.imgSX, self.imgSY)
+end
+
+-- Draws a dot on what is considered the center of the craft for physics purposes
+function SpaceCraft:debugDrawCenter()
+	love.graphics.setColor(self.collisionDebugColor)
+
+	local debugX, debugY = self.body:getPosition()
+	love.graphics.circle("fill", debugX, debugY, 10)
+
+	love.graphics.reset()
 end
 
 -- Draws the shape that the Spacecraft is considered for collisions

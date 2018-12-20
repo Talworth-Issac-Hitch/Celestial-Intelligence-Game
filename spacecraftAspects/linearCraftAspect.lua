@@ -5,9 +5,7 @@ LinearCraftAspectDefinition = {
 		sizeX = 25, 
 		sizeY = 25,
 		speed = 250,
-		initializeShape = function(self) 
-			return love.physics.newCircleShape(self.sizeX / 2, self.sizeY / 2, self.sizeX / 2)
-		end,
+		-- Set up our initial speed
 		onSpawnFinished = function(self)
 			-- NOTE : We could do this in the pre-spawn phase to give the player some indication of the direction
 			--         that the enemy will move, we just currently do not.
@@ -23,22 +21,6 @@ LinearCraftAspectDefinition = {
 			-- becoming angular velocity.
 			self.fixture:setRestitution(1) 
 			self.fixture:setFriction(0) 
-		end,
-		drawImage = function(self)
-			local drawX, drawY = self:getCenterPoint()
-
-			-- Compensate for the fact that circular collision when drawing square images
-			-- Unlike square collision shapes that perfectly fit square images, circles on have their center point.
-			drawX = drawX - (self.sizeX / 2)
-			drawY = drawY - (self.sizeY / 2)
-
-			love.graphics.draw(self.image, drawX, drawY, 0, self.imgSX, self.imgSY)
-		end,
-		debugDrawCollisionBorder = function(self)
-			love.graphics.setColor(self.collisionDebugColor)
-			local debugX, debugY = self:getCenterPoint()
-			love.graphics.circle("line", debugX, debugY, self.sizeX / 2)
-			love.graphics.reset()
 		end
 	}
 
