@@ -31,7 +31,10 @@ SpaceCraftAspectDefinitions = {
 		imagePath = "assets/metor.jpg",
 		sizeX = 25, 
 		sizeY = 25,
-		speed = 250
+		speed = 250,
+		initializeShape = function(self) 
+			return love.physics.newCircleShape(self.sizeX / 2, self.sizeY / 2, self.sizeX / 2)
+		end
 	}
 }
 
@@ -90,13 +93,7 @@ function SpaceCraft:new(options)
 
 	-- Set up the space craft's Love2D Physics objects
 	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, spaceCraft.bodyType)
-
-	-- TODO: Factor functions out into aspect definition too.
-	if _.has(spaceCraft.aspects, "enemyLinear") then
-		spaceCraft.shape = love.physics.newCircleShape(spaceCraft.sizeX / 2, spaceCraft.sizeY / 2, spaceCraft.sizeX / 2)
-	else 
-		spaceCraft.shape = love.physics.newRectangleShape(spaceCraft.sizeX, spaceCraft.sizeY)
-	end
+	spaceCraft.shape = spaceCraft:initializeShape()
 
 	return spaceCraft 
 end 
@@ -164,6 +161,10 @@ function SpaceCraft:draw()
 
 		love.graphics.reset()
 	end
+end
+
+function SpaceCraft:initializeShape()
+	return love.physics.newRectangleShape(self.sizeX, self.sizeY)
 end
 
 return SpaceCraft
