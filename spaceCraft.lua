@@ -5,20 +5,53 @@ _ = require "moses_min"
 SpaceCraft = {}
 SpaceCraft.__index = SpaceCraft
 
+-- ASPECT DEFINITIONS --
+-- TODO: Make all these aspects their own files with a registry.
+-- A table of aspect attributes to be applied on initialization
+SpaceCraftAspectDefinitions = {
+	player = {
+		imagePath ="assets/pig.png", 
+		sizeX = 50, 
+		sizeY = 50,
+		speed = 400, 
+
+		collisionData = "player",
+
+		collisionDebugColor = {0.05, 0.9, 0.05}
+	},
+	enemyStatic = {
+		imagePath = "assets/head.png", 
+		sizeX = 100, 
+		sizeY = 100,
+		speed = 0,
+
+		bodyType = "static"
+	},
+	enemyLinear = {
+		imagePath = "assets/metor.jpg",
+		sizeX = 25, 
+		sizeY = 25,
+		speed = 250
+	}
+}
+
 function SpaceCraft:new(options)
 	-- Initialize our spaceCraft with defaults
 	local spaceCraft = {
 		imagePath = "assets/unknown.png", 
-		sizeX = 100, 
-		sizeY = 100, 
+		sizeX = 50, 
+		sizeY = 50, 
 		xPosition = 0, 
 		yPosition = 0,
 		xVelocity = 0, 
 		yVelocity = 0, 
 		speed = 0,
 		age = 0,
-		aspects ="enemyStatic",
+
 		world = nil,
+		bodyType = "dynamic",
+		collisionData = "enemy",
+
 		debug = false,
 		collisionDebugColor = {0.9, 0.05, 0.05}
 	}
@@ -27,16 +60,20 @@ function SpaceCraft:new(options)
 
 	spaceCraft = _.extend(spaceCraft, options)	
 
-	-- TODO: Better "aspect" logic
-	bodyType = "dynamic"
-	if spaceCraft.aspects == "player" then	
-		spaceCraft.collisionDebugColor = {0.05, 0.9, 0.05}
-	elseif spaceCraft.aspects == "enemyStatic" then
-		bodyType = "static"
-	elseif spaceCraft.aspects == "enemyLinear" then
-		spaceCraft.imagePath = "assets/metor.jpg"
-		spaceCraft.speed = 250
-		local initAngle = math.random(0, 2 * math.pi)
+	-- For each aspect the SpaceCraft has, apply that aspect's initial paremters.  Remember here that aspect lists are Sets, not tables
+	--  so we need to index by the AspectName, not the value
+	_.each(spaceCraft.aspects, function(aspectVal, aspectName) 
+		-- For each the parameters that Aspect Definition has 
+		_.each(SpaceCraftAspectDefinitions[aspectName], function(aspectPropertyValue, aspectPropertyName)
+			-- TODO: Better handling of Aspects that set the same property.  Currently they simply overwrite, last wins..
+			spaceCraft[aspectPropertyName] = aspectPropertyValue
+		end)
+	end)
+	
+
+	if _.has(spaceCraft.aspects, "enemyLinear") then
+		-- TODO: We'll figure you in second...
+		local initAngle = love.math.random(0, 2 * math.pi)
 		
 		spaceCraft.xVelocity = math.sin(initAngle) * spaceCraft.speed
 		spaceCraft.yVelocity = math.cos(initAngle) * spaceCraft.speed
@@ -52,9 +89,10 @@ function SpaceCraft:new(options)
 	spaceCraft.imgSY = spaceCraft.sizeY / spaceCraft.image:getHeight()
 
 	-- Set up the space craft's Love2D Physics objects
-	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, bodyType)
+	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, spaceCraft.bodyType)
 
-	if spaceCraft.aspects == "enemyLinear" then
+	-- TODO: Factor functions out into aspect definition too.
+	if _.has(spaceCraft.aspects, "enemyLinear") then
 		spaceCraft.shape = love.physics.newCircleShape(spaceCraft.sizeX / 2, spaceCraft.sizeY / 2, spaceCraft.sizeX / 2)
 	else 
 		spaceCraft.shape = love.physics.newRectangleShape(spaceCraft.sizeX, spaceCraft.sizeY)
@@ -69,10 +107,12 @@ function SpaceCraft:update(dt)
 	-- Enemies should not be collidable until they have spawned, so we wait until then to add their world fixture.
 	if not self.finishedSpawn and self.age > 2 then
 		self.fixture = love.physics.newFixture(self.body, self.shape)
-		self.fixture:setUserData(self.aspects)
+
+		-- TODO: Make collision data into Table / Set to enable more info for more different types of collisions.
+		self.fixture:setUserData(self.collisionData)
 
 		-- TODO: Get this outta here and into a specific module implementation.  You playing a dangerous game boi.
-		if self.aspects == "enemyLinear" then
+		if _.has(self.aspects, "enemyLinear") then
 			self.body:setLinearVelocity(self.xVelocity, self.yVelocity)
 
 			-- preserve all linear momentum for now.  Set restitution to 1 since perfect elasticity 
@@ -92,7 +132,7 @@ function SpaceCraft:draw()
 	-- Enemies blink before they are finished spawning
 	if self.finishedSpawn or math.ceil(self.age * blinkInterval) % 2 == 0 then
 		local drawX, drawY
-		if self.aspects == "enemyLinear" then
+		if _.has(self.aspects, "enemyLinear") then
 			drawX, drawY = self.body:getWorldPoints(self.shape:getPoint())
 			-- Compensate for the fact that circular collision when drawing square images
 			-- Unlike square collision shapes that perfectly fit square images, circles on have their center point.
@@ -109,7 +149,8 @@ function SpaceCraft:draw()
 	if self.debug and self.finishedSpawn then
 		love.graphics.setColor(self.collisionDebugColor)
 
-		if self.aspects == "enemyLinear" then
+		-- Should be dependent on having speed / velocity, not aspects...
+		if _.has(self.aspects, "enemyLinear") then
 			local debugX, debugY = self.body:getWorldPoints(self.shape:getPoint())
 			love.graphics.circle("line", debugX, debugY, self.sizeX / 2)
 

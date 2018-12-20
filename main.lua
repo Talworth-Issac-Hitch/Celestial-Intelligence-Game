@@ -3,6 +3,15 @@ _ = require "moses_min"
 WorldPhysics = require "worldPhysics"
 SpaceCraft = require "spaceCraft"
 
+-- UTILS --
+-- Creates a set, aka a table where the identifiers are keys
+-- TODO: Move to a Utils type file.
+function Set (list)
+	local set = {}
+	for _, l in ipairs(list) do set[l] = true end
+	return set
+end
+
 -- CONSTANTS -- 
 VIEWPORT_HEIGHT = 800
 VIEWPORT_WIDTH = 1200
@@ -13,30 +22,21 @@ PLAYABLE_AREA_WIDTH = 800
 
 DEBUG = true
 
--- TODO: Probably make these into tables
--- TODO: Load this from a file / server.  File could either be user made (manually or in an 'admin' interace), or Machine Learning generated.
+-- TODO: Load this from a file / server.	File could either be user made (manually or in an 'admin' interace), or Machine Learning generated.
 EnemySpawnTable = {
 	{
 		interval = 15,
 		counter = 10,
-		enemyObj = { -- TODO: Create more simple constructor for enemies.  Aspects only?
-			imagePath = "assets/head.png", 
-			sizeX = 100, 
-			sizeY = 100, 
-			xVelocity = 0, 
-			yVelocity = 0, 
-			speed = 0, 
-			aspects = "enemyStatic", 
+		enemyObj = { 
+			aspects = Set{"enemyStatic"}, 
 			debug = DEBUG
 		}
 	},
 	{
 		interval = 7,
 		counter = 5,
-		enemyObj = { -- TODO: Create more simple constructor for enemies.  Aspects only?
-			sizeX = 25, 
-			sizeY = 25, 
-			aspects = "enemyLinear", 
+		enemyObj = {
+			aspects = Set{"enemyLinear"}, 
 			debug = DEBUG
 		}
 	}
@@ -56,23 +56,17 @@ function love.load()
 	love.window.setMode(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
 
 	worldPhysics = WorldPhysics:new {
-		worldWidth=VIEWPORT_WIDTH,
-		worldHeight=VIEWPORT_HEIGHT,
-		debug=DEBUG
+		worldWidth = VIEWPORT_WIDTH,
+		worldHeight = VIEWPORT_HEIGHT,
+		debug = DEBUG
 	}
 
 	activeCrafts = {
-		playerCraft = SpaceCraft:new {
-			imagePath ="assets/pig.png", 
-			sizeX = 50, 
-			sizeY = 50, 
+		playerCraft = SpaceCraft:new { 
 			xPosition = 50, 
-			yPosition = 50,
-			xVelocity = 10, 
-			yVelocity = 0, 
-			speed = 400, 
+			yPosition = 50, 
 			age = 2, 
-			aspects = "player", 
+			aspects = Set{"player"}, 
 			world = worldPhysics:getWorld(),
 			debug = DEBUG
 		}
