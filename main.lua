@@ -79,6 +79,9 @@ function love.load()
 	}
 
 	score = 0
+
+	seed = os.time()
+	love.math.setRandomSeed(seed)
 end
 
 
@@ -108,8 +111,8 @@ function love.update(dt)
 
 		if spawnParameters.counter > spawnParameters.interval then
 			local newEnemyInstanceParameters = {
-				xPosition = math.random(50, VIEWPORT_WIDTH - 50), 
-				yPosition = math.random(50, VIEWPORT_HEIGHT - 50),
+				xPosition = love.math.random(50, VIEWPORT_WIDTH - 50), 
+				yPosition = love.math.random(50, VIEWPORT_HEIGHT - 50),
 				world = worldPhysics:getWorld()
 			}
 
@@ -133,7 +136,7 @@ function love.draw()
 	end)
 
 	-- Draw the score
-	love.graphics.print("Score : " .. math.ceil(score), VIEWPORT_WIDTH / 2, 50)
+	love.graphics.print("Game Seed : " .. seed .. "\nScore : " .. math.ceil(score), VIEWPORT_WIDTH / 2, 50)
 end
 
 function love.keypressed(key)
