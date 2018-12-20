@@ -16,7 +16,6 @@ DEBUG = true
 -- TODO: Probably make these into tables
 SPAWN_INTERVAL_ENEMY_1 = 15
 SPAWN_INTERVAL_ENEMY_2 = 7
-
 SPAWN_COUNTER_ENEMY_1 = 10
 SPAWN_COUNTER_ENEMY_2 = 5
 
@@ -130,13 +129,13 @@ function love.keypressed(key)
 	-- User input affeccting new physics
 	local xVelocity, yVelocity = activeCrafts.playerCraft.body:getLinearVelocity()
 	
-	if key == 'up' then
+	if key == 'up' or key == 'w' then
 		yVelocity = -activeCrafts.playerCraft.speed
-	elseif key == 'down' then
+	elseif key == 'down' or key == 's' then
 		yVelocity = activeCrafts.playerCraft.speed
-	elseif key == 'right' then
+	elseif key == 'right' or key == 'd' then
 		xVelocity = activeCrafts.playerCraft.speed
-	elseif key == 'left' then
+	elseif key == 'left' or key == 'a' then
 		xVelocity = -activeCrafts.playerCraft.speed
 	end
 
@@ -147,25 +146,25 @@ function love.keyreleased(key)
 	-- User input affeccting playerCraft's movements
 	local xVelocity, yVelocity = activeCrafts.playerCraft.body:getLinearVelocity()
 
-	if key == 'up' then
+	if key == 'up' or key == 'w' then
 		if love.keyboard.isDown('down') then
 			yVelocity = activeCrafts.playerCraft.speed
 		else 
 			yVelocity = 0
 		end
-	elseif key == 'down' then
+	elseif key == 'down' or key == 's' then
 		if love.keyboard.isDown('up') then
 			yVelocity = -activeCrafts.playerCraft.speed
 		else 
 			yVelocity = 0
 		end
-	elseif key == 'right' then
+	elseif key == 'right' or key == 'd' then
 		if love.keyboard.isDown('left') then
 			xVelocity = -activeCrafts.playerCraft.speed
 		else 
 			xVelocity = 0
 		end
-	elseif key == 'left' then
+	elseif key == 'left' or key == 'a' then
 		if love.keyboard.isDown('right') then
 			xVelocity = activeCrafts.playerCraft.speed
 		else 

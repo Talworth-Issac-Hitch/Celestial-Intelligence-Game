@@ -1,5 +1,5 @@
 -- IMPORTS --
---_ = require "moses_min"
+_ = require "moses_min"
 
 -- CLASS DEFINITION -- 
 WorldPhysics = {}
