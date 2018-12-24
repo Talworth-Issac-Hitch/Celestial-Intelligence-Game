@@ -22,11 +22,15 @@ PLAYABLE_AREA_WIDTH = 800
 
 DEBUG = true
 
+
+-- TODO: BOOO Globals boo
+StunCounter = 0
+
 -- TODO: Load this from a file / server.	File could either be user made (manually or in an 'admin' interace), or Machine Learning generated.
 EnemySpawnTable = {
 	{
 		interval = 15,
-		counter = 5,
+		counter = -65,
 		enemyObj = { 
 			imagePath = "assets/head.png", 
 			aspects = Set{"enemyStatic", "deadly"}, 
@@ -34,8 +38,8 @@ EnemySpawnTable = {
 		}
 	},
 	{
-		interval = 5,
-		counter = 5,
+		interval = 6,
+		counter = 6,
 		enemyObj = {
 			imagePath = "assets/comet-spark.png",
 			imageRotationOffset = -math.pi / 4,
@@ -44,11 +48,21 @@ EnemySpawnTable = {
 		}
 	},
 	{
-		interval = 10,
-		counter = 5,
+		interval = 12,
+		counter = -2,
 		enemyObj = {
 			imagePath = "assets/evil-moon.png",
 			aspects = Set{"circular", "enemyStatic"}, 
+			debug = DEBUG
+		}
+	},
+		{
+	interval = 7,
+		counter = -50,
+		enemyObj = {
+			imagePath = "assets/wind-hole.png",
+			angularVelocity = 2, --TODO: Make stun-nados actually spin
+			aspects = Set{"enemyLinear", "circular", "stun"}, 
 			debug = DEBUG
 		}
 	},
@@ -130,6 +144,14 @@ function love.update(dt)
 			spawnParameters.counter = spawnParameters.counter - spawnParameters.interval
 		end
 	end)
+
+	-- TODO: BOOO GLOBALS.  Handle this not in main.lua.  Also do the stun blinking differently.
+	if StunCounter > 0 then
+		activeCrafts.playerCraft.stunned = true
+		StunCounter = StunCounter - dt
+	else
+		activeCrafts.playerCraft.stunned = false
+	end
 
 	score = score + dt
 end

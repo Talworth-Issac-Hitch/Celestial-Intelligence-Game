@@ -99,8 +99,10 @@ function beginContactHandler(fixtureA, fixtureB, coll)
 
 	-- If the play collides, game over
 	-- TODO: Separate Game Logic, from the purely physics module?
-	if  (aType == "player" and bType == "deadly") or (bType == "player" and aType == "deadly") then 
-		love.event.quit( )
+	if  aType == "player" then 
+		handlePlayerCollision(aType, bType)
+	elseif bType == "player" then
+		handlePlayerCollision(bType, aType)
 	end
 end
 
@@ -125,6 +127,15 @@ end
 
 function postSolveHandler(fixtureA, fixtureB, coll, normalImpluse, tangentImpulse)
 	-- Unused 
+end
+
+function handlePlayerCollision(playerData, otherData)
+	if otherData == "deadly" then
+		love.event.quit( )
+	elseif otherData == "stun" then
+		StunCounter = StunCounter + 1
+		print("incrementing stun counter, now is : " .. StunCounter)
+	end
 end
 
 function WorldPhysics:getWorld()

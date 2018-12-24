@@ -23,7 +23,9 @@ function SpaceCraft:new(options)
 		angularVelocity = 0,
 		angularDampening = 0,
 		speed = 0,
+
 		age = 0,
+		stunned = false,
 
 		world = nil,
 		bodyType = "dynamic",
@@ -46,6 +48,11 @@ function SpaceCraft:new(options)
 			spaceCraft[aspectPropertyName] = aspectPropertyValue
 		end)
 	end)
+
+	-- TODO: Better logic for multiple scaling factors
+	if spaceCraft.scalingFactor then
+		spaceCraft:applyScaling(spaceCraft.scalingFactor)
+	end
 
 	spaceCraft:loadImageAndAttrs()
 
@@ -81,7 +88,7 @@ function SpaceCraft:draw()
 	local blinkInterval = 7
 
 	-- Enemies blink before they are finished spawning
-	if self.finishedSpawn or math.ceil(self.age * blinkInterval) % 2 == 0 then
+	if (self.finishedSpawn and not self.stunned) or math.ceil(self.age * blinkInterval) % 2 == 0 then
 		self:drawImage()
 	end
 
@@ -98,6 +105,13 @@ function SpaceCraft:draw()
 			self:debugDrawVelocityIndicator()
 		end
 	end
+end
+
+-- We can make him better, stronger...
+function SpaceCraft:applyScaling(scalingFactor)
+	self.sizeX = self.sizeX * scalingFactor
+	self.sizeY = self.sizeY * scalingFactor
+	self.speed = self.speed * scalingFactor
 end
 
 function SpaceCraft:beforeBodySetup()
@@ -170,7 +184,7 @@ function SpaceCraft:debugDrawFacing()
 	local facingVectorX = math.cos(facingAngle) * 0.75 * self.sizeX
 	local facingVectorY = math.sin(facingAngle) * 0.75 * self.sizeY
 
-	love.graphics.setColor(0.7, 0.05, 0.7)
+	love.graphics.setColor(0.6, 0.05, 0.6)
 	love.graphics.line(centerX, centerY, centerX + facingVectorX, centerY + facingVectorY)
 
 	love.graphics.reset()
@@ -187,7 +201,7 @@ function SpaceCraft:debugDrawVelocityIndicator()
 	local centerX, centerY = self:getCenterPoint()
 
 	local velocityX, velocityY = self.body:getLinearVelocity()
-	love.graphics.setColor(0.7, 0.7, 0.05)
+	love.graphics.setColor(0.6, 0.6, 0.05)
 	love.graphics.line(centerX, centerY, centerX + velocityX / 5 , centerY + velocityY / 5)
 	love.graphics.reset()
 end
