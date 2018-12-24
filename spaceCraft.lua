@@ -11,12 +11,16 @@ function SpaceCraft:new(options)
 	-- Initialize our spaceCraft with defaults
 	local spaceCraft = {
 		imagePath = "assets/unknown.png", 
+		imageRotationOffset = 0, -- TODO: Also allow the image's center point to be offset from 'collision' frame center.
+
 		sizeX = 50, 
 		sizeY = 50, 
 		xPosition = 0, 
 		yPosition = 0,
 		xVelocity = 0, 
-		yVelocity = 0, 
+		yVelocity = 0,
+		facingAngle = 0,
+		angularVelocity = 0, 
 		speed = 0,
 		age = 0,
 
@@ -42,17 +46,14 @@ function SpaceCraft:new(options)
 		end)
 	end)
 
-	-- TODO: consider caching a table of images to avoid repeat loading in here
-	--       as more spaceCraft (potentially with the same image) are spawned during the game
-	spaceCraft.image = love.graphics.newImage(spaceCraft.imagePath)
+	spaceCraft:loadImageAndAttrs()
 
-	-- TODO: Get images that are properly sized to avoid scaling
-	-- TODO2: Draw characters procedurally based on parameters rather using images
-	spaceCraft.imgSX = spaceCraft.sizeX / spaceCraft.image:getWidth()
-	spaceCraft.imgSY = spaceCraft.sizeY / spaceCraft.image:getHeight()
+	spaceCraft:beforeBodySetup()
 
 	-- Set up the space craft's Love2D Physics objects
 	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, spaceCraft.bodyType)
+	spaceCraft.body:setAngle(spaceCraft.facingAngle)
+
 	spaceCraft.shape = spaceCraft:initializeShape()
 
 	return spaceCraft 
@@ -86,6 +87,8 @@ function SpaceCraft:draw()
 	if self.debug and self.finishedSpawn then
 		self:debugDrawCenter()
 
+		self:debugDrawFacing()
+
 		self:debugDrawCollisionBorder()
 
 		-- Additionally if the craft currently has a velocity. draw a velocity indicator line
@@ -93,6 +96,30 @@ function SpaceCraft:draw()
 			self:debugDrawVelocityIndicator()
 		end
 	end
+end
+
+function SpaceCraft:beforeBodySetup()
+	-- N0-0P, hook for others to override.
+end
+
+-- Loads the SpaceCraft's image, and sets related properties
+function SpaceCraft:loadImageAndAttrs()
+	-- TODO: consider caching a table of images to avoid repeat loading in here
+	--       as more spaceCraft (potentially with the same image) are spawned during the game
+	self.image = love.graphics.newImage(self.imagePath)
+
+	-- TODO: Get images that are properly sized to avoid scaling
+	-- TODO2: Draw characters procedurally based on parameters rather using images
+	self.imgSX = self.sizeX / self.image:getWidth()
+	self.imgSY = self.sizeY / self.image:getHeight()
+
+	self:setImageOffset()
+end
+
+function SpaceCraft:setImageOffset()
+	-- Square Images require no offset
+	self.imgOX = 0
+	self.imgOY = 0
 end
 
 -- Initializes the SpaceCrafts shape for the purposes of physics and collisions.
@@ -104,23 +131,45 @@ function SpaceCraft:getCenterPoint()
 	return self.body:getPosition()
 end
 
+function SpaceCraft:getDrawingAnchor()
+	return self.body:getWorldPoints(self.shape:getPoints())
+end
+
 -- A hook for any SpaceCraft Behavior that should occur on spawn.
 function SpaceCraft:onSpawnFinished()
 	-- Do nothing by default
 end
 
+function SpaceCraft:getImageDrawAngle()
+	-- Default, square crafts simply always draw the image as axis aligned.
+	return self.body:getAngle()
+end
+
 -- Draw the spaceCraft's image, if one exists.
 function SpaceCraft:drawImage()
-	local drawX, drawY = self.body:getWorldPoints(self.shape:getPoints())
-	love.graphics.draw(self.image, drawX, drawY, 0, self.imgSX, self.imgSY)
+	local drawX, drawY = self:getDrawingAnchor()
+	love.graphics.draw(self.image, drawX, drawY, self:getImageDrawAngle(), self.imgSX, self.imgSY, self.imgOX, self.imgOY)
 end
 
 -- Draws a dot on what is considered the center of the craft for physics purposes
 function SpaceCraft:debugDrawCenter()
-	love.graphics.setColor(self.collisionDebugColor)
-
 	local debugX, debugY = self.body:getPosition()
-	love.graphics.circle("fill", debugX, debugY, 10)
+	love.graphics.setColor(self.collisionDebugColor)
+	love.graphics.circle("fill", debugX, debugY, 5)
+
+	love.graphics.reset()
+end
+
+-- Draws an arrow in the direction the object is "facing" for physics purposes
+function SpaceCraft:debugDrawFacing()
+	local centerX, centerY = self:getCenterPoint()
+	local facingAngle = self.body:getAngle()
+
+	local facingVectorX = math.cos(facingAngle) * 0.75 * self.sizeX
+	local facingVectorY = math.sin(facingAngle) * 0.75 * self.sizeY
+
+	love.graphics.setColor(0.7, 0.05, 0.7)
+	love.graphics.line(centerX, centerY, centerX + facingVectorX, centerY + facingVectorY)
 
 	love.graphics.reset()
 end
@@ -137,7 +186,7 @@ function SpaceCraft:debugDrawVelocityIndicator()
 
 	local velocityX, velocityY = self.body:getLinearVelocity()
 	love.graphics.setColor(0.7, 0.7, 0.05)
-	love.graphics.line(centerX, centerY, centerX + velocityX / 5, centerY + velocityY / 5)
+	love.graphics.line(centerX, centerY, centerX + velocityX / 5 , centerY + velocityY / 5)
 	love.graphics.reset()
 end
 

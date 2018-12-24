@@ -1,7 +1,7 @@
 -- ASPECT DEFINITION --
 -- For the player's craft
 PlayerCraftAspectDefinition = {
-	imagePath ="assets/pig.png", 
+	imagePath ="assets/totem-head.png", 
 	sizeX = 50, 
 	sizeY = 50,
 	speed = 400, 

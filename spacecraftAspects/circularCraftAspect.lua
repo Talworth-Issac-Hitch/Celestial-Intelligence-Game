@@ -1,19 +1,16 @@
 -- ASPECT DEFINITION --
 -- For Craft which have a circular collision area.
 CircularCraftAspectDefinition = {
-	imagePath = "assets/evil-moon.png", 
+	setImageOffset = function(self)
+		self.imgOX = self.image:getWidth() / 2
+		self.imgOY = self.image:getHeight() / 2
+	end,
 	initializeShape = function(self) 
 		return love.physics.newCircleShape(self.sizeX / 2)
 	end,
-	drawImage = function(self)
-		local drawX, drawY = self:getCenterPoint()
-
-		-- Compensate for the fact that circular collision when drawing square images
-		-- Unlike square collision shapes that perfectly fit square images, circles on have their center point.
-		drawX = drawX - (self.sizeX / 2)
-		drawY = drawY - (self.sizeY / 2)
-
-		love.graphics.draw(self.image, drawX, drawY, 0, self.imgSX, self.imgSY)
+	getDrawingAnchor = function(self)
+		-- We no longer need to do anything special, because we properly set the image offset when drawing, simply return center
+		return self:getCenterPoint()
 	end,
 	debugDrawCollisionBorder = function(self)
 		love.graphics.setColor(self.collisionDebugColor)

@@ -28,14 +28,17 @@ EnemySpawnTable = {
 		interval = 15,
 		counter = 10,
 		enemyObj = { 
+			imagePath = "assets/head.png", 
 			aspects = Set{"enemyStatic"}, 
 			debug = DEBUG
 		}
 	},
 	{
-		interval = 7,
+		interval = 5,
 		counter = 5,
 		enemyObj = {
+			imagePath = "assets/comet-spark.png",
+			imageRotationOffset = -math.pi / 4,
 			aspects = Set{"enemyLinear", "circular"}, 
 			debug = DEBUG
 		}
@@ -43,7 +46,8 @@ EnemySpawnTable = {
 	{
 		interval = 15,
 		counter = 5,
-		enemyObj = { 
+		enemyObj = {
+			imagePath = "assets/evil-moon.png",
 			aspects = Set{"circular", "enemyStatic"}, 
 			debug = DEBUG
 		}
@@ -107,7 +111,7 @@ function love.update(dt)
 		AMP_COUNTER = AMP_COUNTER - AMP_INTERVAL
 	end 
 
-		-- Update each spawn interval, spawning an enemy if it's time
+	-- Update each spawn interval, spawning an enemy if it's time
 	_.each(EnemySpawnTable, function(spawnParameters)
 		spawnParameters.counter = spawnParameters.counter + dt
 

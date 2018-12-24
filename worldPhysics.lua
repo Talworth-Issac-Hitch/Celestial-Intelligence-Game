@@ -18,7 +18,6 @@ function WorldPhysics:new(options)
 	worldPhysics = _.extend(worldPhysics, options)
 
 	-- Create Physics context 
-	-- TODO - Make this its own module / file
 	-- Set the height of the meter in pixels to 64
 	love.physics.setMeter(64)
 
@@ -63,6 +62,7 @@ function WorldPhysics:update(dt)
 	self.world:update(dt)
 
 	-- cleanup when 'text' gets too long
+	-- TODO: Add a physics log for each session
 	if string.len(self.collisionDebugText) > 768 then
 		self.collisionDebugText = "" 
 	end
