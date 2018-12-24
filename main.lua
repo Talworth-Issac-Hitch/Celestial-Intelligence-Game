@@ -26,10 +26,10 @@ DEBUG = true
 EnemySpawnTable = {
 	{
 		interval = 15,
-		counter = 10,
+		counter = 5,
 		enemyObj = { 
 			imagePath = "assets/head.png", 
-			aspects = Set{"enemyStatic"}, 
+			aspects = Set{"enemyStatic", "deadly"}, 
 			debug = DEBUG
 		}
 	},
@@ -39,12 +39,12 @@ EnemySpawnTable = {
 		enemyObj = {
 			imagePath = "assets/comet-spark.png",
 			imageRotationOffset = -math.pi / 4,
-			aspects = Set{"enemyLinear", "circular"}, 
+			aspects = Set{"enemyLinear", "circular", "deadly"}, 
 			debug = DEBUG
 		}
 	},
 	{
-		interval = 15,
+		interval = 10,
 		counter = 5,
 		enemyObj = {
 			imagePath = "assets/evil-moon.png",

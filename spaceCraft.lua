@@ -20,16 +20,17 @@ function SpaceCraft:new(options)
 		xVelocity = 0, 
 		yVelocity = 0,
 		facingAngle = 0,
-		angularVelocity = 0, 
+		angularVelocity = 0,
+		angularDampening = 0,
 		speed = 0,
 		age = 0,
 
 		world = nil,
 		bodyType = "dynamic",
-		collisionData = "enemy",
+		collisionData = "non-lethal-enemy",
 
 		debug = false,
-		collisionDebugColor = {0.9, 0.05, 0.05}
+		collisionDebugColor = {0.05, 0.05, 0.9}
 	}
 
 	setmetatable(spaceCraft, SpaceCraft)
@@ -53,6 +54,7 @@ function SpaceCraft:new(options)
 	-- Set up the space craft's Love2D Physics objects
 	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, spaceCraft.bodyType)
 	spaceCraft.body:setAngle(spaceCraft.facingAngle)
+	spaceCraft.body:setAngularDamping(spaceCraft.angularDampening)
 
 	spaceCraft.shape = spaceCraft:initializeShape()
 

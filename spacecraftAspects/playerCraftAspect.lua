@@ -4,7 +4,8 @@ PlayerCraftAspectDefinition = {
 	imagePath ="assets/totem-head.png", 
 	sizeX = 50, 
 	sizeY = 50,
-	speed = 400, 
+	speed = 400,
+	angularDampening = 0.65,
 
 	collisionData = "player",
 

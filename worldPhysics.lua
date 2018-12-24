@@ -98,8 +98,8 @@ function beginContactHandler(fixtureA, fixtureB, coll)
 	local bType = fixtureB:getUserData()
 
 	-- If the play collides, game over
-	-- TODO: Separate Game Logic, from the purely physics module.
-	if  (aType == "player" and bType ~= "wall") or (bType == "player" and aType ~= "wall") then 
+	-- TODO: Separate Game Logic, from the purely physics module?
+	if  (aType == "player" and bType == "deadly") or (bType == "player" and aType == "deadly") then 
 		love.event.quit( )
 	end
 end
