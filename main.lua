@@ -29,8 +29,8 @@ StunCounter = 0
 -- TODO: Load this from a file / server.	File could either be user made (manually or in an 'admin' interace), or Machine Learning generated.
 EnemySpawnTable = {
 	{
-		interval = 15,
-		counter = -65,
+		spawnInterval = 15,
+		spawnCounter = -65,
 		enemyObj = { 
 			imagePath = "assets/head.png", 
 			aspects = Set{"enemyStatic", "deadly"}, 
@@ -38,8 +38,8 @@ EnemySpawnTable = {
 		}
 	},
 	{
-		interval = 6,
-		counter = 6,
+		spawnInterval = 7,
+		spawnCounter = 6,
 		enemyObj = {
 			imagePath = "assets/comet-spark.png",
 			imageRotationOffset = -math.pi / 4,
@@ -48,20 +48,20 @@ EnemySpawnTable = {
 		}
 	},
 	{
-		interval = 12,
-		counter = -2,
+		spawnInterval = 12,
+		spawnCounter = -2,
 		enemyObj = {
 			imagePath = "assets/evil-moon.png",
 			aspects = Set{"circular", "enemyStatic"}, 
 			debug = DEBUG
 		}
 	},
-		{
-	interval = 7,
-		counter = -50,
+	{
+		spawnInterval = 5,
+		spawnCounter = -60,
 		enemyObj = {
 			imagePath = "assets/wind-hole.png",
-			angularVelocity = 2, --TODO: Make stun-nados actually spin
+			angularVelocity = -5,
 			aspects = Set{"enemyLinear", "circular", "stun"}, 
 			debug = DEBUG
 		}
@@ -119,7 +119,7 @@ function love.update(dt)
 		-- The 'Amp' currently spawns a burst of all types of enemies.
 		-- TODO: Make more ways the game can 'AMP'
 		_.each(EnemySpawnTable, function(spawnParameters)
-			spawnParameters.counter = spawnParameters.counter + 25
+			spawnParameters.spawnCounter = spawnParameters.spawnCounter + 25
 		end)
 
 		AMP_COUNTER = AMP_COUNTER - AMP_INTERVAL
@@ -127,9 +127,9 @@ function love.update(dt)
 
 	-- Update each spawn interval, spawning an enemy if it's time
 	_.each(EnemySpawnTable, function(spawnParameters)
-		spawnParameters.counter = spawnParameters.counter + dt
+		spawnParameters.spawnCounter = spawnParameters.spawnCounter + dt
 
-		if spawnParameters.counter > spawnParameters.interval then
+		if spawnParameters.spawnCounter > spawnParameters.spawnInterval then
 			local newEnemyInstanceParameters = {
 				-- New enemies are randomly places in valid bounds in the world
 				xPosition = love.math.random(50, VIEWPORT_WIDTH - 50), 
@@ -141,7 +141,7 @@ function love.update(dt)
 
 			table.insert(activeCrafts, SpaceCraft:new(newEnemyInstanceParameters) )
 
-			spawnParameters.counter = spawnParameters.counter - spawnParameters.interval
+			spawnParameters.spawnCounter = spawnParameters.spawnCounter - spawnParameters.spawnInterval
 		end
 	end)
 

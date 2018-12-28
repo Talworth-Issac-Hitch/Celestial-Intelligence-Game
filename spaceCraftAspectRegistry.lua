@@ -8,7 +8,7 @@ stunningAspectDefinition = require "spacecraftAspects/stunningCraftAspect"
 
 -- ASPECT DEFINITIONS --
 -- A table of aspect attributes to be applied on initialization
--- TODO: 
+-- TODO: Make multiple nested tables to handle the mutally exclusive aspects
 SpaceCraftAspectDefinitions = {
 	player = playerAspectDefinition,
 	deadly = deadlyAspectDefinition,
@@ -16,6 +16,8 @@ SpaceCraftAspectDefinitions = {
 	circular = circularAspectDefinition,
 	enemyStatic = staticAspectDefinition,
 	stun = stunningAspectDefinition
+
+	-- TODO: Player-friendly unit that does other units, to clear out the map
 }
 
 return SpaceCraftAspectDefinitions

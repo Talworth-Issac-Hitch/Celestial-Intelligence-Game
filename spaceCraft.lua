@@ -6,6 +6,18 @@ SpaceCraftAspectDefinitions = require "spaceCraftAspectRegistry"
 SpaceCraft = {}
 SpaceCraft.__index = SpaceCraft
 
+-- CONSTANTS --
+-- TODO: Create a collision Constants files, since these values are used by both worldPhysics and spaceCraft
+-- NOTE: Global constants are slower to to access than locals.  Therefore for globals used many times in a 
+--        given function, it makes more sense to copy it to a local, for performance reasons.
+COLLISION_CATEGORY_DEFAULT = 0x0001
+COLLISION_CATEGORY_BOUNDARY = 0x0002
+COLLISION_CATEGORY_PLAYER = 0x0004
+COLLISION_CATEGORY_ENEMY = 0x008
+
+COLLISION_MASK_ALL = 0xFFFF
+
+COLLISION_GROUP_NONE = 0
 
 function SpaceCraft:new(options)
 	-- Initialize our spaceCraft with defaults
@@ -30,6 +42,9 @@ function SpaceCraft:new(options)
 		world = nil,
 		bodyType = "dynamic",
 		collisionData = "non-lethal-enemy",
+		collisionCategory = COLLISION_CATEGORY_DEFAULT,
+		collisionMask = COLLISION_MASK_ALL,
+		collisionGroup = COLLISION_GROUP_NONE,
 
 		debug = false,
 		collisionDebugColor = {0.05, 0.05, 0.9}
@@ -61,6 +76,7 @@ function SpaceCraft:new(options)
 	-- Set up the space craft's Love2D Physics objects
 	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, spaceCraft.bodyType)
 	spaceCraft.body:setAngle(spaceCraft.facingAngle)
+	spaceCraft.body:setAngularVelocity(spaceCraft.angularVelocity)
 	spaceCraft.body:setAngularDamping(spaceCraft.angularDampening)
 
 	spaceCraft.shape = spaceCraft:initializeShape()
@@ -76,9 +92,13 @@ function SpaceCraft:update(dt)
 		self.fixture = love.physics.newFixture(self.body, self.shape)
 
 		-- TODO: Make collision data into Table / Set to enable more info for more different types of collisions.
+		self.fixture:setFilterData(self.collisionCategory, self.collisionMask, self.collisionGroup)
 		self.fixture:setUserData(self.collisionData)
 
+		-- TODO: OH THIS SHIT WILL NOT STAND.  HANDLE YOUR (aspect-collision) SHIT!
+		-- TODO: HANDLE YOUR SHIT
 		self:onSpawnFinished()
+		self:onSpawnFinished2()
 
 		self.finishedSpawn = true
 	end
@@ -154,6 +174,9 @@ end
 -- A hook for any SpaceCraft Behavior that should occur on spawn.
 function SpaceCraft:onSpawnFinished()
 	-- Do nothing by default
+end
+function SpaceCraft:onSpawnFinished2()
+	-- God, damn, it.
 end
 
 function SpaceCraft:getImageDrawAngle()
