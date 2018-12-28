@@ -28,18 +28,11 @@ StunCounter = 0
 
 -- TODO: Load this from a file / server.	File could either be user made (manually or in an 'admin' interace), or Machine Learning generated.
 EnemySpawnTable = {
-	{
-		spawnInterval = 15,
-		spawnCounter = -65,
-		enemyObj = { 
-			imagePath = "assets/head.png", 
-			aspects = Set{"enemyStatic", "deadly"}, 
-			debug = DEBUG
-		}
-	},
-	{
-		spawnInterval = 7,
-		spawnCounter = 6,
+	{ -- Slot 1, The Base Layer: spawns quickly but with a low limit.  Forms the initial challenge / interaction with the player 
+		spawnInterval = 5,
+		spawnCounter = 5,
+		currentEnemyCount = 0,
+		spawnLimit = 7,
 		enemyObj = {
 			imagePath = "assets/comet-spark.png",
 			imageRotationOffset = -math.pi / 4,
@@ -47,22 +40,37 @@ EnemySpawnTable = {
 			debug = DEBUG
 		}
 	},
-	{
+	{ -- Slot 2, The Consistent Threat: spawns slowly, but with a high limit
 		spawnInterval = 12,
 		spawnCounter = -2,
+		currentEnemyCount = 0,
+		spawnLimit = 25,
 		enemyObj = {
 			imagePath = "assets/evil-moon.png",
 			aspects = Set{"circular", "enemyStatic"}, 
 			debug = DEBUG
 		}
 	},
-	{
-		spawnInterval = 5,
+	{ -- Slot 3, The Wrench: After a long wait and the first amp, spawns quickly
+		spawnInterval = 3,
 		spawnCounter = -60,
+		currentEnemyCount = 0,
+		spawnLimit = 10,
 		enemyObj = {
 			imagePath = "assets/wind-hole.png",
 			angularVelocity = -5,
 			aspects = Set{"enemyLinear", "circular", "stun"}, 
+			debug = DEBUG
+		}
+	},
+	{ -- Slot 4, Ragnarok: If the player isn't dead yet, reward them with swift death
+		spawnInterval = 2,
+		spawnCounter = -120,
+		currentEnemyCount = 0,
+		spawnLimit = 100,
+		enemyObj = { 
+			imagePath = "assets/head.png", 
+			aspects = Set{"enemyStatic", "deadly"}, 
 			debug = DEBUG
 		}
 	},
@@ -127,21 +135,25 @@ function love.update(dt)
 
 	-- Update each spawn interval, spawning an enemy if it's time
 	_.each(EnemySpawnTable, function(spawnParameters)
-		spawnParameters.spawnCounter = spawnParameters.spawnCounter + dt
+		-- TOOD: May need tweaking when enemies can die..
+		if spawnParameters.currentEnemyCount < spawnParameters.spawnLimit then
+			spawnParameters.spawnCounter = spawnParameters.spawnCounter + dt
 
-		if spawnParameters.spawnCounter > spawnParameters.spawnInterval then
-			local newEnemyInstanceParameters = {
-				-- New enemies are randomly places in valid bounds in the world
-				xPosition = love.math.random(50, VIEWPORT_WIDTH - 50), 
-				yPosition = love.math.random(50, VIEWPORT_HEIGHT - 50),
-				world = worldPhysics:getWorld()
-			}
+			if spawnParameters.spawnCounter > spawnParameters.spawnInterval then
+				local newEnemyInstanceParameters = {
+					-- New enemies are randomly places in valid bounds in the world
+					xPosition = love.math.random(50, VIEWPORT_WIDTH - 50), 
+					yPosition = love.math.random(50, VIEWPORT_HEIGHT - 50),
+					world = worldPhysics:getWorld()
+				}
 
-			newEnemyInstanceParameters = _.extend(newEnemyInstanceParameters, spawnParameters.enemyObj)
+				newEnemyInstanceParameters = _.extend(newEnemyInstanceParameters, spawnParameters.enemyObj)
 
-			table.insert(activeCrafts, SpaceCraft:new(newEnemyInstanceParameters) )
+				table.insert(activeCrafts, SpaceCraft:new(newEnemyInstanceParameters) )
 
-			spawnParameters.spawnCounter = spawnParameters.spawnCounter - spawnParameters.spawnInterval
+				spawnParameters.currentEnemyCount = spawnParameters.currentEnemyCount + 1
+				spawnParameters.spawnCounter = spawnParameters.spawnCounter - spawnParameters.spawnInterval
+			end
 		end
 	end)
 
