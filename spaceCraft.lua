@@ -1,23 +1,11 @@
 -- IMPORTS --
-_ = require "moses_min"
+_ = require "libs/moses_min"
+CollisionConstants = require "collisionConstants"
 SpaceCraftAspectDefinitions = require "spaceCraftAspectRegistry"
 
 -- CLASS DEFINITIONS --
 SpaceCraft = {}
 SpaceCraft.__index = SpaceCraft
-
--- CONSTANTS --
--- TODO: Create a collision Constants files, since these values are used by both worldPhysics and spaceCraft
--- NOTE: Global constants are slower to to access than locals.  Therefore for globals used many times in a 
---        given function, it makes more sense to copy it to a local, for performance reasons.
-COLLISION_CATEGORY_DEFAULT = 0x0001
-COLLISION_CATEGORY_BOUNDARY = 0x0002
-COLLISION_CATEGORY_PLAYER = 0x0004
-COLLISION_CATEGORY_ENEMY = 0x008
-
-COLLISION_MASK_ALL = 0xFFFF
-
-COLLISION_GROUP_NONE = 0
 
 function SpaceCraft:new(options)
 	-- Initialize our spaceCraft with defaults
@@ -42,9 +30,9 @@ function SpaceCraft:new(options)
 		world = nil,
 		bodyType = "dynamic",
 		collisionData = "non-lethal-enemy",
-		collisionCategory = COLLISION_CATEGORY_DEFAULT,
-		collisionMask = COLLISION_MASK_ALL,
-		collisionGroup = COLLISION_GROUP_NONE,
+		collisionCategory = CollisionConstants.CATEGORY_DEFAULT,
+		collisionMask = CollisionConstants.MASK_ALL,
+		collisionGroup = CollisionConstants.GROUP_NONE,
 
 		debug = false,
 		collisionDebugColor = {0.05, 0.05, 0.9}

@@ -1,14 +1,10 @@
 -- IMPORTS --
-_ = require "moses_min"
+_ = require "libs/moses_min"
+CollisionConstants = require "collisionConstants"
 
 -- CONSTANTS --
 -- TODO: Create a collision Constants files, since these values are used by both worldPhysics and spaceCraft
-COLLISION_CATEGORY_DEFAULT = 0x0001
-COLLISION_CATEGORY_BOUNDARY = 0x0002
-COLLISION_CATEGORY_PLAYER = 0x0004
-COLLISION_CATEGORY_ENEMY = 0x0008
 
-COLLISION_MASK_ALL = 0xFFFF
 
 -- CLASS DEFINITION -- 
 WorldPhysics = {}
@@ -43,28 +39,28 @@ function WorldPhysics:new(options)
 	worldPhysics.leftWall.body = love.physics.newBody(worldPhysics.world, 0, worldPhysics.worldHeight / 2, "static")
 	worldPhysics.leftWall.shape = love.physics.newRectangleShape(1, worldPhysics.worldHeight)
 	worldPhysics.leftWall.fixture = love.physics.newFixture(worldPhysics.leftWall.body, worldPhysics.leftWall.shape)
-	worldPhysics.leftWall.fixture:setFilterData(COLLISION_CATEGORY_BOUNDARY, COLLISION_MASK_ALL, 0)
+	worldPhysics.leftWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
 	worldPhysics.leftWall.fixture:setUserData("wall")
 
 	worldPhysics.rightWall = {}
 	worldPhysics.rightWall.body = love.physics.newBody(worldPhysics.world, worldPhysics.worldWidth, worldPhysics.worldHeight / 2, "static")
 	worldPhysics.rightWall.shape = love.physics.newRectangleShape(1, worldPhysics.worldHeight)
 	worldPhysics.rightWall.fixture = love.physics.newFixture(worldPhysics.rightWall.body, worldPhysics.rightWall.shape)
-	worldPhysics.rightWall.fixture:setFilterData(COLLISION_CATEGORY_BOUNDARY, COLLISION_MASK_ALL, 0)
+	worldPhysics.rightWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
 	worldPhysics.rightWall.fixture:setUserData("wall")
 
 	worldPhysics.topWall = {}
 	worldPhysics.topWall.body = love.physics.newBody(worldPhysics.world, worldPhysics.worldWidth / 2, 0, "static")
 	worldPhysics.topWall.shape = love.physics.newRectangleShape(worldPhysics.worldWidth, 1)
 	worldPhysics.topWall.fixture = love.physics.newFixture(worldPhysics.topWall.body, worldPhysics.topWall.shape)
-	worldPhysics.topWall.fixture:setFilterData(COLLISION_CATEGORY_BOUNDARY, COLLISION_MASK_ALL, 0)
+	worldPhysics.topWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
 	worldPhysics.topWall.fixture:setUserData("wall")
 
 	worldPhysics.bottomWall = {}
 	worldPhysics.bottomWall.body = love.physics.newBody(worldPhysics.world, worldPhysics.worldWidth / 2, worldPhysics.worldHeight, "static")
 	worldPhysics.bottomWall.shape = love.physics.newRectangleShape(worldPhysics.worldWidth, 1)
 	worldPhysics.bottomWall.fixture = love.physics.newFixture(worldPhysics.bottomWall.body, worldPhysics.bottomWall.shape)
-	worldPhysics.bottomWall.fixture:setFilterData(COLLISION_CATEGORY_BOUNDARY, COLLISION_MASK_ALL, 0)
+	worldPhysics.bottomWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
 	worldPhysics.bottomWall.fixture:setUserData("wall")
 
 	return worldPhysics

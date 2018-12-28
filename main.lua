@@ -1,5 +1,5 @@
 -- IMPORTS --
-_ = require "moses_min"
+_ = require "libs/moses_min"
 WorldPhysics = require "worldPhysics"
 SpaceCraft = require "spaceCraft"
 
