@@ -2,10 +2,6 @@
 _ = require "libs/moses_min"
 CollisionConstants = require "collisionConstants"
 
--- CONSTANTS --
--- TODO: Create a collision Constants files, since these values are used by both worldPhysics and spaceCraft
-
-
 -- CLASS DEFINITION -- 
 WorldPhysics = {}
 WorldPhysics.__index = WorldPhysics

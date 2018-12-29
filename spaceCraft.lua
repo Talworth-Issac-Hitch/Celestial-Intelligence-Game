@@ -168,14 +168,14 @@ function SpaceCraft:onSpawnFinished2()
 end
 
 function SpaceCraft:getImageDrawAngle()
-	-- Default, square crafts simply always draw the image as axis aligned.
-	return self.body:getAngle()
+	-- Default, crafts simply always draw the image as axis aligned.
+	return 0
 end
 
 -- Draw the spaceCraft's image, if one exists.
 function SpaceCraft:drawImage()
 	local drawX, drawY = self:getDrawingAnchor()
-	love.graphics.draw(self.image, drawX, drawY, self:getImageDrawAngle(), self.imgSX, self.imgSY, self.imgOX, self.imgOY)
+	love.graphics.draw(self.image, drawX, drawY, self:getImageDrawAngle() + self.imageRotationOffset, self.imgSX, self.imgSY, self.imgOX, self.imgOY)
 end
 
 -- Draws a dot on what is considered the center of the craft for physics purposes

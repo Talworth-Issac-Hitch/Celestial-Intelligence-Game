@@ -26,21 +26,6 @@ LinearCraftAspectDefinition = {
 		-- becoming angular velocity.
 		self.fixture:setRestitution(1) 
 		self.fixture:setFriction(0) 
-	end,
-
-	-- Draw our image to always be facing the direction of travel
-	-- NOTE: This function sort defines these craft as ones that never change their own direction
-	--        themselves, only as a result of collision
-	getImageDrawAngle = function(self)
-		-- If we've spawned then face the direction that we're traveling, otherwise, simply face our
-		-- 'facing' direction.  Other self-driven crafts would likely always face their facing direction?
-		-- TODO: self.drawFacing is a stopgap and points some logic here needing to be a separate aspect.
-		if self.finishedSpawn and not self.drawFacing then 
-			local craftDirection = getDirectionInRadiansFromVector(self.body:getLinearVelocity())
-			return craftDirection + self.imageRotationOffset
-		else
-			return self.body:getAngle() + self.imageRotationOffset
-		end
 	end
 }
 

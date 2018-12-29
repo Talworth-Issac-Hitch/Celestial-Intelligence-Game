@@ -36,7 +36,7 @@ EnemySpawnTable = {
 		enemyObj = {
 			imagePath = "assets/comet-spark.png",
 			imageRotationOffset = -math.pi / 4,
-			aspects = Set{"enemyLinear", "circular", "deadly"}, 
+			aspects = Set{"enemyLinear", "faceMotion", "circular", "deadly"}, 
 			debug = DEBUG
 		}
 	},
@@ -59,7 +59,7 @@ EnemySpawnTable = {
 		enemyObj = {
 			imagePath = "assets/wind-hole.png",
 			angularVelocity = -5,
-			aspects = Set{"enemyLinear", "circular", "stun"}, 
+			aspects = Set{"enemyLinear", "faceAngle", "circular", "stun"}, 
 			debug = DEBUG
 		}
 	},
@@ -100,7 +100,7 @@ function love.load()
 			xPosition = 50, 
 			yPosition = 50, 
 			age = 2, 
-			aspects = Set{"player"}, 
+			aspects = Set{"player", "faceAngle"}, 
 			world = worldPhysics:getWorld(),
 			debug = DEBUG
 		}

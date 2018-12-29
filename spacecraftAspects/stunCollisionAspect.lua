@@ -7,8 +7,6 @@ StunningCraftAspectDefinition = {
 	collisionData = "stun",
 	collisionDebugColor = {0.9, 0.9, 0.05},
 	scalingFactor = 2,
-	-- TODO: Make its' own aspect
-	drawFacing = true,
 
 	-- TODO: MAke it's own aspect
 	collisionCategory = CollisionConstants.CATEGORY_ENEMY,
