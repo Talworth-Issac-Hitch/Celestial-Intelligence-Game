@@ -1,0 +1,5 @@
+# Ignore Notes directory
+notes/
+
+# Ignore assets that are not yet use
+assets/soon
