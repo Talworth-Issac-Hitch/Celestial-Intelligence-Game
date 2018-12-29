@@ -1,11 +1,20 @@
+-------------
 -- IMPORTS --
+-------------
 _ = require "libs/moses_min"
 CollisionConstants = require "collisionConstants"
 
+----------------------
 -- CLASS DEFINITION -- 
+----------------------
+
+-- A wrapper for handling the game's physics.  
+-- Currently uses Love2D's native Phsyics engine.
 WorldPhysics = {}
 WorldPhysics.__index = WorldPhysics
 
+-- Constructor.  Builds a new Love2D World, and adds the game's level boundaries.
+-- @return A newly constructed instance of WorldPhyiscs.
 function WorldPhysics:new(options)
 	local worldPhysics = {
 		worldWidth = 800,
@@ -30,61 +39,31 @@ function WorldPhysics:new(options)
 	worldPhysics.collisionDebugText = ""
 	worldPhysics.persisting = 0
 
-	-- Create us some boundaries. Bodies are bound by their center point.
-	worldPhysics.leftWall = {}
-	worldPhysics.leftWall.body = love.physics.newBody(worldPhysics.world, 0, worldPhysics.worldHeight / 2, "static")
-	worldPhysics.leftWall.shape = love.physics.newRectangleShape(1, worldPhysics.worldHeight)
-	worldPhysics.leftWall.fixture = love.physics.newFixture(worldPhysics.leftWall.body, worldPhysics.leftWall.shape)
-	worldPhysics.leftWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
-	worldPhysics.leftWall.fixture:setUserData({
-		type = "wall",
-		craft = nil
-	})
-
-	worldPhysics.rightWall = {}
-	worldPhysics.rightWall.body = love.physics.newBody(worldPhysics.world, worldPhysics.worldWidth, worldPhysics.worldHeight / 2, "static")
-	worldPhysics.rightWall.shape = love.physics.newRectangleShape(1, worldPhysics.worldHeight)
-	worldPhysics.rightWall.fixture = love.physics.newFixture(worldPhysics.rightWall.body, worldPhysics.rightWall.shape)
-	worldPhysics.rightWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
-	worldPhysics.rightWall.fixture:setUserData({
-		type = "wall",
-		craft = nil
-	})
-
-	worldPhysics.topWall = {}
-	worldPhysics.topWall.body = love.physics.newBody(worldPhysics.world, worldPhysics.worldWidth / 2, 0, "static")
-	worldPhysics.topWall.shape = love.physics.newRectangleShape(worldPhysics.worldWidth, 1)
-	worldPhysics.topWall.fixture = love.physics.newFixture(worldPhysics.topWall.body, worldPhysics.topWall.shape)
-	worldPhysics.topWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
-	worldPhysics.topWall.fixture:setUserData({
-		type = "wall",
-		craft = nil
-	})
-
-	worldPhysics.bottomWall = {}
-	worldPhysics.bottomWall.body = love.physics.newBody(worldPhysics.world, worldPhysics.worldWidth / 2, worldPhysics.worldHeight, "static")
-	worldPhysics.bottomWall.shape = love.physics.newRectangleShape(worldPhysics.worldWidth, 1)
-	worldPhysics.bottomWall.fixture = love.physics.newFixture(worldPhysics.bottomWall.body, worldPhysics.bottomWall.shape)
-	worldPhysics.bottomWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
-	worldPhysics.bottomWall.fixture:setUserData({
-		type = "wall",
-		craft = nil
-	})
+	worldPhysics:setupLevelBoundaries()
 
 	return worldPhysics
 end 
 
+
+--------------------
+-- LOVE CALLBACKS --
+--------------------
+
+-- The Love2D callback for time passing in the game.  Here we call Love2D' Physics' update, and log debug info about
+--  the world physics.
+-- @param dt The time interval since the last time love.update was called.
 function WorldPhysics:update(dt)
 	-- New Physics 
 	self.world:update(dt)
 
 	-- cleanup when 'text' gets too long
-	-- TODO: Add a physics log for each session
+	-- TODO: Add a physics log for each session that we flush removed to text to.
 	if string.len(self.collisionDebugText) > 768 then
 		self.collisionDebugText = "" 
 	end
 end
 
+-- The Love2D callback for each drawing frame. Draws our level boundaries.
 function WorldPhysics:draw()
 	-- Print debug info on collisions and game boundaries
 	if self.debug then
@@ -101,7 +80,51 @@ function WorldPhysics:draw()
 	end 
 end
 
+-- Creates the boundaries of the level.  By default, the level is a simple square/
+function WorldPhysics:setupLevelBoundaries()
+	local wallCollisionData = {
+		type = "wall",
+		craft = nil
+	}
+
+	-- Create 4 walls for our box world
+	self.leftWall = {}
+	self.leftWall.body = love.physics.newBody(self.world, 0, self.worldHeight / 2, "static")
+	self.leftWall.shape = love.physics.newRectangleShape(1, self.worldHeight)
+	self.leftWall.fixture = love.physics.newFixture(self.leftWall.body, self.leftWall.shape)
+	self.leftWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
+	self.leftWall.fixture:setUserData(wallCollisionData)
+
+	self.rightWall = {}
+	self.rightWall.body = love.physics.newBody(self.world, self.worldWidth, self.worldHeight / 2, "static")
+	self.rightWall.shape = love.physics.newRectangleShape(1, self.worldHeight)
+	self.rightWall.fixture = love.physics.newFixture(self.rightWall.body, self.rightWall.shape)
+	self.rightWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
+	self.rightWall.fixture:setUserData(wallCollisionData)
+
+	self.topWall = {}
+	self.topWall.body = love.physics.newBody(self.world, self.worldWidth / 2, 0, "static")
+	self.topWall.shape = love.physics.newRectangleShape(self.worldWidth, 1)
+	self.topWall.fixture = love.physics.newFixture(self.topWall.body, self.topWall.shape)
+	self.topWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
+	self.topWall.fixture:setUserData(wallCollisionData)
+
+	self.bottomWall = {}
+	self.bottomWall.body = love.physics.newBody(self.world, self.worldWidth / 2, self.worldHeight, "static")
+	self.bottomWall.shape = love.physics.newRectangleShape(self.worldWidth, 1)
+	self.bottomWall.fixture = love.physics.newFixture(self.bottomWall.body, self.bottomWall.shape)
+	self.bottomWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
+	self.bottomWall.fixture:setUserData(wallCollisionData)
+end
+
+----------------------------
+-- LOVE PHYSICS CALLBACKS --
+----------------------------
+
+-- Callback for anytime 2 Fixtures initially come into contact with one another.
+-- Here we evaluate game logic involving player collisons.
 function beginContactHandler(fixtureA, fixtureB, coll)
+	-- Log out information about the collision.
 	if worldPhysics.debug then
 		x,y = coll:getNormal()
 		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. "\n"
@@ -114,7 +137,7 @@ function beginContactHandler(fixtureA, fixtureB, coll)
 	local aData = fixtureA:getUserData()
 	local bData = fixtureB:getUserData()
 
-	-- If the play collides, game over
+	-- Currently we only have game-logic that gets tripped when the plyer is involved in a collision.
 	-- TODO: Separate Game Logic, from the purely physics module?
 	if  aData.type == "player" then 
 		handlePlayerCollision(aData, bData)
@@ -123,6 +146,7 @@ function beginContactHandler(fixtureA, fixtureB, coll)
 	end
 end
 
+-- Callback for anytime 2 Fixtures initially come into contact with one another.  Currently we only log some information.
 function endContactHandler(fixtureA, fixtureB, coll)
 	if worldPhysics.debug then
 		worldPhysics.persisting = 0
@@ -130,6 +154,8 @@ function endContactHandler(fixtureA, fixtureB, coll)
 	end
 end
 
+-- Callback for before the resulting forces from the collision for each Fixture have been calculated.
+-- Currently we just log out debug info, but I'm guessing here is where we could have game-logic / game-data, overule / impact physics.
 function preSolveHandler(fixtureA, fixtureB, coll)
 	if worldPhysics.debug then
 		if worldPhysics.persisting == 0 then
@@ -142,10 +168,18 @@ function preSolveHandler(fixtureA, fixtureB, coll)
 	end
 end
 
+-- Callback for after the resulting forces from the collision for each Fixture have been calculated.
+-- Currently we do nothing, but could add or remove force / impulse here I'm guessing?
 function postSolveHandler(fixtureA, fixtureB, coll, normalImpluse, tangentImpulse)
 	-- Unused 
 end
 
+
+-----------
+-- UTILS --
+-----------
+
+-- Handle the game-logic of what needs to happen when a player is involved in a crash.
 function handlePlayerCollision(playerData, otherData)
 	if otherData.type == "deadly" then
 		love.event.quit( )
@@ -154,6 +188,11 @@ function handlePlayerCollision(playerData, otherData)
 		playerData.craft.stunCounter = playerData.craft.stunCounter + 1
 	end
 end
+
+
+-------------
+-- GETTERS --
+-------------
 
 function WorldPhysics:getWorld()
 	return self.world

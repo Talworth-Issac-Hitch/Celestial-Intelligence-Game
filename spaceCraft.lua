@@ -1,12 +1,23 @@
+-------------
 -- IMPORTS --
+-------------
 _ = require "libs/moses_min"
 CollisionConstants = require "collisionConstants"
 SpaceCraftAspectDefinitions = require "spaceCraftAspectRegistry"
 
--- CLASS DEFINITIONS --
+
+----------------------
+-- CLASS DEFINITION --
+----------------------
+
+-- SpaceCrafts are (so far) the basic units for game entities.  Currently everything except the level bounds are SpaceCraft.
+-- SpaceCrafts are built using a composition model, on top of this base.  
 SpaceCraft = {}
 SpaceCraft.__index = SpaceCraft
 
+-- Constructor.  Applies our options and aspects to construct a new craft.  Then creates the physics entity, but does
+--   does not yet fully add it to the world.
+-- @return A newly constructed instance of a SpaceCraft.
 function SpaceCraft:new(options)
 	-- Initialize our spaceCraft with defaults
 	local spaceCraft = {
@@ -29,7 +40,7 @@ function SpaceCraft:new(options)
 
 		world = nil,
 		bodyType = "dynamic",
-		collisionData = "non-lethal-enemy",
+		collisionType = "non-lethal-enemy",
 		collisionCategory = CollisionConstants.CATEGORY_DEFAULT,
 		collisionMask = CollisionConstants.MASK_ALL,
 		collisionGroup = CollisionConstants.GROUP_NONE,
@@ -40,6 +51,8 @@ function SpaceCraft:new(options)
 
 	setmetatable(spaceCraft, SpaceCraft)
 
+	-- Layer in passed-in options.  These should typically be used for things not covered by aspects, generally things
+	-- that are manually tweaked, like imagePath
 	spaceCraft = _.extend(spaceCraft, options)	
 
 	-- For each aspect the SpaceCraft has, apply that aspect's initial paremters.  Remember here that aspect lists are Sets, not tables
@@ -57,47 +70,42 @@ function SpaceCraft:new(options)
 		spaceCraft:applyScaling(spaceCraft.scalingFactor)
 	end
 
+	-- Set up our craft's image
 	spaceCraft:loadImageAndAttrs()
 
-	spaceCraft:beforeBodySetup()
-
 	-- Set up the space craft's Love2D Physics objects
-	spaceCraft.body = love.physics.newBody(spaceCraft.world, spaceCraft.xPosition, spaceCraft.yPosition, spaceCraft.bodyType)
-	spaceCraft.body:setAngle(spaceCraft.facingAngle)
-	spaceCraft.body:setAngularVelocity(spaceCraft.angularVelocity)
-	spaceCraft.body:setAngularDamping(spaceCraft.angularDampening)
-
+	spaceCraft.body = spaceCraft:initializeBody()
 	spaceCraft.shape = spaceCraft:initializeShape()
 
 	return spaceCraft 
 end 
 
+
+----------------------
+-- LOVE2D CALLBACKS --
+----------------------
+
+-- The Love2D callback for time passing in the game. Handle general behavior related to age here.  
+-- @param dt The time interval since the last time love.update was called.
 function SpaceCraft:update(dt)
+	-- The amount of lag time between when a craft appears, and when it is an active participant in the world.
+	local SPAWN_WAIT_DURATION = 2
+
 	self.age = self.age + dt
 
 	-- Enemies should not be collidable until they have spawned, so we wait until then to add their world fixture.
-	if not self.finishedSpawn and self.age > 2 then
-		self.fixture = love.physics.newFixture(self.body, self.shape)
-
-		-- TODO: Make collision data into Table / Set to enable more info for more different types of collisions.
-		self.fixture:setFilterData(self.collisionCategory, self.collisionMask, self.collisionGroup)
-		self.fixture:setUserData({
-			type = self.collisionData,
-			craft = self
-		})
-
-		self:onSpawnFinished()
-
-		self.finishedSpawn = true
+	if not self.finishedSpawn and self.age > SPAWN_WAIT_DURATION then
+		self:spawn()
 	end
 
 	self:onUpdate(dt)
 end
 
+-- The Love2D callback for each drawing frame. Draw our craft's image, and potentially debugging frames.
 function SpaceCraft:draw()
 	local blinkInterval = 7
 
-	-- Enemies blink before they are finished spawning
+	-- Enemies blink before they are finished spawning, to indicator that they cannot be interacted with.
 	if (self.finishedSpawn and not self.stunned) or math.ceil(self.age * blinkInterval) % 2 == 0 then
 		self:drawImage()
 	end
@@ -117,15 +125,16 @@ function SpaceCraft:draw()
 	end
 end
 
--- We can make him better, stronger...
+
+-----------------------------
+-- GENERIC CRAFT BEHAVIORS --
+-----------------------------
+
+-- Applies scaling factor(s) that can come in from aspects to a spaceCraft's base attributes.
 function SpaceCraft:applyScaling(scalingFactor)
 	self.sizeX = self.sizeX * scalingFactor
 	self.sizeY = self.sizeY * scalingFactor
 	self.speed = self.speed * scalingFactor
-end
-
-function SpaceCraft:beforeBodySetup()
-	-- N0-0P, hook for others to override.
 end
 
 -- Loads the SpaceCraft's image, and sets related properties
@@ -139,50 +148,70 @@ function SpaceCraft:loadImageAndAttrs()
 	self.imgSX = self.sizeX / self.image:getWidth()
 	self.imgSY = self.sizeY / self.image:getHeight()
 
-	self:setImageOffset()
+	self.imgOX, self.imgOY = self:setImageOffset()
 end
 
+-- Sets the anchor point for graphical transformations (like rotation) when drawing the Craft's image.
+-- Since Crafts by default are square, and axis-aligned, images require no offset and just use top-left the corner.
+-- @return [number, number] The x-axis and y-axis offsets respectively.
 function SpaceCraft:setImageOffset()
-	-- Square Images require no offset
-	self.imgOX = 0
-	self.imgOY = 0
+	return 0, 0
 end
 
--- Initializes the SpaceCrafts shape for the purposes of physics and collisions.
+-- Initializes the SpaceCrafts Body, which describes the Craft's motion (position, velocity, etc.) for the purposes of 
+-- Ephysics and collisions.
+-- @return Body A new Love2D physics body @see https://love2d.org/wiki/Body
+function SpaceCraft:initializeBody()
+	self:beforeBodySetup()
+
+	-- Set up the space craft's Love2D Physics objects
+	local body = love.physics.newBody(self.world, self.xPosition, self.yPosition, self.bodyType)
+	body:setAngle(self.facingAngle)
+	body:setAngularVelocity(self.angularVelocity)
+	body:setAngularDamping(self.angularDampening)
+
+	return body
+end
+
+-- Initializes the SpaceCrafts Shape for the purposes of physics and collisions.
+-- By default Crafts are simply axis-aligned boxes.
 function SpaceCraft:initializeShape()
 	return love.physics.newRectangleShape(self.sizeX, self.sizeY)
 end
 
-function SpaceCraft:getCenterPoint()
-	return self.body:getPosition()
+-- Adds the (already-initialized) Craft to the World.  
+-- We do this in Love2D by creating a new fixture.
+function SpaceCraft:spawn()
+	self.fixture = love.physics.newFixture(self.body, self.shape)
+
+	-- Setup collision-related attributes.
+	self.fixture:setFilterData(self.collisionCategory, self.collisionMask, self.collisionGroup)
+	self.fixture:setUserData({
+		type = self.collisionType,
+		craft = self
+	})
+
+	self:onSpawnFinished()
+
+	self.finishedSpawn = true
 end
 
-function SpaceCraft:getDrawingAnchor()
-	return self.body:getWorldPoints(self.shape:getPoints())
-end
 
--- A hook for any custom update Behavior.
-function SpaceCraft:onUpdate()
-	-- Do nothing by default
-end
+-------------
+-- DRAWING --
+-------------
 
--- A hook for any SpaceCraft Behavior that should occur on spawn.
-function SpaceCraft:onSpawnFinished()
-	-- Do nothing by default
-end
-
-function SpaceCraft:getImageDrawAngle()
-	-- Default, crafts simply always draw the image as axis aligned.
-	return 0
-end
-
--- Draw the spaceCraft's image, if one exists.
+-- Render the SpaceCraft's image to the screen, if one exists.
 function SpaceCraft:drawImage()
 	local drawX, drawY = self:getDrawingAnchor()
 	love.graphics.draw(self.image, drawX, drawY, self:getImageDrawAngle() + self.imageRotationOffset, self.imgSX, self.imgSY, self.imgOX, self.imgOY)
 end
 
--- Draws a dot on what is considered the center of the craft for physics purposes
+-------------------
+-- DEBUG DRAWING --
+-------------------
+
+-- Draws a dot on what is considered the center of the Craft for physics purposes.
 function SpaceCraft:debugDrawCenter()
 	local debugX, debugY = self.body:getPosition()
 	love.graphics.setColor(self.collisionDebugColor)
@@ -191,34 +220,83 @@ function SpaceCraft:debugDrawCenter()
 	love.graphics.reset()
 end
 
--- Draws an arrow in the direction the object is "facing" for physics purposes
+-- Draws a line in the direction the object is "facing" for physics purposes.
 function SpaceCraft:debugDrawFacing()
 	local centerX, centerY = self:getCenterPoint()
 	local facingAngle = self.body:getAngle()
 
+	-- The line should extend just outside of the Craft's bounds.
 	local facingVectorX = math.cos(facingAngle) * 0.75 * self.sizeX
 	local facingVectorY = math.sin(facingAngle) * 0.75 * self.sizeY
 
+	-- TODO: Make a debug color constants tab
 	love.graphics.setColor(0.6, 0.05, 0.6)
 	love.graphics.line(centerX, centerY, centerX + facingVectorX, centerY + facingVectorY)
 
 	love.graphics.reset()
 end
 
--- Draws the shape that the Spacecraft is considered for collisions
+-- Draws the shape that the Spacecraft is considered for collisions.
+-- By default, Crafts are squares, so we simple draw the same 4 points of our square Shape object.
 function SpaceCraft:debugDrawCollisionBorder()
 	love.graphics.setColor(self.collisionDebugColor)
 	love.graphics.polygon("line", self.body:getWorldPoints(self.shape:getPoints()))
 	love.graphics.reset()
 end
 
+-- Draws a line to indicat direct and speed of an object.  Speed is represented by length of the line.
+-- TODO: Speed being represented by line-length, likely can't keep scaling well.  Perhaps increase thickness, or add more lines?
 function SpaceCraft:debugDrawVelocityIndicator()
+	local INDICATOR_LENGTH_FACTOR = 0.2
 	local centerX, centerY = self:getCenterPoint()
 
 	local velocityX, velocityY = self.body:getLinearVelocity()
+
+	-- TODO: Make a debug color constants tab
 	love.graphics.setColor(0.6, 0.6, 0.05)
-	love.graphics.line(centerX, centerY, centerX + velocityX / 5 , centerY + velocityY / 5)
+	love.graphics.line(centerX, centerY, centerX + velocityX * INDICATOR_LENGTH_FACTOR, centerY + velocityY * INDICATOR_LENGTH_FACTOR)
 	love.graphics.reset()
+end
+
+
+--------------------------
+-- SpaceCraft Callbacks --
+--------------------------
+
+-- A hook for any custom behavior to occur during the Love2D update callback.
+function SpaceCraft:onUpdate()
+	-- Do nothing by default
+end
+
+-- Hook for any special modifications that need to be initially made to the Craft's Physics Body.
+function SpaceCraft:beforeBodySetup()
+	-- N0-0P, hook for aspects to override.
+end
+
+-- A hook for any SpaceCraft Behavior that should occur on spawn.
+function SpaceCraft:onSpawnFinished()
+	-- Do nothing by default
+end
+
+
+-------------
+-- Getters --
+-------------
+
+-- Gets the center of the Craft, in terms of Physics.
+function SpaceCraft:getCenterPoint()
+	return self.body:getPosition()
+end
+
+-- Gets the point from which the Craft should be drawn (in terms of Graphics)
+function SpaceCraft:getDrawingAnchor()
+	return self.body:getWorldPoints(self.shape:getPoints())
+end
+
+-- Gets the angle (in terms of Graphics) that the drawn image be rotated.  Applied through a transformation.
+-- By default, Crafts simply always draw the image as axis aligned.
+function SpaceCraft:getImageDrawAngle()
+	return 0
 end
 
 return SpaceCraft

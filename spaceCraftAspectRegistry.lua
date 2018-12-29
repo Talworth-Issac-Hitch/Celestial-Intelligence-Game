@@ -1,4 +1,6 @@
+-------------
 -- IMPORTS --
+-------------
 playerAspectDefinition = require "spacecraftAspects/playerSpecialAspect"
 faceAngleAspectDefinition = require "spacecraftAspects/faceAngleDrawingAspect"
 faceMotionAspectDefinition = require "spacecraftAspects/faceMotionDrawingAspect"
@@ -10,8 +12,7 @@ deadlyAspectDefinition = require "spacecraftAspects/deadlyCollisionAspect"
 stunningAspectDefinition = require "spacecraftAspects/stunCollisionAspect"
 
 
--- ASPECT DEFINITIONS --
--- A table of aspect attributes to be applied on initialization
+-- A table of Aspect names to Aspect definitions/modules.
 -- TODO: Make multiple nested tables to handle the mutally exclusive aspects
 SpaceCraftAspectDefinitions = {
 	-- Special Aspects
@@ -46,6 +47,7 @@ SpaceCraftAspectDefinitions = {
 	-- TODO: Enemy that teleports the player to a random(?) location on collision. Not necessarily mutually exclusive with stun :3
 	-- TODO: A stun variant that just/also makes you invisible.  It was a bug, but horrifying.
 	--       Maybe that'd be a challenging Amp
+	-- TODO: Could we have static objects with >1 restitution, aka, accelerator walls?
 
 }
 

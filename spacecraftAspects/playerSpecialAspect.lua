@@ -1,8 +1,14 @@
+-------------
+-- IMPORTS --
+-------------
+CollisionConstants = require "collisionConstants"
+
+
+-----------------------
 -- ASPECT DEFINITION --
+-----------------------
 
-COLLISION_CATEGORY_PLAYER = 0x0004
-
--- For the player's craft
+-- Special Aspect for the player's craft
 PlayerCraftAspectDefinition = {
 	imagePath ="assets/totem-head.png", 
 	sizeX = 50, 
@@ -10,15 +16,16 @@ PlayerCraftAspectDefinition = {
 	speed = 400,
 	angularDampening = 0.65,
 
-	collisionData = "player",
-	collisionCategory = COLLISION_CATEGORY_PLAYER,
+	collisionType = "player",
+	collisionCategory = CollisionConstants.CATEGORY_PLAYER,
 
 	collisionDebugColor = {0.05, 0.9, 0.05},
 
 	stunCounter = 0,
 
+	-- A hook for any custom behavior to occur during the Love2D update callback. 
+	-- If we're stunned, run down our timer, otherwise, we're not stunned!
 	onUpdate = function(self, dt) 
-		-- If we're stunned, run down our timer, otherwise, we're not stunned!
 		if self.stunCounter > 0 then
 			self.stunCounter = self.stunCounter - dt
 		else
@@ -27,6 +34,7 @@ PlayerCraftAspectDefinition = {
 		end
 	end,
 
+	-- Love2D callback for when the player presses a key.  This is how the player moves.
 	onKeyPressed = function(self, key)
 		if self.stunCounter <= 0 then
 			-- User input affeccting playerCraft's movements
@@ -45,6 +53,8 @@ PlayerCraftAspectDefinition = {
 			self.body:setLinearVelocity(xVelocity, yVelocity)
 		end
 	end,
+
+	-- Love2D callback for when the player presses a key.  This is how the player stops moving.
 	onKeyReleased = function(self, key)
 		if self.stunCounter <= 0 then
 			-- User input affeccting playerCraft's movements

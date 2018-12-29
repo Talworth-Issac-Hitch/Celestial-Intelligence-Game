@@ -1,4 +1,4 @@
--- Constants related to Physics and Collisions --
+-- A table of Constants related to Physics and Collisions --
 
 CollisionConstants = {
 	CATEGORY_DEFAULT = 0x0001,

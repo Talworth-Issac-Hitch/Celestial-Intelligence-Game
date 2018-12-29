@@ -1,18 +1,29 @@
+-------------
 -- IMPORTS --
+-------------
 _ = require "libs/moses_min"
 WorldPhysics = require "worldPhysics"
 SpaceCraft = require "spaceCraft"
 
+-----------
 -- UTILS --
+-----------
+-- TODO: Move global Utils to their own file.
+
 -- Creates a set, aka a table where the identifiers are keys
--- TODO: Move to a Utils type file.
 function Set (list)
 	local set = {}
 	for _, l in ipairs(list) do set[l] = true end
 	return set
 end
 
--- CONSTANTS -- 
+function getDirectionInRadiansFromVector(vectorXComponet, vectorYComponent)
+	return math.atan2(vectorYComponent, vectorXComponet)
+end
+
+---------------
+-- CONSTANTS --
+--------------- 
 VIEWPORT_HEIGHT = 800
 VIEWPORT_WIDTH = 1200
 
@@ -20,9 +31,14 @@ VIEWPORT_WIDTH = 1200
 PLAYABLE_AREA_HEIGHT = 600
 PLAYABLE_AREA_WIDTH = 800
 
+
+-------------
+-- GLOBALS --
+-------------
 DEBUG = true
 
 -- TODO: Load this from a file / server.	File could either be user made (manually or in an 'admin' interace), or Machine Learning generated.
+-- A Table defining when and how often enemies space, how many times they spawn, as well as enemy attributes.
 EnemySpawnTable = {
 	{ -- Slot 1, The Base Layer: spawns quickly but with a low limit.  Forms the initial challenge / interaction with the player 
 		spawnInterval = 5,
@@ -75,22 +91,27 @@ EnemySpawnTable = {
 -- TODO: Add Amps to the interval table.
 -- TODO: Create multiple types of Amps.
 -- TODO: Make Amps configurable.
+-- Variables for 'Amps' or periodic added challenges / difficulty spikes to keep things interesting.
 AMP_INTERVAL = 30
-
 AMP_COUNTER = 0
 
--- LOVE CALLBACKS -- 
+----------------------
+-- LOVE2D CALLBACKS --
+----------------------
 
+-- The Love2D callback for when the game initially loads.  Here we initialize our game variables.
 function love.load()
-	-- Set background to blue
+	-- Set the Window size.
 	love.window.setMode(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
 
+	-- Initialize our physics
 	worldPhysics = WorldPhysics:new {
 		worldWidth = VIEWPORT_WIDTH,
 		worldHeight = VIEWPORT_HEIGHT,
 		debug = DEBUG
 	}
 
+	-- Create our player
 	activeCrafts = {
 		playerCraft = SpaceCraft:new { 
 			xPosition = 50, 
@@ -104,11 +125,15 @@ function love.load()
 
 	score = 0
 
-	seed = os.time()
+	-- Get and set our random seed.  This can be used to re-create an exact session.
+	local seed = os.time()
+	print("Session initialized with game seed: " .. seed)
 	love.math.setRandomSeed(seed)
 end
 
-
+-- The Love2D callback for time passing in the game.  Most game components have their individual implementations for
+-- that callback, which we blindly call here.  Additional we manage some global counters.
+-- @param dt The time interval since the last time love.update was called.
 function love.update(dt)
 	worldPhysics:update(dt)
 
@@ -116,6 +141,7 @@ function love.update(dt)
 		craft:update(dt)
 	end)
 
+	-- TODO: Break the following counters and logic into a general "gameLogic" module.
 	-- Update our Amp counter, and apply a global hazard effect if it is time.
 	AMP_COUNTER = AMP_COUNTER + dt
 
@@ -153,9 +179,12 @@ function love.update(dt)
 		end
 	end)
 
+	-- Finally increment the score, which currently is just equal to time. 
 	score = score + dt
 end
 
+-- Love2D callback for graphics drawing.  Most game components have their individual implementations for that callback,
+-- which we blindly call here.
 function love.draw()
 	worldPhysics:draw()
 
@@ -165,9 +194,11 @@ function love.draw()
 	end)
 
 	-- Draw the score
-	love.graphics.print("Game Seed : " .. seed .. "\nScore : " .. math.ceil(score), VIEWPORT_WIDTH / 2, 50)
+	love.graphics.print("Score : " .. math.ceil(score), VIEWPORT_WIDTH / 2, 50)
 end
 
+-- Love2D callback for when the player presses a key.  Some game components have their individual implementations for that callback,
+-- so if one exists, we call it here.
 function love.keypressed(key)
 	_.each(activeCrafts, function(craft)
 		if _.has(craft, "onKeyPressed") then
@@ -176,6 +207,8 @@ function love.keypressed(key)
 	end)
 end
 
+-- Love2D callback for when the player releases a key.  Some game components have their individual implementations for that callback,
+-- so if one exists, we call it here.
 function love.keyreleased(key)
 	_.each(activeCrafts, function(craft)
 		if _.has(craft, "onKeyReleased") then
