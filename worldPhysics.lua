@@ -36,28 +36,40 @@ function WorldPhysics:new(options)
 	worldPhysics.leftWall.shape = love.physics.newRectangleShape(1, worldPhysics.worldHeight)
 	worldPhysics.leftWall.fixture = love.physics.newFixture(worldPhysics.leftWall.body, worldPhysics.leftWall.shape)
 	worldPhysics.leftWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
-	worldPhysics.leftWall.fixture:setUserData("wall")
+	worldPhysics.leftWall.fixture:setUserData({
+		type = "wall",
+		craft = nil
+	})
 
 	worldPhysics.rightWall = {}
 	worldPhysics.rightWall.body = love.physics.newBody(worldPhysics.world, worldPhysics.worldWidth, worldPhysics.worldHeight / 2, "static")
 	worldPhysics.rightWall.shape = love.physics.newRectangleShape(1, worldPhysics.worldHeight)
 	worldPhysics.rightWall.fixture = love.physics.newFixture(worldPhysics.rightWall.body, worldPhysics.rightWall.shape)
 	worldPhysics.rightWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
-	worldPhysics.rightWall.fixture:setUserData("wall")
+	worldPhysics.rightWall.fixture:setUserData({
+		type = "wall",
+		craft = nil
+	})
 
 	worldPhysics.topWall = {}
 	worldPhysics.topWall.body = love.physics.newBody(worldPhysics.world, worldPhysics.worldWidth / 2, 0, "static")
 	worldPhysics.topWall.shape = love.physics.newRectangleShape(worldPhysics.worldWidth, 1)
 	worldPhysics.topWall.fixture = love.physics.newFixture(worldPhysics.topWall.body, worldPhysics.topWall.shape)
 	worldPhysics.topWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
-	worldPhysics.topWall.fixture:setUserData("wall")
+	worldPhysics.topWall.fixture:setUserData({
+		type = "wall",
+		craft = nil
+	})
 
 	worldPhysics.bottomWall = {}
 	worldPhysics.bottomWall.body = love.physics.newBody(worldPhysics.world, worldPhysics.worldWidth / 2, worldPhysics.worldHeight, "static")
 	worldPhysics.bottomWall.shape = love.physics.newRectangleShape(worldPhysics.worldWidth, 1)
 	worldPhysics.bottomWall.fixture = love.physics.newFixture(worldPhysics.bottomWall.body, worldPhysics.bottomWall.shape)
 	worldPhysics.bottomWall.fixture:setFilterData(CollisionConstants.CATEGORY_BOUNDARY, CollisionConstants.MASK_ALL, 0)
-	worldPhysics.bottomWall.fixture:setUserData("wall")
+	worldPhysics.bottomWall.fixture:setUserData({
+		type = "wall",
+		craft = nil
+	})
 
 	return worldPhysics
 end 
@@ -93,35 +105,35 @@ function beginContactHandler(fixtureA, fixtureB, coll)
 	if worldPhysics.debug then
 		x,y = coll:getNormal()
 		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. "\n"
-		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. fixtureA:getUserData() .. " colliding with "
-		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. fixtureB:getUserData() .. " with a vector normal of : " 
+		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. fixtureA:getUserData().type .. " colliding with "
+		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. fixtureB:getUserData().type .. " with a vector normal of : " 
 		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. x .. ", "
 		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. y
 	end
 
-	local aType = fixtureA:getUserData()
-	local bType = fixtureB:getUserData()
+	local aData = fixtureA:getUserData()
+	local bData = fixtureB:getUserData()
 
 	-- If the play collides, game over
 	-- TODO: Separate Game Logic, from the purely physics module?
-	if  aType == "player" then 
-		handlePlayerCollision(aType, bType)
-	elseif bType == "player" then
-		handlePlayerCollision(bType, aType)
+	if  aData.type == "player" then 
+		handlePlayerCollision(aData, bData)
+	elseif bData.type == "player" then
+		handlePlayerCollision(bData, aData)
 	end
 end
 
 function endContactHandler(fixtureA, fixtureB, coll)
 	if worldPhysics.debug then
 		worldPhysics.persisting = 0
-		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. "\n" .. fixtureA:getUserData() .. " uncolliding with " .. fixtureB:getUserData()
+		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. "\n" .. fixtureA:getUserData().type .. " uncolliding with " .. fixtureB:getUserData().type
 	end
 end
 
 function preSolveHandler(fixtureA, fixtureB, coll)
 	if worldPhysics.debug then
 		if worldPhysics.persisting == 0 then
-			worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. "\n" .. fixtureA:getUserData() .. " touching " .. fixtureB:getUserData()
+			worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. "\n" .. fixtureA:getUserData().type .. " touching " .. fixtureB:getUserData().type
 		elseif worldPhysics.persisting < 20 then
 			worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. " " .. worldPhysics.persisting
 		end
@@ -135,11 +147,11 @@ function postSolveHandler(fixtureA, fixtureB, coll, normalImpluse, tangentImpuls
 end
 
 function handlePlayerCollision(playerData, otherData)
-	if otherData == "deadly" then
+	if otherData.type == "deadly" then
 		love.event.quit( )
-	elseif otherData == "stun" then
-		StunCounter = StunCounter + 1
-		print("incrementing stun counter, now is : " .. StunCounter)
+	elseif otherData.type == "stun" then
+		playerData.craft.stunned = true
+		playerData.craft.stunCounter = playerData.craft.stunCounter + 1
 	end
 end
 

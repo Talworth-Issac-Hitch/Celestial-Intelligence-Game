@@ -2,10 +2,11 @@
 playerAspectDefinition = require "spacecraftAspects/playerSpecialAspect"
 faceAngleAspectDefinition = require "spacecraftAspects/faceAngleDrawingAspect"
 faceMotionAspectDefinition = require "spacecraftAspects/faceMotionDrawingAspect"
-deadlyAspectDefinition = require "spacecraftAspects/deadlyCollisionAspect"
-linearAspectDefinition = require "spacecraftAspects/linearMotionAspect"
 circularAspectDefinition = require "spacecraftAspects/circularShapeAspect"
+linearAspectDefinition = require "spacecraftAspects/linearMotionAspect"
 staticAspectDefinition = require "spacecraftAspects/staticMotionAspect"
+noEnemyCollisionAspectDefinition = require "spacecraftAspects/noEnemyCollisionAspect"
+deadlyAspectDefinition = require "spacecraftAspects/deadlyCollisionAspect"
 stunningAspectDefinition = require "spacecraftAspects/stunCollisionAspect"
 
 
@@ -32,6 +33,9 @@ SpaceCraftAspectDefinitions = {
 	-- TODO: Crafts that accelerate and deccelerate
 	-- TODO: Teleporting enemy static.  Use a spining arc/circle that fills out to indicate location and timing.
 
+	-- Collision (detection) Aspects
+	noEnemyCollision = noEnemyCollisionAspectDefinition,
+
 	-- Collision (resolution) Aspects 
 	deadly = deadlyAspectDefinition,
 	stun = stunningAspectDefinition
@@ -40,6 +44,8 @@ SpaceCraftAspectDefinitions = {
 	-- TODO: Enemy that can exert gravity / repulsion.
 	-- TODO: An enemy with totally static collisions, but very high initial velocity.
 	-- TODO: Enemy that teleports the player to a random(?) location on collision. Not necessarily mutually exclusive with stun :3
+	-- TODO: A stun variant that just/also makes you invisible.  It was a bug, but horrifying.
+	--       Maybe that'd be a challenging Amp
 
 }
 

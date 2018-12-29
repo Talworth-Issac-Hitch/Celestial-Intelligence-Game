@@ -22,10 +22,6 @@ PLAYABLE_AREA_WIDTH = 800
 
 DEBUG = true
 
-
--- TODO: BOOO Globals boo
-StunCounter = 0
-
 -- TODO: Load this from a file / server.	File could either be user made (manually or in an 'admin' interace), or Machine Learning generated.
 EnemySpawnTable = {
 	{ -- Slot 1, The Base Layer: spawns quickly but with a low limit.  Forms the initial challenge / interaction with the player 
@@ -59,7 +55,7 @@ EnemySpawnTable = {
 		enemyObj = {
 			imagePath = "assets/wind-hole.png",
 			angularVelocity = -5,
-			aspects = Set{"enemyLinear", "faceAngle", "circular", "stun"}, 
+			aspects = Set{"enemyLinear", "faceAngle", "noEnemyCollision", "circular", "stun"}, 
 			debug = DEBUG
 		}
 	},
@@ -157,14 +153,6 @@ function love.update(dt)
 		end
 	end)
 
-	-- TODO: BOOO GLOBALS.  Handle this not in main.lua.  Also do the stun blinking differently.
-	if StunCounter > 0 then
-		activeCrafts.playerCraft.stunned = true
-		StunCounter = StunCounter - dt
-	else
-		activeCrafts.playerCraft.stunned = false
-	end
-
 	score = score + dt
 end
 
@@ -180,7 +168,6 @@ function love.draw()
 	love.graphics.print("Game Seed : " .. seed .. "\nScore : " .. math.ceil(score), VIEWPORT_WIDTH / 2, 50)
 end
 
--- TODO : Make an enemy that reacts to your key presses :3
 function love.keypressed(key)
 	_.each(activeCrafts, function(craft)
 		if _.has(craft, "onKeyPressed") then

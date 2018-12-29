@@ -81,15 +81,17 @@ function SpaceCraft:update(dt)
 
 		-- TODO: Make collision data into Table / Set to enable more info for more different types of collisions.
 		self.fixture:setFilterData(self.collisionCategory, self.collisionMask, self.collisionGroup)
-		self.fixture:setUserData(self.collisionData)
+		self.fixture:setUserData({
+			type = self.collisionData,
+			craft = self
+		})
 
-		-- TODO: OH THIS SHIT WILL NOT STAND.  HANDLE YOUR (aspect-collision) SHIT!
-		-- TODO: HANDLE YOUR SHIT
 		self:onSpawnFinished()
-		self:onSpawnFinished2()
 
 		self.finishedSpawn = true
 	end
+
+	self:onUpdate(dt)
 end
 
 function SpaceCraft:draw()
@@ -159,12 +161,14 @@ function SpaceCraft:getDrawingAnchor()
 	return self.body:getWorldPoints(self.shape:getPoints())
 end
 
+-- A hook for any custom update Behavior.
+function SpaceCraft:onUpdate()
+	-- Do nothing by default
+end
+
 -- A hook for any SpaceCraft Behavior that should occur on spawn.
 function SpaceCraft:onSpawnFinished()
 	-- Do nothing by default
-end
-function SpaceCraft:onSpawnFinished2()
-	-- God, damn, it.
 end
 
 function SpaceCraft:getImageDrawAngle()

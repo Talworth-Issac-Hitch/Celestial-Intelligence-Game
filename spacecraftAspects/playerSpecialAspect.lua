@@ -15,8 +15,20 @@ PlayerCraftAspectDefinition = {
 
 	collisionDebugColor = {0.05, 0.9, 0.05},
 
+	stunCounter = 0,
+
+	onUpdate = function(self, dt) 
+		-- If we're stunned, run down our timer, otherwise, we're not stunned!
+		if self.stunCounter > 0 then
+			self.stunCounter = self.stunCounter - dt
+		else
+			self.stunned = false
+			self.stunCounter = 0
+		end
+	end,
+
 	onKeyPressed = function(self, key)
-		if StunCounter <= 0 then
+		if self.stunCounter <= 0 then
 			-- User input affeccting playerCraft's movements
 			local xVelocity, yVelocity = self.body:getLinearVelocity()
 			
@@ -34,7 +46,7 @@ PlayerCraftAspectDefinition = {
 		end
 	end,
 	onKeyReleased = function(self, key)
-		if StunCounter <= 0 then
+		if self.stunCounter <= 0 then
 			-- User input affeccting playerCraft's movements
 			local xVelocity, yVelocity = self.body:getLinearVelocity()
 
