@@ -45,7 +45,7 @@ function SpaceCraft:new(options)
 		collisionMask = CollisionConstants.MASK_ALL,
 		collisionGroup = CollisionConstants.GROUP_NONE,
 
-		debug = false,
+		debug = nil,
 		collisionDebugColor = {0.05, 0.05, 0.9}
 	}
 
@@ -111,7 +111,7 @@ function SpaceCraft:draw()
 	end
 
 	-- If we're debugging, draw collision board. Color of boarder indicates collsion type.
-	if self.debug and self.finishedSpawn then
+	if self.debug.physicsVisual and self.finishedSpawn then
 		self:debugDrawCenter()
 
 		self:debugDrawFacing()

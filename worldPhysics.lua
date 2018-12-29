@@ -20,7 +20,7 @@ function WorldPhysics:new(options)
 		worldWidth = 800,
 		worldHeight = 600,
 		world = nil,
-		debug = false
+		debug = nil
 	}
 
 	setmetatable(worldPhysics, WorldPhysics)
@@ -66,9 +66,11 @@ end
 -- The Love2D callback for each drawing frame. Draws our level boundaries.
 function WorldPhysics:draw()
 	-- Print debug info on collisions and game boundaries
-	if self.debug then
+	if self.debug.physicsLog then
 		love.graphics.print(self.collisionDebugText, 10, 10)
+	end
 
+	if self.debug.physicsVisual then
 		-- TODO: Make a map of collision types to visual colors
 		love.graphics.setColor(0.28, 0.05, 0.63)
 		love.graphics.polygon("fill", self.leftWall.body:getWorldPoints(self.leftWall.shape:getPoints()))
@@ -125,7 +127,7 @@ end
 -- Here we evaluate game logic involving player collisons.
 function beginContactHandler(fixtureA, fixtureB, coll)
 	-- Log out information about the collision.
-	if worldPhysics.debug then
+	if worldPhysics.debug.physicsLog then
 		x,y = coll:getNormal()
 		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. "\n"
 		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. fixtureA:getUserData().type .. " colliding with "
@@ -148,7 +150,7 @@ end
 
 -- Callback for anytime 2 Fixtures initially come into contact with one another.  Currently we only log some information.
 function endContactHandler(fixtureA, fixtureB, coll)
-	if worldPhysics.debug then
+	if worldPhysics.debug.physicsLog then
 		worldPhysics.persisting = 0
 		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. "\n" .. fixtureA:getUserData().type .. " uncolliding with " .. fixtureB:getUserData().type
 	end
@@ -157,7 +159,7 @@ end
 -- Callback for before the resulting forces from the collision for each Fixture have been calculated.
 -- Currently we just log out debug info, but I'm guessing here is where we could have game-logic / game-data, overule / impact physics.
 function preSolveHandler(fixtureA, fixtureB, coll)
-	if worldPhysics.debug then
+	if worldPhysics.debug.physicsLog then
 		if worldPhysics.persisting == 0 then
 			worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. "\n" .. fixtureA:getUserData().type .. " touching " .. fixtureB:getUserData().type
 		elseif worldPhysics.persisting < 20 then

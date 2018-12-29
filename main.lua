@@ -35,7 +35,10 @@ PLAYABLE_AREA_WIDTH = 800
 -------------
 -- GLOBALS --
 -------------
-DEBUG = true
+Debug = {
+	physicsVisual = false,
+	physicsLog = false
+}
 
 -- TODO: Load this from a file / server.	File could either be user made (manually or in an 'admin' interace), or Machine Learning generated.
 -- A Table defining when and how often enemies space, how many times they spawn, as well as enemy attributes.
@@ -49,7 +52,7 @@ EnemySpawnTable = {
 			imagePath = "assets/comet-spark.png",
 			imageRotationOffset = -math.pi / 4,
 			aspects = Set{"enemyLinear", "faceMotion", "circular", "deadly"}, 
-			debug = DEBUG
+			debug = Debug
 		}
 	},
 	{ -- Slot 2, The Consistent Threat: spawns slowly, but with a high limit
@@ -60,7 +63,7 @@ EnemySpawnTable = {
 		enemyObj = {
 			imagePath = "assets/evil-moon.png",
 			aspects = Set{"circular", "enemyStatic"}, 
-			debug = DEBUG
+			debug = Debug
 		}
 	},
 	{ -- Slot 3, The Wrench: After a long wait and the first amp, spawns quickly
@@ -72,7 +75,7 @@ EnemySpawnTable = {
 			imagePath = "assets/wind-hole.png",
 			angularVelocity = -5,
 			aspects = Set{"enemyLinear", "faceAngle", "noEnemyCollision", "circular", "stun"}, 
-			debug = DEBUG
+			debug = Debug
 		}
 	},
 	{ -- Slot 4, Ragnarok: If the player isn't dead yet, reward them with swift death
@@ -83,7 +86,7 @@ EnemySpawnTable = {
 		enemyObj = { 
 			imagePath = "assets/head.png", 
 			aspects = Set{"enemyStatic", "deadly"}, 
-			debug = DEBUG
+			debug = Debug
 		}
 	},
 }
@@ -108,7 +111,7 @@ function love.load()
 	worldPhysics = WorldPhysics:new {
 		worldWidth = VIEWPORT_WIDTH,
 		worldHeight = VIEWPORT_HEIGHT,
-		debug = DEBUG
+		debug = Debug
 	}
 
 	-- Create our player
@@ -119,7 +122,7 @@ function love.load()
 			age = 2, 
 			aspects = Set{"player", "faceAngle"}, 
 			world = worldPhysics:getWorld(),
-			debug = DEBUG
+			debug = Debug
 		}
 	}
 
@@ -200,6 +203,15 @@ end
 -- Love2D callback for when the player presses a key.  Some game components have their individual implementations for that callback,
 -- so if one exists, we call it here.
 function love.keypressed(key)
+	-- Toggle Debug View
+		if key == 'o' then
+			print(Debug.physicsVisual)
+			Debug.physicsVisual = not Debug.physicsVisual
+		elseif key == 'l' then
+			Debug.physicsLog = not Debug.physicsLog
+		end
+
+	-- Call any keypresses that the 
 	_.each(activeCrafts, function(craft)
 		if _.has(craft, "onKeyPressed") then
 			craft:onKeyPressed(key)
