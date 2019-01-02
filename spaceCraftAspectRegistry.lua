@@ -8,6 +8,7 @@ circularAspectDefinition = require "spacecraftAspects/circularShapeAspect"
 linearAspectDefinition = require "spacecraftAspects/linearMotionAspect"
 staticAspectDefinition = require "spacecraftAspects/staticMotionAspect"
 noEnemyCollisionAspectDefinition = require "spacecraftAspects/noEnemyCollisionAspect"
+playerOnlyCollisionAspectDefinition = require "spacecraftAspects/playerOnlyCollisionAspect"
 deadlyAspectDefinition = require "spacecraftAspects/deadlyCollisionAspect"
 stunningAspectDefinition = require "spacecraftAspects/stunCollisionAspect"
 
@@ -36,6 +37,7 @@ SpaceCraftAspectDefinitions = {
 
 	-- Collision (detection) Aspects
 	noEnemyCollision = noEnemyCollisionAspectDefinition,
+	playerOnlyCollision = playerOnlyCollisionAspectDefinition,
 
 	-- Collision (resolution) Aspects 
 	deadly = deadlyAspectDefinition,

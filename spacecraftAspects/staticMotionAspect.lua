@@ -4,9 +4,11 @@
 
 -- For Craft which do not move and cannot be moved themselves.
 StaticCraftAspectDefinition = {
-	sizeX = 100, -- TODO: Replace hard-coding attributes with scaling factor.
-	sizeY = 100, -- TODO: Replace hard-coding attributes with scaling factor.
-	speed = 0, -- TODO: Replace hard-coding attributes with scaling factor.
+	scalingTable = {
+		sizeX = 2,
+		sizeY = 2,
+		speed = 0
+	},
 
 	bodyType = "static",
 

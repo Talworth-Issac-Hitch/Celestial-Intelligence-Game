@@ -24,8 +24,8 @@ function SpaceCraft:new(options)
 		imagePath = "assets/unknown.png", 
 		imageRotationOffset = 0, -- TODO: Also allow the image's center point to be offset from 'collision' frame center.
 
-		sizeX = 50, 
-		sizeY = 50, 
+		sizeX = 64, 
+		sizeY = 64,
 		xPosition = 0, 
 		yPosition = 0,
 		xVelocity = 0, 
@@ -33,7 +33,7 @@ function SpaceCraft:new(options)
 		facingAngle = 0,
 		angularVelocity = 0,
 		angularDampening = 0,
-		speed = 0,
+		speed = 400,
 
 		age = 0,
 		stunned = false,
@@ -53,22 +53,33 @@ function SpaceCraft:new(options)
 
 	-- Layer in passed-in options.  These should typically be used for things not covered by aspects, generally things
 	-- that are manually tweaked, like imagePath
-	spaceCraft = _.extend(spaceCraft, options)	
+	spaceCraft = _.extend(spaceCraft, options)
+
+	local allAspectsScalingTable = {
+		sizeX = 1,
+		sizeY = 1,
+		speed = 1
+	}	
 
 	-- For each aspect the SpaceCraft has, apply that aspect's initial paremters.  Remember here that aspect lists are Sets, not tables
 	--  so we need to index by the AspectName, not the value
 	_.each(spaceCraft.aspects, function(aspectVal, aspectName) 
 		-- For each the parameters that Aspect Definition has 
 		_.each(SpaceCraftAspectDefinitions[aspectName], function(aspectPropertyValue, aspectPropertyName)
+			-- For the scaling factors, combine them all into one table.  For other properties and functions, simply
+			-- overwrite or add.
 			-- TODO: Better handling of Aspects that set the same property.  Currently they simply overwrite, last wins..
-			spaceCraft[aspectPropertyName] = aspectPropertyValue
+			if aspectPropertyName == "scalingTable" then
+				_.each(aspectPropertyValue, function(scalingFactor, scalingFieldName) 
+					allAspectsScalingTable[scalingFieldName] = allAspectsScalingTable[scalingFieldName] * scalingFactor
+				end)
+			else 
+				spaceCraft[aspectPropertyName] = aspectPropertyValue
+			end
 		end)
 	end)
 
-	-- TODO: Better logic for multiple scaling factors
-	if spaceCraft.scalingFactor then
-		spaceCraft:applyScaling(spaceCraft.scalingFactor)
-	end
+	spaceCraft:applyScaling(allAspectsScalingTable)
 
 	-- Set up our craft's image
 	spaceCraft:loadImageAndAttrs()
@@ -131,10 +142,11 @@ end
 -----------------------------
 
 -- Applies scaling factor(s) that can come in from aspects to a spaceCraft's base attributes.
-function SpaceCraft:applyScaling(scalingFactor)
-	self.sizeX = self.sizeX * scalingFactor
-	self.sizeY = self.sizeY * scalingFactor
-	self.speed = self.speed * scalingFactor
+function SpaceCraft:applyScaling(scalingTable)
+	-- For each entry in the scaling table, apply that scaling factor to the corresponding attribute.
+	_.each(scalingTable, function(scalingFactor, attributeName)
+		self[attributeName] = self[attributeName] * scalingFactor
+	end)
 end
 
 -- Loads the SpaceCraft's image, and sets related properties

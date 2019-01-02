@@ -71,12 +71,20 @@ EnemySpawnTable = {
 		spawnCounter = -60,
 		currentEnemyCount = 0,
 		spawnLimit = 10,
+		-- [[ Gamma Ray
+		enemyObj = {
+			imagePath = "assets/lightning-frequency.png",
+			imageRotationOffset = -math.pi / 4,
+			aspects = Set{"enemyLinear", "faceMotion", "playerOnlyCollision", "circular", "deadly"}, 
+			debug = Debug
+		} --]]
+		--[[ Stun-Nado
 		enemyObj = {
 			imagePath = "assets/wind-hole.png",
 			angularVelocity = -5,
 			aspects = Set{"enemyLinear", "faceAngle", "noEnemyCollision", "circular", "stun"}, 
 			debug = Debug
-		}
+		} --]]
 	},
 	{ -- Slot 4, Ragnarok: If the player isn't dead yet, reward them with swift death
 		spawnInterval = 2,
@@ -85,7 +93,7 @@ EnemySpawnTable = {
 		spawnLimit = 100,
 		enemyObj = { 
 			imagePath = "assets/head.png", 
-			aspects = Set{"enemyStatic", "deadly"}, 
+			aspects = Set{"enemyStatic", "faceAngle", "deadly"}, 
 			debug = Debug
 		}
 	},

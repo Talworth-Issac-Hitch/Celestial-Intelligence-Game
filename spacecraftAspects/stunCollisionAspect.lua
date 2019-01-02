@@ -6,7 +6,9 @@
 StunningCraftAspectDefinition = {
 	collisionType = "stun",
 	collisionDebugColor = {0.9, 0.9, 0.05},
-	scalingFactor = 2
+	scalingTable = {
+		speed = 1.2
+	}
 }
 
 return StunningCraftAspectDefinition

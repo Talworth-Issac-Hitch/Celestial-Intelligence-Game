@@ -4,10 +4,6 @@
 
 -- For Craft which move in a straight line, in a (somewhat) constant fashion.
 LinearCraftAspectDefinition = {
-	sizeX = 32, -- TODO: Replace hard-coding attributes with scaling factor.
-	sizeY = 32, -- TODO: Replace hard-coding attributes with scaling factor.
-	speed = 250, -- TODO: Replace hard-coding attributes with scaling factor.
-
 	-- Hook for any special modifications that need to be initially made to the Craft's Physics Body.
 	-- We set a random facing angle, which differs from default, axis-aligned crafts.
 	beforeBodySetup = function(self) 

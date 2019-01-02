@@ -3,17 +3,18 @@
 -------------
 CollisionConstants = require "collisionConstants"
 
-
 -----------------------
 -- ASPECT DEFINITION --
 -----------------------
 
 -- Special Aspect for the player's craft
 PlayerCraftAspectDefinition = {
-	imagePath ="assets/totem-head.png", 
-	sizeX = 50, 
-	sizeY = 50,
-	speed = 400,
+	imagePath ="assets/totem-head.png",
+
+	scalingTable = {
+		sizeX = 0.8,
+		sizeY = 0.8
+	},
 	angularDampening = 0.65,
 
 	collisionType = "player",
