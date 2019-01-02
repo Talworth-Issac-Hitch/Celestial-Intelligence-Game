@@ -60,18 +60,26 @@ EnemySpawnTable = {
 		spawnCounter = -2,
 		currentEnemyCount = 0,
 		spawnLimit = 25,
+		-- [[ Mad Moons 
 		enemyObj = {
 			imagePath = "assets/evil-moon.png",
 			aspects = Set{"circular", "enemyStatic"}, 
 			debug = Debug
-		}
+		} --]]
+
 	},
 	{ -- Slot 3, The Wrench: After a long wait and the first amp, spawns quickly
 		spawnInterval = 3,
 		spawnCounter = -60,
 		currentEnemyCount = 0,
 		spawnLimit = 10,
-		-- [[ Gamma Ray
+		-- [[ Mimes 
+		enemyObj = {
+			imagePath = "assets/mime.png",
+			aspects = Set{"circular", "playerInputMotion", "playerOnlyCollision", "deadly"}, 
+			debug = Debug
+		} --]]
+		--[[ Gamma Ray
 		enemyObj = {
 			imagePath = "assets/lightning-frequency.png",
 			imageRotationOffset = -math.pi / 4,

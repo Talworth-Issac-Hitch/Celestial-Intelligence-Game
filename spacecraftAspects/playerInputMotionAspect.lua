@@ -1,45 +1,19 @@
--------------
--- IMPORTS --
--------------
-CollisionConstants = require "collisionConstants"
-
 -----------------------
 -- ASPECT DEFINITION --
 -----------------------
 
--- Special Aspect for the player's craft
-PlayerCraftAspectDefinition = {
-	imagePath ="assets/totem-head.png",
-
+-- An aspect that makes a craft move according to when the player hits the WASD, or Arrow keys.
+-- TODO: Maybe make these enemies movable with separate keys from the player motion, to work on Michael skills?
+PlayerInputMotionAspectDefinition = {
 	scalingTable = {
-		sizeX = 0.8,
-		sizeY = 0.8
+		sizeX = 1.2,
+		sizeY = 1.2,
+		speed = 0.5
 	},
-	angularDampening = 0.65,
 
-	collisionType = "player",
-	collisionCategory = CollisionConstants.CATEGORY_PLAYER,
-
-	collisionDebugColor = {0.05, 0.9, 0.05},
-
-	stunCounter = 0,
-
-	-- A hook for any custom behavior to occur during the Love2D update callback. 
-	-- If we're stunned, run down our timer, otherwise, we're not stunned!
-	onUpdate = function(self, dt) 
-		if self.stunCounter > 0 then
-			self.stunCounter = self.stunCounter - dt
-		else
-			self.stunned = false
-			self.stunCounter = 0
-		end
-	end,
-
-	-- TODO: Duplicated in another aspect.  Allow for depedent aspects to be defined within an aspect.
-	-- NOTE: In the above scenario, override / ignore dependent aspect's scalingTables.  Probably.
 	-- Love2D callback for when the player presses a key.  This is how the player moves.
 	onKeyPressed = function(self, key)
-		if self.stunCounter <= 0 then
+		if self.finishedSpawn then
 			-- User input affeccting playerCraft's movements
 			local xVelocity, yVelocity = self.body:getLinearVelocity()
 			
@@ -59,7 +33,7 @@ PlayerCraftAspectDefinition = {
 
 	-- Love2D callback for when the player presses a key.  This is how the player stops moving.
 	onKeyReleased = function(self, key)
-		if self.stunCounter <= 0 then
+		if self.finishedSpawn then
 			-- User input affeccting playerCraft's movements
 			local xVelocity, yVelocity = self.body:getLinearVelocity()
 
@@ -94,4 +68,4 @@ PlayerCraftAspectDefinition = {
 	end
 }
 
-return PlayerCraftAspectDefinition
+return PlayerInputMotionAspectDefinition

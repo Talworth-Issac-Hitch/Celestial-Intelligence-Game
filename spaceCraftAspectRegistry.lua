@@ -6,6 +6,7 @@ faceAngleAspectDefinition = require "spacecraftAspects/faceAngleDrawingAspect"
 faceMotionAspectDefinition = require "spacecraftAspects/faceMotionDrawingAspect"
 circularAspectDefinition = require "spacecraftAspects/circularShapeAspect"
 linearAspectDefinition = require "spacecraftAspects/linearMotionAspect"
+playerInputAspectDefinition = require "spacecraftAspects/playerInputMotionAspect"
 staticAspectDefinition = require "spacecraftAspects/staticMotionAspect"
 noEnemyCollisionAspectDefinition = require "spacecraftAspects/noEnemyCollisionAspect"
 playerOnlyCollisionAspectDefinition = require "spacecraftAspects/playerOnlyCollisionAspect"
@@ -30,7 +31,7 @@ SpaceCraftAspectDefinitions = {
 	-- Motion Aspects
 	enemyLinear = linearAspectDefinition,
 	enemyStatic = staticAspectDefinition,
-	-- TODO: An enemy that reacts to player key presses too.
+	playerInputMotion = playerInputAspectDefinition,
 	-- TODO: Craft with ossilating velocity
 	-- TODO: Crafts that accelerate and deccelerate
 	-- TODO: Teleporting enemy static.  Use a spining arc/circle that fills out to indicate location and timing.
