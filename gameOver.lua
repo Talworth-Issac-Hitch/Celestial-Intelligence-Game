@@ -29,9 +29,7 @@ function GameOver:new(options)
 
 	-- TODO: Look into localization!
 	gameOver.header = "Game Over!"
-	gameOver.subHeader = "Final Score : " .. gameOver.score .. "\nGame Seed: " .. gameOver.gameSeed
 	gameOver.footer = "Press 'q' to quit."
-
 	return gameOver
 end 
 
@@ -39,8 +37,10 @@ end
 -- TODO: Fadeout from the regular game, before drawing the end game screen.
 function GameOver:draw()
 	local LINEHEIGHT = 32
+	local subHeader = "Final Score : " .. self.score .. "\nGame Seed: " .. self.gameSeed
+
 	love.graphics.print(self.header, self.worldWidth / 3, LINEHEIGHT)
-	love.graphics.print(self.subHeader, self.worldWidth / 3, LINEHEIGHT * 2)
+	love.graphics.print(subHeader, self.worldWidth / 3, LINEHEIGHT * 2)
 	love.graphics.print(self.footer, self.worldWidth / 3, self.worldHeight - LINEHEIGHT * 2)
 end
 
@@ -50,6 +50,10 @@ function GameOver:onKeyReleased(key)
 	if key == 'q' then
 		love.event.quit( )
 	end
+end
+
+function GameOver:setScore(score)
+	self.score = score
 end
 
 return GameOver

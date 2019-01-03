@@ -21,6 +21,7 @@ SpaceCraft.__index = SpaceCraft
 function SpaceCraft:new(options)
 	-- Initialize our spaceCraft with defaults
 	local spaceCraft = {
+		name = "Chaotic Entity",
 		imagePath = "assets/unknown.png", 
 		imageRotationOffset = 0, -- TODO: Also allow the image's center point to be offset from 'collision' frame center.
 
