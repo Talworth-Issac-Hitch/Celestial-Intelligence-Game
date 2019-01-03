@@ -184,7 +184,7 @@ end
 -- Handle the game-logic of what needs to happen when a player is involved in a crash.
 function handlePlayerCollision(playerData, otherData)
 	if otherData.type == "deadly" then
-		love.event.quit( )
+		GameState.GameOver = true -- TODO: EWWW  GLOBALS EWWW
 	elseif otherData.type == "stun" then
 		playerData.craft.stunned = true
 		playerData.craft.stunCounter = playerData.craft.stunCounter + 1

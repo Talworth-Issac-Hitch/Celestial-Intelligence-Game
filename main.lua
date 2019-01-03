@@ -3,6 +3,8 @@
 -------------
 _ = require "libs/moses_min"
 WorldPhysics = require "worldPhysics"
+GameOver = require "gameOver"
+
 SpaceCraft = require "spaceCraft"
 
 -----------
@@ -35,9 +37,15 @@ PLAYABLE_AREA_WIDTH = 800
 -------------
 -- GLOBALS --
 -------------
+
 Debug = {
 	physicsVisual = false,
 	physicsLog = false
+}
+
+-- TODO: BOO GLOBALS BOO.  BOOOOOO STATE BOOOOOOOOOOO
+GameState = {
+	GameOver = false
 }
 
 -- TODO: Load this from a file / server.	File could either be user made (manually or in an 'admin' interace), or Machine Learning generated.
@@ -145,9 +153,17 @@ function love.load()
 	score = 0
 
 	-- Get and set our random seed.  This can be used to re-create an exact session.
-	local seed = os.time()
+	seed = os.time()
 	print("Session initialized with game seed: " .. seed)
 	love.math.setRandomSeed(seed)
+
+	-- NOTE: DEBUG
+	gameOver = GameOver:new {
+		worldWidth = VIEWPORT_WIDTH,
+		worldHeight = VIEWPORT_HEIGHT,
+		score = 69,
+		gameSeed = seed
+	}
 end
 
 -- The Love2D callback for time passing in the game.  Most game components have their individual implementations for
@@ -205,15 +221,19 @@ end
 -- Love2D callback for graphics drawing.  Most game components have their individual implementations for that callback,
 -- which we blindly call here.
 function love.draw()
-	worldPhysics:draw()
+	if GameState.GameOver then 
+		gameOver:draw()
+	else
+		worldPhysics:draw()
 
-	-- Draw our custom spacecraft objects
-	_.each(activeCrafts, function(craft)
-		craft:draw()
-	end)
+		-- Draw our custom spacecraft objects
+		_.each(activeCrafts, function(craft)
+			craft:draw()
+		end)
 
-	-- Draw the score
-	love.graphics.print("Score : " .. math.ceil(score), VIEWPORT_WIDTH / 2, 50)
+		-- Draw the score
+		love.graphics.print("Score : " .. math.ceil(score), VIEWPORT_WIDTH / 2, 50)
+	end
 end
 
 -- Love2D callback for when the player presses a key.  Some game components have their individual implementations for that callback,
@@ -238,9 +258,13 @@ end
 -- Love2D callback for when the player releases a key.  Some game components have their individual implementations for that callback,
 -- so if one exists, we call it here.
 function love.keyreleased(key)
-	_.each(activeCrafts, function(craft)
-		if _.has(craft, "onKeyReleased") then
-			craft:onKeyReleased(key)
-		end
-	end)
+	if GameState.GameOver then 
+		gameOver:onKeyReleased(key)
+	else
+		_.each(activeCrafts, function(craft)
+			if _.has(craft, "onKeyReleased") then
+				craft:onKeyReleased(key)
+			end
+		end)
+	end
 end
