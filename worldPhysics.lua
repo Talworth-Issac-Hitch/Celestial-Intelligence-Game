@@ -63,16 +63,18 @@ function WorldPhysics:update(dt)
 	end
 end
 
--- The Love2D callback for each drawing frame. Draws our level boundaries.
-function WorldPhysics:draw()
+-- The Love2D callback for each drawing frame. Draws our level boundaries
+-- @param {number} alpha - How much alpha to draw the gameover screen with.
+function WorldPhysics:draw(alpha)
 	-- Print debug info on collisions and game boundaries
 	if self.debug.physicsLog then
+		love.graphics.setColor(1, 1, 1, alpha)
 		love.graphics.print(self.collisionDebugText, 10, 10)
 	end
 
 	if self.debug.physicsVisual then
 		-- TODO: Make a map of collision types to visual colors
-		love.graphics.setColor(0.28, 0.05, 0.63)
+		love.graphics.setColor(0.28, 0.05, 0.63, alpha)
 		love.graphics.polygon("fill", self.leftWall.body:getWorldPoints(self.leftWall.shape:getPoints()))
 		love.graphics.polygon("fill", self.rightWall.body:getWorldPoints(self.rightWall.shape:getPoints()))
 		love.graphics.polygon("fill", self.topWall.body:getWorldPoints(self.topWall.shape:getPoints()))
@@ -184,6 +186,7 @@ end
 -- Handle the game-logic of what needs to happen when a player is involved in a crash.
 function handlePlayerCollision(playerData, otherData)
 	if otherData.type == "deadly" then
+		playerData.craft:onDeath()
 		love.event.push('playerDied', otherData.craft.name)
 	elseif otherData.type == "stun" then
 		playerData.craft.stunned = true

@@ -114,25 +114,25 @@ function SpaceCraft:update(dt)
 end
 
 -- The Love2D callback for each drawing frame. Draw our craft's image, and potentially debugging frames.
-function SpaceCraft:draw()
+function SpaceCraft:draw(alpha)
 	local blinkInterval = 7
 
 	-- Enemies blink before they are finished spawning, to indicator that they cannot be interacted with.
 	if (self.finishedSpawn and not self.stunned) or math.ceil(self.age * blinkInterval) % 2 == 0 then
-		self:drawImage()
+		self:drawImage(alpha)
 	end
 
 	-- If we're debugging, draw collision board. Color of boarder indicates collsion type.
 	if self.debug.physicsVisual and self.finishedSpawn then
-		self:debugDrawCenter()
+		self:debugDrawCenter(alpha)
 
-		self:debugDrawFacing()
+		self:debugDrawFacing(alpha)
 
-		self:debugDrawCollisionBorder()
+		self:debugDrawCollisionBorder(alpha)
 
 		-- Additionally if the craft currently has a velocity. draw a velocity indicator line
 		if self.speed > 0 then
-			self:debugDrawVelocityIndicator()
+			self:debugDrawVelocityIndicator(alpha)
 		end
 	end
 end
@@ -215,9 +215,12 @@ end
 -------------
 
 -- Render the SpaceCraft's image to the screen, if one exists.
-function SpaceCraft:drawImage()
+function SpaceCraft:drawImage(alpha)
 	local drawX, drawY = self:getDrawingAnchor()
+	love.graphics.setColor(1, 1, 1, alpha)
 	love.graphics.draw(self.image, drawX, drawY, self:getImageDrawAngle() + self.imageRotationOffset, self.imgSX, self.imgSY, self.imgOX, self.imgOY)
+
+	love.graphics.reset()
 end
 
 -------------------
@@ -225,8 +228,11 @@ end
 -------------------
 
 -- Draws a dot on what is considered the center of the Craft for physics purposes.
-function SpaceCraft:debugDrawCenter()
+function SpaceCraft:debugDrawCenter(alpha)
 	local debugX, debugY = self.body:getPosition()
+
+	--TODO: Find a way to slot in alpha that doesn't permanently change self.collisionDebugColor.
+	self.collisionDebugColor[4] = alpha
 	love.graphics.setColor(self.collisionDebugColor)
 	love.graphics.circle("fill", debugX, debugY, 5)
 
@@ -234,7 +240,7 @@ function SpaceCraft:debugDrawCenter()
 end
 
 -- Draws a line in the direction the object is "facing" for physics purposes.
-function SpaceCraft:debugDrawFacing()
+function SpaceCraft:debugDrawFacing(alpha)
 	local centerX, centerY = self:getCenterPoint()
 	local facingAngle = self.body:getAngle()
 
@@ -243,7 +249,7 @@ function SpaceCraft:debugDrawFacing()
 	local facingVectorY = math.sin(facingAngle) * 0.75 * self.sizeY
 
 	-- TODO: Make a debug color constants tab
-	love.graphics.setColor(0.6, 0.05, 0.6)
+	love.graphics.setColor(0.6, 0.05, 0.6, alpha)
 	love.graphics.line(centerX, centerY, centerX + facingVectorX, centerY + facingVectorY)
 
 	love.graphics.reset()
@@ -251,7 +257,9 @@ end
 
 -- Draws the shape that the Spacecraft is considered for collisions.
 -- By default, Crafts are squares, so we simple draw the same 4 points of our square Shape object.
-function SpaceCraft:debugDrawCollisionBorder()
+function SpaceCraft:debugDrawCollisionBorder(alpha)
+	--TODO: Find a way to slot in alpha that doesn't permanently change self.collisionDebugColor.
+	self.collisionDebugColor[4] = alpha
 	love.graphics.setColor(self.collisionDebugColor)
 	love.graphics.polygon("line", self.body:getWorldPoints(self.shape:getPoints()))
 	love.graphics.reset()
@@ -259,14 +267,14 @@ end
 
 -- Draws a line to indicat direct and speed of an object.  Speed is represented by length of the line.
 -- TODO: Speed being represented by line-length, likely can't keep scaling well.  Perhaps increase thickness, or add more lines?
-function SpaceCraft:debugDrawVelocityIndicator()
+function SpaceCraft:debugDrawVelocityIndicator(alpha)
 	local INDICATOR_LENGTH_FACTOR = 0.2
 	local centerX, centerY = self:getCenterPoint()
 
 	local velocityX, velocityY = self.body:getLinearVelocity()
 
 	-- TODO: Make a debug color constants tab
-	love.graphics.setColor(0.6, 0.6, 0.05)
+	love.graphics.setColor(0.6, 0.6, 0.05, alpha)
 	love.graphics.line(centerX, centerY, centerX + velocityX * INDICATOR_LENGTH_FACTOR, centerY + velocityY * INDICATOR_LENGTH_FACTOR)
 	love.graphics.reset()
 end

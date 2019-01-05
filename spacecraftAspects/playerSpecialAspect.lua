@@ -91,6 +91,12 @@ PlayerCraftAspectDefinition = {
 
 			self.body:setLinearVelocity(xVelocity, yVelocity)
 		end
+	end,
+
+	-- TODO: Make this a more standardized behavior!
+	onDeath = function(self) 
+		self.imagePath = "assets/spiky-explosion.png"
+		self:loadImageAndAttrs()
 	end
 }
 

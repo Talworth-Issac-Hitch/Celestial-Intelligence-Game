@@ -39,6 +39,7 @@ PLAYABLE_AREA_WIDTH = 800
 -------------
 
 isGameOver = false
+gameOverTime = 0
 
 Debug = {
 	physicsVisual = false,
@@ -80,7 +81,7 @@ EnemySpawnTable = {
 		spawnCounter = -60,
 		currentEnemyCount = 0,
 		spawnLimit = 10,
-		-- [[ Mimes 
+		--[[ Mimes 
 		enemyObj = {
 			name = "Mime",
 			imagePath = "assets/mime.png",
@@ -95,7 +96,7 @@ EnemySpawnTable = {
 			aspects = Set{"enemyLinear", "faceMotion", "playerOnlyCollision", "circular", "deadly"}, 
 			debug = Debug
 		} --]]
-		--[[ Stun-Nado
+		-- [[ Stun-Nado
 		enemyObj = {
 			name = "Stun-Nado",
 			imagePath = "assets/wind-hole.png",
@@ -219,14 +220,32 @@ function love.update(dt)
 
 		-- Finally increment the score, which currently is just equal to time. 
 		score = score + dt
+	else
+		gameOverTime = gameOverTime + dt
 	end
 end
 
 -- Love2D callback for graphics drawing.  Most game components have their individual implementations for that callback,
 -- which we blindly call here.
 function love.draw()
+	-- TODO: Could be a little more DRY here..
 	if isGameOver then 
-		gameOver:draw()
+		local fadeTime = 2
+
+		if gameOverTime < fadeTime then 
+			local waxingAlpha = gameOverTime / fadeTime
+			local waningAlpha = 1 - waxingAlpha
+
+			gameOver:draw(gameOverTime, waxingAlpha)
+			worldPhysics:draw(waningAlpha)
+
+			-- Draw our custom spacecraft objects
+			_.each(activeCrafts, function(craft)
+				craft:draw(waningAlpha)
+			end)
+		else
+			gameOver:draw(gameOverTime)
+		end 
 	else
 		worldPhysics:draw()
 
@@ -281,8 +300,7 @@ end
 -- A custom event that occurs when the player dies.
 function love.handlers.playerDied(killedBy)
 	print("Player killed by: " .. killedBy)
-	print(score)
-	-- TODO : Print out what enemy killed the player.
+
 	isGameOver = true
-	gameOver:setScore(math.ceil(score))
+	gameOver.score = math.ceil(score)
 end
