@@ -2,6 +2,7 @@
 -- IMPORTS --
 -------------
 _ = require "libs/moses_min"
+JSON = require "libs/json"
 
 
 ----------------------
@@ -61,8 +62,30 @@ end
 	-- over screen.
 function GameOver:onKeyReleased(key)
 	if key == 'q' then
-		love.event.quit( )
+		self:appExit()
 	end
+end
+
+function GameOver:appExit() 
+	-- TODO: Create a more specific GUID for game data hash.  This one will currently cause probs if two players submit
+	--       data at the same instant, which is a legitmate issue at scale.
+	local gameHash = os.time()
+
+	-- Build a table to serialize to a data file summarizing the play through for the ML.
+	local playDataTable = {
+		score = self.score,
+		-- TODO: Do this... Better...
+		-- TODO: BOO GLOBALS BOO.
+		e1Aspects = _.keys(EnemySpawnTable[1].enemyObj.aspects),
+		e2Aspects = _.keys(EnemySpawnTable[2].enemyObj.aspects),
+		e3Aspects = _.keys(EnemySpawnTable[3].enemyObj.aspects),
+		e4Aspects = _.keys(EnemySpawnTable[4].enemyObj.aspects)
+	}
+
+	-- TODO: Make game data output no matter what.  Currently only logs data if player hits 'Q' at the end.  
+	--       Maybe can hook into an event?
+	love.filesystem.write("playData-" .. gameHash .. ".json", JSON.encode(playDataTable), all)
+	love.event.quit( )
 end
 
 return GameOver
