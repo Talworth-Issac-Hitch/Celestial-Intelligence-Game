@@ -66,7 +66,9 @@ function GameOver:onKeyReleased(key)
 	end
 end
 
-function GameOver:appExit() 
+function GameOver:appExit()
+	local DATA_DIRECTORY_NAME = "playData/"
+
 	-- TODO: Create a more specific GUID for game data hash.  This one will currently cause probs if two players submit
 	--       data at the same instant, which is a legitmate issue at scale.
 	local gameHash = os.time()
@@ -82,9 +84,15 @@ function GameOver:appExit()
 		e4Aspects = _.keys(EnemySpawnTable[4].enemyObj.aspects)
 	}
 
+	-- Ensure the data/ folder exists.
+	local dataFolder = love.filesystem.getInfo(DATA_DIRECTORY_NAME)
+
+	if not dataFolder or dataFolder.type ~= "directory"  then
+		love.filesystem.createDirectory(DATA_DIRECTORY_NAME)
+	end
 	-- TODO: Make game data output no matter what.  Currently only logs data if player hits 'Q' at the end.  
 	--       Maybe can hook into an event?
-	love.filesystem.write("playData-" .. gameHash .. ".json", JSON.encode(playDataTable), all)
+	love.filesystem.write(DATA_DIRECTORY_NAME .. "playData-" .. gameHash .. ".json", JSON.encode(playDataTable), all)
 	love.event.quit( )
 end
 
