@@ -1,6 +1,7 @@
 -------------
 -- IMPORTS --
 -------------
+CustomExceptionHandler = require "customExceptionHandler"
 _ = require "libs/moses_min"
 WorldPhysics = require "worldPhysics"
 GameOver = require "gameOver"
