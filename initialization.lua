@@ -2,7 +2,7 @@
 -- IMPORTS --
 -------------
 _ = require "libs/moses_min"
-
+JSON = require "libs/json"
 
 -----------
 -- UTILS --
@@ -14,6 +14,14 @@ function Set (list)
 	local set = {}
 	for _, l in ipairs(list) do set[l] = true end
 	return set
+end
+
+function PrintKeysAndValues(table)
+	for k,v in pairs(table) do
+		print(k)
+		print("=")
+		print(v)
+	end
 end
 
 ----------------------
@@ -42,7 +50,9 @@ end
 
 -- TODO: Comment
 function GameInitialization:loadEnemyTable()
-	local defaultEnemyTable = {
+	-- Initialize the table with the defaults
+	-- TODO: Also allow for overwriting of cosmetic attributes
+	local enemyTable = {
 		{ -- Slot 1, The Base Layer: spawns quickly but with a low limit.  Forms the initial challenge / interaction with the player 
 			spawnInterval = 5,
 			spawnCounter = 5,
@@ -113,9 +123,38 @@ function GameInitialization:loadEnemyTable()
 		}
 	}
 
-	-- TODO: Load this from a file / server.	File could either be user made (manually or in an 'admin' interace), or Machine Learning generated.
 
-	return defaultEnemyTable
+	-- NOTE: Currently it assumes this file was manually created, and won't make one if it doesn't find it.
+	local CONFIG_FILE_PATH = "config/enemyConfig.json"
+
+	local configFileInfo = love.filesystem.getInfo(CONFIG_FILE_PATH)
+
+	-- If a config file exists, Load enemy aspects from a file.	File could either be user made (manually or in 
+	--an 'admin' interace), or Machine Learning generated.	
+	-- TODO: Load configs from a server instead of locally.
+	if configFileInfo and configFileInfo.type == "file"  then
+
+		local aspectOverrides = {
+		}
+
+		-- NOTE: Currently configs should only be a single line, but we iterate here for good measure.
+		for line in love.filesystem.lines(CONFIG_FILE_PATH) do
+			local config = JSON.decode(line)
+
+			-- TODO: Make size generic
+			aspectOverrides[1] = Set(config.e1Aspects)
+			aspectOverrides[2] = Set(config.e2Aspects)
+			aspectOverrides[3] = Set(config.e3Aspects)
+			aspectOverrides[4] = Set(config.e4Aspects)
+		end
+
+		-- For each enemy slot, overwrite the default aspect list.'
+		_.eachi(enemyTable, function(enemyTableEntry, index)
+			enemyTableEntry.enemyObj.aspects = aspectOverrides[index]
+		end)
+	end
+
+	return enemyTable
 end 
 
 return GameInitialization

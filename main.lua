@@ -4,7 +4,6 @@
 CustomExceptionHandler = require "customExceptionHandler"
 
 _ = require "libs/moses_min"
-JSON = require "libs/json"
 
 GameInitialization = require "initialization"
 WorldPhysics = require "worldPhysics"
@@ -222,30 +221,7 @@ end
 function love.quit()
 	-- Only output playData if the game was actually over.
 	if isGameOver then 
-		local DATA_DIRECTORY_NAME = "playData/"
-
-		-- TODO: Create a more specific GUID for game data hash.  This one will currently cause probs if two players submit
-		--       data at the same instant, which is a legitmate issue at scale.
-		local gameHash = os.time()
-
-		-- Build a table to serialize to a data file summarizing the play through for the ML.
-		local playDataTable = {
-			score = score,
-			-- TODO: Do this... Better...
-			e1Aspects = _.keys(EnemySpawnTable[1].enemyObj.aspects),
-			e2Aspects = _.keys(EnemySpawnTable[2].enemyObj.aspects),
-			e3Aspects = _.keys(EnemySpawnTable[3].enemyObj.aspects),
-			e4Aspects = _.keys(EnemySpawnTable[4].enemyObj.aspects)
-		}
-
-		-- Ensure the data/ folder exists.
-		local dataFolder = love.filesystem.getInfo(DATA_DIRECTORY_NAME)
-
-		if not dataFolder or dataFolder.type ~= "directory"  then
-			love.filesystem.createDirectory(DATA_DIRECTORY_NAME)
-		end
-
-		love.filesystem.write(DATA_DIRECTORY_NAME .. "playData-" .. gameHash .. ".json", JSON.encode(playDataTable), all)
+		gameOver:onQuiteHandler()
 	end
 
 	return false
