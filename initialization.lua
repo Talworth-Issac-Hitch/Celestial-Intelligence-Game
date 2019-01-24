@@ -43,10 +43,38 @@ function GameInitialization:new(options)
 
 	setmetatable(gameInitialization, GameInitialization)
 
-	gameOver = _.extend(gameInitialization, options)
+	gameInitialization = _.extend(gameInitialization, options)
+
+	gameInitialization:loadPlayerData()
 
 	return gameInitialization
 end 
+
+function GameInitialization:loadPlayerData()
+	-- NOTE: Currently it assumes this file was manually created, and won't make one if it doesn't find it.
+	local CONFIG_FILE_PATH = "config/playerConfig.json"
+
+	local configFileInfo = love.filesystem.getInfo(CONFIG_FILE_PATH)
+
+	-- If a config file exists, player name and type	
+	-- TODO: Load configs from a server instead of locally.
+	if configFileInfo and configFileInfo.type == "file"  then
+
+		local aspectOverrides = {
+		}
+
+		-- NOTE: Currently configs should only be a single line, but we iterate here for good measure.
+		for line in love.filesystem.lines(CONFIG_FILE_PATH) do
+			local config = JSON.decode(line)
+
+			if config.playerName then
+				self.playerName = config.playerName
+			end
+		end
+	end
+
+	return self.playerName
+end
 
 -- TODO: Comment
 function GameInitialization:loadEnemyTable()

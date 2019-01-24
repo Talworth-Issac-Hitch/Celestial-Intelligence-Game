@@ -60,6 +60,7 @@ function love.load()
 	}
 
 	-- A Table defining when and how often enemies space, how many times they spawn, as well as enemy attributes.
+	local playerName = gameInitialization:loadPlayerData()
 	EnemySpawnTable = gameInitialization:loadEnemyTable()
 
 	-- Initialize our physics
@@ -92,6 +93,7 @@ function love.load()
 	gameOver = GameOver:new {
 		worldWidth = VIEWPORT_WIDTH,
 		worldHeight = VIEWPORT_HEIGHT,
+		playerName = playerName,
 		gameSeed = seed
 	}
 end

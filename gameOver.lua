@@ -20,7 +20,8 @@ function GameOver:new(options)
 		worldWidth = 800,
 		worldHeight = 600,
 		score = 0,
-		gameSeed = 1999
+		gameSeed = 1999,
+		playerName = "N00B"
 	}
 
 	setmetatable(gameOver, GameOver)
@@ -28,7 +29,7 @@ function GameOver:new(options)
 	gameOver = _.extend(gameOver, options)
 
 	-- TODO: Look into localization!
-	gameOver.header = "Game Over!"
+	gameOver.header = "Game Over!  You suck " .. gameOver.playerName
 	gameOver.footer = "Press 'q' to quit."
 	return gameOver
 end 
