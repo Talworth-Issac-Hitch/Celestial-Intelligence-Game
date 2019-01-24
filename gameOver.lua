@@ -21,7 +21,7 @@ function GameOver:new(options)
 		worldHeight = 600,
 		score = 0,
 		gameSeed = 1999,
-		playerName = "N00B"
+		playerConfig = { playerType = 0}
 	}
 
 	setmetatable(gameOver, GameOver)
@@ -29,7 +29,16 @@ function GameOver:new(options)
 	gameOver = _.extend(gameOver, options)
 
 	-- TODO: Look into localization!
-	gameOver.header = "Game Over!  You suck " .. gameOver.playerName
+	local playerName = "N00B"
+
+	-- Currently only humans get to pick their names.  Sorry AI friends!
+	if gameOver.playerConfig.playerType == 0 and gameOver.playerConfig.playerName then
+		playerName = gameOver.playerConfig.playerName
+	elseif playerConfig.playerType ~= 0 then
+	    playerName = playerName .. " Bot " .. gameOver.playerConfig.playerType
+	end
+
+	gameOver.header = "Game Over!  You suck " .. playerName
 	gameOver.footer = "Press 'q' to quit."
 	return gameOver
 end 
@@ -75,6 +84,7 @@ function GameOver:onQuiteHandler()
 
 	-- Build a table to serialize to a data file summarizing the play through for the ML.
 	local playDataTable = {
+		playerType = playerConfig.playerType,
 		score = score,
 		-- TODO: Do this... Better...
 		e1Aspects = _.keys(EnemySpawnTable[1].enemyObj.aspects),

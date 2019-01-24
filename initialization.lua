@@ -67,13 +67,11 @@ function GameInitialization:loadPlayerData()
 		for line in love.filesystem.lines(CONFIG_FILE_PATH) do
 			local config = JSON.decode(line)
 
-			if config.playerName then
-				self.playerName = config.playerName
-			end
+			self.playerConfig = config
 		end
 	end
 
-	return self.playerName
+	return self.playerConfig
 end
 
 -- TODO: Comment
