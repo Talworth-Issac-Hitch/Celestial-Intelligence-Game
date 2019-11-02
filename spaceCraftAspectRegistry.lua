@@ -3,7 +3,8 @@
 -------------
 playerAspectDefinition = require "spacecraftAspects/playerSpecialAspect"
 circularAspectDefinition = require "spacecraftAspects/circularShapeAspect"
-linearAspectDefinition = require "spacecraftAspects/linearMotionAspect"
+fixedInitialSpeedAspectDefinition = require "spacecraftAspects/fixedInitialSpeedAspect"
+randomStartingDirectionAspectDefinition = require "spacecraftAspects/randomStartingDirectionAspect"
 playerInputAspectDefinition = require "spacecraftAspects/playerInputMotionAspect"
 staticAspectDefinition = require "spacecraftAspects/staticMotionAspect"
 noEnemyCollisionAspectDefinition = require "spacecraftAspects/noEnemyCollisionAspect"
@@ -23,12 +24,26 @@ SpaceCraftAspectDefinitions = {
 	circular = circularAspectDefinition,
 
 	-- Motion Aspects
-	-- Default: No velocity, but will move if collided with
-	enemyLinear = linearAspectDefinition, -- Moves constant speed, in a line.
-	enemyStatic = staticAspectDefinition, -- Will never move.  A Wall
-	playerInputMotion = playerInputAspectDefinition,
+
+	-- Motion - Directional Aspects:
+	--	Aspects that govern the craft's direction of motion, and change in direction.
+	-- Default: Faces right
+	randomInitDir = randomStartingDirectionAspectDefinition,
+	
+	-- Motion - Speed Aspects:
+	--	Aspects that govern a craft's speed or change of speed in it's direction.  
+	-- Default : No motion, but will move if collided with.
+	fixedInitialSpeed = fixedInitialSpeedAspectDefinition, -- Moves constant speed, in a line.
 	-- TODO: Craft with ossilating velocity
 	-- TODO: Crafts that accelerate and deccelerate
+
+	-- Motion - Special: 
+	--	Special Motion aspects that are override aspects of other motion aspects.
+	enemyStatic = staticAspectDefinition, -- Will never move.  A Wall
+	playerInputMotion = playerInputAspectDefinition, -- Currently Governs speed and direction.
+
+	-- Motion - Misc: 
+	--	Miscellaneous aspects that do not interfere with other motion aspects.
 	-- TODO: Teleporting enemy static.  Use a spining arc/circle that fills out to indicate location and timing.
 
 	-- Collision (detection) Aspects
