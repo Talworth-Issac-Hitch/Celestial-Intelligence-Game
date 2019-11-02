@@ -4,6 +4,11 @@
 
 -- A Craft that has a circular Shape/collision area.
 CircularCraftAspectDefinition = {
+	------------
+	-- VISUAL --
+	------------
+	imagePath = "assets/evil-moon.png",
+
 	-----------------------------
 	-- GENERIC CRAFT BEHAVIORS --
 	-----------------------------

@@ -2,8 +2,6 @@
 -- IMPORTS --
 -------------
 playerAspectDefinition = require "spacecraftAspects/playerSpecialAspect"
-faceAngleAspectDefinition = require "spacecraftAspects/faceAngleDrawingAspect"
-faceMotionAspectDefinition = require "spacecraftAspects/faceMotionDrawingAspect"
 circularAspectDefinition = require "spacecraftAspects/circularShapeAspect"
 linearAspectDefinition = require "spacecraftAspects/linearMotionAspect"
 playerInputAspectDefinition = require "spacecraftAspects/playerInputMotionAspect"
@@ -20,30 +18,29 @@ SpaceCraftAspectDefinitions = {
 	-- Special Aspects
 	player = playerAspectDefinition,
 
-	-- Drawing Aspects
-	-- Default facing is axis-aligned
-	faceAngle = faceAngleAspectDefinition,
-	faceMotion = faceMotionAspectDefinition,
-
 	-- Shape Aspects
+	-- Default: Square
 	circular = circularAspectDefinition,
 
 	-- Motion Aspects
-	enemyLinear = linearAspectDefinition,
-	enemyStatic = staticAspectDefinition,
+	-- Default: No velocity, but will move if collided with
+	enemyLinear = linearAspectDefinition, -- Moves constant speed, in a line.
+	enemyStatic = staticAspectDefinition, -- Will never move.  A Wall
 	playerInputMotion = playerInputAspectDefinition,
 	-- TODO: Craft with ossilating velocity
 	-- TODO: Crafts that accelerate and deccelerate
 	-- TODO: Teleporting enemy static.  Use a spining arc/circle that fills out to indicate location and timing.
 
 	-- Collision (detection) Aspects
+	-- Default: Collide with everything
 	noEnemyCollision = noEnemyCollisionAspectDefinition,
 	playerOnlyCollision = playerOnlyCollisionAspectDefinition,
 
-	-- Collision (resolution) Aspects 
+	-- Collision (resolution) Aspects
+	-- Default : Physics collision w/o game affect.
 	deadly = deadlyAspectDefinition,
 	stun = stunningAspectDefinition
-	-- TODO: Player-friendly unit that does other units, to clear out the map
+	-- TODO: Player-friendly unit that kills other units, to clear out the map
 	-- TODO: Enemy that hides other ships it collides with / overlaps
 	-- TODO: Enemy that can exert gravity / repulsion.
 	-- TODO: An enemy with totally static collisions, but very high initial velocity.

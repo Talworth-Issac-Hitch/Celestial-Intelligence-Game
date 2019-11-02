@@ -22,7 +22,7 @@ function SpaceCraft:new(options)
 	-- Initialize our spaceCraft with defaults
 	local spaceCraft = {
 		name = "Chaotic Entity",
-		imagePath = "assets/unknown.png", 
+		imagePath = "assets/head.png", 
 		imageRotationOffset = 0, -- TODO: Also allow the image's center point to be offset from 'collision' frame center.
 
 		sizeX = 64, 
@@ -315,9 +315,9 @@ function SpaceCraft:getDrawingAnchor()
 end
 
 -- Gets the angle (in terms of Graphics) that the drawn image be rotated.  Applied through a transformation.
--- By default, Crafts simply always draw the image as axis aligned.
+-- Our drawing angle always matches our Love2D Phyiscs Body's 'facing' angle.
 function SpaceCraft:getImageDrawAngle()
-	return 0
+	return self.body:getAngle()
 end
 
 return SpaceCraft

@@ -76,7 +76,7 @@ function love.load()
 			xPosition = 50, 
 			yPosition = 50, 
 			age = 2, 
-			aspects = Set{"player", "faceAngle"}, 
+			aspects = Set{"player"}, 
 			world = worldPhysics:getWorld(),
 			debug = Debug
 		}

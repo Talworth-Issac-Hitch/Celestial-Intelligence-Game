@@ -26,6 +26,20 @@ LinearCraftAspectDefinition = {
 		self.fixture:setRestitution(1) 
 		self.fixture:setFriction(0) 
 	end
+
+	-- Gets the angle (in terms of Graphics) that the drawn image be rotated.  Applied through a transformation.
+	-- Our draw facing the current direction of our craft's velocity.
+	-- MAYBE Needed to avoid confusion for facing direction
+	-- getImageDrawAngle = function(self)
+	-- 	-- If we've spawned then face the direction that we're traveling, otherwise, simply face our
+	-- 	-- 'facing' direction, since don't have velocity till they are finished spawning.
+	-- 	if self.finishedSpawn then 
+	-- 		local craftDirection = getDirectionInRadiansFromVector(self.body:getLinearVelocity())
+	-- 		return craftDirection
+	-- 	else
+	-- 		return self.body:getAngle()
+	-- 	end
+	-- end
 }
 
 return LinearCraftAspectDefinition

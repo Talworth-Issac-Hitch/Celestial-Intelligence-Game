@@ -77,7 +77,9 @@ end
 -- TODO: Comment
 function GameInitialization:loadEnemyTable()
 	-- Initialize the table with the defaults
+
 	-- TODO: Also allow for overwriting of cosmetic attributes
+
 	local enemyTable = {
 		{ -- Slot 1, The Base Layer: spawns quickly but with a low limit.  Forms the initial challenge / interaction with the player 
 			spawnInterval = 5,
@@ -86,9 +88,8 @@ function GameInitialization:loadEnemyTable()
 			spawnLimit = 7,
 			enemyObj = {
 				name = "Comet",
-				imagePath = "assets/comet-spark.png",
-				imageRotationOffset = -math.pi / 4,
-				aspects = Set{"enemyLinear", "faceMotion", "circular", "deadly"}, 
+				angularVelocity = -5,
+				aspects = Set{"enemyLinear", "circular", "deadly"}, 
 				debug = self.debug
 			}
 		},
@@ -100,7 +101,6 @@ function GameInitialization:loadEnemyTable()
 			-- [[ Mad Moons 
 			enemyObj = {
 				name = "Mad Moon",
-				imagePath = "assets/evil-moon.png",
 				aspects = Set{"circular", "enemyStatic"}, 
 				debug = self.debug
 			} --]]
@@ -111,27 +111,11 @@ function GameInitialization:loadEnemyTable()
 			spawnCounter = -60,
 			currentEnemyCount = 0,
 			spawnLimit = 10,
-			--[[ Mimes 
-			enemyObj = {
-				name = "Mime",
-				imagePath = "assets/mime.png",
-				aspects = Set{"circular", "playerInputMotion", "playerOnlyCollision", "deadly"}, 
-				debug = Debug
-			} --]]
-			--[[ Gamma Ray
-			enemyObj = {
-				name = "Gamma Ray",
-				imagePath = "assets/lightning-frequency.png",
-				imageRotationOffset = -math.pi / 4,
-				aspects = Set{"enemyLinear", "faceMotion", "playerOnlyCollision", "circular", "deadly"}, 
-				debug = Debug
-			} --]]
+
 			-- [[ Stun-Nado
 			enemyObj = {
 				name = "Stun-Nado",
-				imagePath = "assets/wind-hole.png",
-				angularVelocity = -5,
-				aspects = Set{"enemyLinear", "faceAngle", "noEnemyCollision", "circular", "stun"}, 
+				aspects = Set{"enemyLinear", "noEnemyCollision", "circular", "stun"}, 
 				debug = self.debug
 			} --]]
 		},
@@ -142,8 +126,7 @@ function GameInitialization:loadEnemyTable()
 			spawnLimit = 100,
 			enemyObj = { 
 				name = "Thwomp",
-				imagePath = "assets/head.png", 
-				aspects = Set{"enemyStatic", "faceAngle", "deadly"}, 
+				aspects = Set{"enemyStatic", "deadly"}, 
 				debug = self.debug
 			}
 		}
