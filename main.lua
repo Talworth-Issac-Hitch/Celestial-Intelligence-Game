@@ -60,7 +60,7 @@ function love.load()
 	}
 
 	-- A Table defining when and how often enemies space, how many times they spawn, as well as enemy attributes.
-	local playerName = gameInitialization:loadPlayerData()
+	playerConfig = gameInitialization:loadPlayerData()
 	EnemySpawnTable = gameInitialization:loadEnemyTable()
 
 	-- Initialize our physics
@@ -93,7 +93,7 @@ function love.load()
 	gameOver = GameOver:new {
 		worldWidth = VIEWPORT_WIDTH,
 		worldHeight = VIEWPORT_HEIGHT,
-		playerName = playerName,
+		playerConfig = playerConfig,
 		gameSeed = seed
 	}
 end
@@ -190,33 +190,38 @@ end
 
 -- Love2D callback for when the player presses a key.  Some game components have their individual implementations for that callback,
 -- so if one exists, we call it here.
-function love.keypressed(key)
+function love.keypressed(key, scancode, isrepeat, isNonPlayerAction)
+
 	-- Toggle Debug View
-		if key == 'o' then
-			Debug.physicsVisual = not Debug.physicsVisual
-		elseif key == 'l' then
-			Debug.physicsLog = not Debug.physicsLog
-		end
+	if key == 'o' then
+		Debug.physicsVisual = not Debug.physicsVisual
+	elseif key == 'l' then
+		Debug.physicsLog = not Debug.physicsLog
+	end
 
 	-- Call any keypresses that the 
-	_.each(activeCrafts, function(craft)
-		if _.has(craft, "onKeyPressed") then
-			craft:onKeyPressed(key)
-		end
-	end)
+	if playerConfig.playerType == 0 or isNonPlayerAction then
+		_.each(activeCrafts, function(craft)
+			if _.has(craft, "onKeyPressed") then
+				craft:onKeyPressed(key)
+			end
+		end)
+	end
 end
 
 -- Love2D callback for when the player releases a key.  Some game components have their individual implementations for that callback,
 -- so if one exists, we call it here.
-function love.keyreleased(key)
+function love.keyreleased(key, scancode, isrepeat, isNonPlayerAction)
 	if isGameOver then 
 		gameOver:onKeyReleased(key)
 	else
-		_.each(activeCrafts, function(craft)
-			if _.has(craft, "onKeyReleased") then
-				craft:onKeyReleased(key)
-			end
-		end)
+		if playerConfig.playerType == 0 or isNonPlayerAction then
+			_.each(activeCrafts, function(craft)
+				if _.has(craft, "onKeyReleased") then
+					craft:onKeyReleased(key)
+				end
+			end)
+		end
 	end
 end
 
@@ -239,3 +244,5 @@ function love.handlers.playerDied(killedBy)
 	isGameOver = true
 	gameOver.score = math.ceil(score)
 end
+
+-- TODO: Add a timeout where the player wins!
