@@ -47,6 +47,7 @@ function SpaceCraft:new(options)
 		collisionGroup = CollisionConstants.GROUP_NONE,
 
 		debug = nil,
+		craftColor = {1, 1, 1},
 		collisionDebugColor = {0.05, 0.05, 0.9}
 	}
 
@@ -217,7 +218,7 @@ end
 -- Render the SpaceCraft's image to the screen, if one exists.
 function SpaceCraft:drawImage(alpha)
 	local drawX, drawY = self:getDrawingAnchor()
-	love.graphics.setColor(1, 1, 1, alpha)
+	love.graphics.setColor(self.craftColor, alpha)
 	love.graphics.draw(self.image, drawX, drawY, self:getImageDrawAngle() + self.imageRotationOffset, self.imgSX, self.imgSY, self.imgOX, self.imgOY)
 
 	love.graphics.reset()

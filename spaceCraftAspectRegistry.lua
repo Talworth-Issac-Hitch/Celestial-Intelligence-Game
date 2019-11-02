@@ -5,6 +5,7 @@ playerAspectDefinition = require "spacecraftAspects/playerSpecialAspect"
 circularAspectDefinition = require "spacecraftAspects/circularShapeAspect"
 fixedInitialSpeedAspectDefinition = require "spacecraftAspects/fixedInitialSpeedAspect"
 randomStartingDirectionAspectDefinition = require "spacecraftAspects/randomStartingDirectionAspect"
+downStartingDirectionAspectDefinition = require "spacecraftAspects/downStartingDirectionAspect"
 playerInputAspectDefinition = require "spacecraftAspects/playerInputMotionAspect"
 staticAspectDefinition = require "spacecraftAspects/staticMotionAspect"
 noEnemyCollisionAspectDefinition = require "spacecraftAspects/noEnemyCollisionAspect"
@@ -29,6 +30,7 @@ SpaceCraftAspectDefinitions = {
 	--	Aspects that govern the craft's direction of motion, and change in direction.
 	-- Default: Faces right
 	randomInitDir = randomStartingDirectionAspectDefinition,
+	downInitDir = downStartingDirectionAspectDefinition,
 	
 	-- Motion - Speed Aspects:
 	--	Aspects that govern a craft's speed or change of speed in it's direction.  
@@ -45,6 +47,9 @@ SpaceCraftAspectDefinitions = {
 	-- Motion - Misc: 
 	--	Miscellaneous aspects that do not interfere with other motion aspects.
 	-- TODO: Teleporting enemy static.  Use a spining arc/circle that fills out to indicate location and timing.
+
+	-- Game Visual Aspects:
+	-- TODO: Fading an enemy's alpha value ossilates between visible and totally invisible.
 
 	-- Collision (detection) Aspects
 	-- Default: Collide with everything

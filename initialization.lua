@@ -87,9 +87,9 @@ function GameInitialization:loadEnemyTable()
 			currentEnemyCount = 0,
 			spawnLimit = 7,
 			enemyObj = {
-				name = "Comet",
-				angularVelocity = -5,
-				aspects = Set{"enemyLinear", "circular", "deadly"}, 
+				name = "1st Enemy",
+				aspects = Set{"circular", "deadly"}, 
+				craftColor = {0, 0.8, 0},
 				debug = self.debug
 			}
 		},
@@ -100,8 +100,9 @@ function GameInitialization:loadEnemyTable()
 			spawnLimit = 25,
 			-- [[ Mad Moons 
 			enemyObj = {
-				name = "Mad Moon",
+				name = "2nd Enemy",
 				aspects = Set{"circular", "enemyStatic"}, 
+				craftColor = {0, 0, 0.8},
 				debug = self.debug
 			} --]]
 
@@ -114,8 +115,9 @@ function GameInitialization:loadEnemyTable()
 
 			-- [[ Stun-Nado
 			enemyObj = {
-				name = "Stun-Nado",
-				aspects = Set{"enemyLinear", "noEnemyCollision", "circular", "stun"}, 
+				name = "3rd Enemy",
+				aspects = Set{"noEnemyCollision", "circular", "stun"}, 
+				craftColor = {0.8, 0, 0},
 				debug = self.debug
 			} --]]
 		},
@@ -125,7 +127,7 @@ function GameInitialization:loadEnemyTable()
 			currentEnemyCount = 0,
 			spawnLimit = 100,
 			enemyObj = { 
-				name = "Thwomp",
+				name = "4th Enemy",
 				aspects = Set{"enemyStatic", "deadly"}, 
 				debug = self.debug
 			}
