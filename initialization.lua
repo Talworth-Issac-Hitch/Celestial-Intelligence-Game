@@ -85,7 +85,7 @@ function GameInitialization:loadEnemyTable()
 			spawnInterval = 5,
 			spawnCounter = 5,
 			currentEnemyCount = 0,
-			spawnLimit = 7,
+			spawnLimit = 10,
 			enemyObj = {
 				name = "1st Enemy",
 				aspects = Set{"circular", "deadly"}, 
@@ -94,7 +94,7 @@ function GameInitialization:loadEnemyTable()
 			}
 		},
 		{ -- Slot 2, The Consistent Threat: spawns slowly, but with a high limit
-			spawnInterval = 12,
+			spawnInterval = 8,
 			spawnCounter = -2,
 			currentEnemyCount = 0,
 			spawnLimit = 25,
@@ -109,7 +109,7 @@ function GameInitialization:loadEnemyTable()
 		},
 		{ -- Slot 3, The Wrench: After a long wait and the first amp, spawns quickly
 			spawnInterval = 3,
-			spawnCounter = -60,
+			spawnCounter = -90,
 			currentEnemyCount = 0,
 			spawnLimit = 10,
 

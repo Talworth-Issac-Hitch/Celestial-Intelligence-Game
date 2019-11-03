@@ -205,6 +205,12 @@ function SpaceCraft:spawn()
 		craft = self
 	})
 
+	-- preserve all linear momentum for now.  Set restitution to 1 since perfect elasticity 
+	-- conservers momentum in a head-on collision, and friction to 0 to prevent linear velocity
+	-- becoming angular velocity.
+	self.fixture:setRestitution(1) 
+	self.fixture:setFriction(0) 
+
 	self:onSpawnFinished()
 
 	self.finishedSpawn = true

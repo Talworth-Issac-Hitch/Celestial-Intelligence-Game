@@ -10,12 +10,7 @@ StaticCraftAspectDefinition = {
 		speed = 0
 	},
 
-	bodyType = "static",
-
-	-- TODO: Bring back rotatable square walls.
-	beforeBodySetup = function(self) 
-		self.facingAngle = love.math.random(0, 2 * math.pi)
-	end
+	bodyType = "static"
 }
 
 return StaticCraftAspectDefinition

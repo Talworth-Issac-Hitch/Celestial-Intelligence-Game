@@ -7,7 +7,7 @@ CircularCraftAspectDefinition = {
 	------------
 	-- VISUAL --
 	------------
-	imagePath = "assets/evil-moon.png",
+	imagePath = "assets/cyber-eye.png",
 
 	-----------------------------
 	-- GENERIC CRAFT BEHAVIORS --
