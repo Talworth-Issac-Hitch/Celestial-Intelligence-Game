@@ -47,6 +47,10 @@ function SpaceCraft:new(options)
 		collisionMask = CollisionConstants.MASK_ALL,
 		collisionGroup = CollisionConstants.GROUP_NONE,
 
+		beforeBodySetupFuncs = {},
+		onUpdateFuncs = {},
+		onSpawnFinishedFuncs = {},
+
 		debug = nil,
 		craftColor = {1, 1, 1},
 		collisionDebugColor = {0.05, 0.05, 0.9}
@@ -76,6 +80,9 @@ function SpaceCraft:new(options)
 				_.each(aspectPropertyValue, function(scalingFactor, scalingFieldName) 
 					allAspectsScalingTable[scalingFieldName] = allAspectsScalingTable[scalingFieldName] * scalingFactor
 				end)
+			elseif aspectPropertyName == "beforeBodySetup" or aspectPropertyName == "onUpdate" or aspectPropertyName == "onSpawnFinished" then
+				-- TODO: Make above check more generic... ...within reason.
+				table.insert(spaceCraft[aspectPropertyName .. "Funcs"], aspectPropertyValue)
 			else 
 				spaceCraft[aspectPropertyName] = aspectPropertyValue
 			end
@@ -290,22 +297,28 @@ end
 
 
 --------------------------
--- SpaceCraft Callbacks --
+-- SpaceCraft Hooks --
 --------------------------
 
--- A hook for any custom behavior to occur during the Love2D update callback.
-function SpaceCraft:onUpdate()
-	-- Do nothing by default
+-- Hooks for any custom behavior to occur during the Love2D update callback.
+function SpaceCraft:onUpdate(dt)
+	_.each(self.onUpdateFuncs, function(onUpdateFunc)
+		onUpdateFunc(self, dt)
+	end)
 end
 
--- Hook for any special modifications that need to be initially made to the Craft's Physics Body.
+-- Hooks for any special modifications that need to be initially made to the Craft's Physics Body.
 function SpaceCraft:beforeBodySetup()
-	-- N0-0P, hook for aspects to override.
+	_.each(self.beforeBodySetupFuncs, function(beforeBodySetupFunc)
+		beforeBodySetupFunc(self)
+	end)
 end
 
--- A hook for any SpaceCraft Behavior that should occur on spawn.
+-- Hooks for any SpaceCraft Behavior that should occur on spawn.
 function SpaceCraft:onSpawnFinished()
-	-- Do nothing by default
+	_.each(self.onSpawnFinishedFuncs, function(onSpawnFinishedFunc)
+		onSpawnFinishedFunc(self)
+	end)
 end
 
 
