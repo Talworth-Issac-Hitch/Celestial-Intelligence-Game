@@ -31,6 +31,7 @@ function SpaceCraft:new(options)
 		yPosition = 0,
 		xVelocity = 0, 
 		yVelocity = 0,
+		linearDampening = 0,
 		facingAngle = 0,
 		angularVelocity = 0,
 		angularDampening = 0,
@@ -183,6 +184,7 @@ function SpaceCraft:initializeBody()
 	body:setAngle(self.facingAngle)
 	body:setAngularVelocity(self.angularVelocity)
 	body:setAngularDamping(self.angularDampening)
+	body:setLinearDamping(self.linearDampening)
 
 	return body
 end

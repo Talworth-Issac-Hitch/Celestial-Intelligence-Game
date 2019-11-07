@@ -2,11 +2,18 @@
 -- IMPORTS --
 -------------
 playerAspectDefinition = require "spacecraftAspects/playerSpecialAspect"
+
 circularAspectDefinition = require "spacecraftAspects/circularShapeAspect"
+
 fixedInitialSpeedAspectDefinition = require "spacecraftAspects/fixedInitialSpeedAspect"
 acceleratingSpeedAspectDefinition = require "spacecraftAspects/acceleratingSpeedAspect"
+periodicImpulseSpeedAspectDefinition = require "spacecraftAspects/periodicImpulseSpeedAspect"
+linearDampeningSpeedAspectDefinition = require "spacecraftAspects/linearDampeningSpeedAspect"
+
 randomStartingDirectionAspectDefinition = require "spacecraftAspects/randomStartingDirectionAspect"
 downStartingDirectionAspectDefinition = require "spacecraftAspects/downStartingDirectionAspect"
+initialRotationAspectDefinition = require "spacecraftAspects/initialRotationAspect"
+
 playerInputAspectDefinition = require "spacecraftAspects/playerInputMotionAspect"
 staticAspectDefinition = require "spacecraftAspects/staticMotionAspect"
 noEnemyCollisionAspectDefinition = require "spacecraftAspects/noEnemyCollisionAspect"
@@ -32,12 +39,15 @@ SpaceCraftAspectDefinitions = {
 	-- Default: Faces right
 	randomInitDir = randomStartingDirectionAspectDefinition,
 	downInitDir = downStartingDirectionAspectDefinition,
+	initRotation = initialRotationAspectDefinition,
 	
 	-- Motion - Speed Aspects:
 	--	Aspects that govern a craft's speed or change of speed in it's direction.  
 	-- Default : No motion, but will move if collided with.
 	fixedInitialSpeed = fixedInitialSpeedAspectDefinition, -- Moves constant speed, in a line.
 	acceleratingSpeed = acceleratingSpeedAspectDefinition, -- Unendingly accelerates toward it's facing direction.
+	periodicImpulseSpeed = periodicImpulseSpeedAspectDefinition,
+	linearDampening = linearDampeningSpeedAspectDefinition,
 	-- TODO: Craft with ossilating velocity
 	-- TODO: Crafts that accelerate and deccelerate
 

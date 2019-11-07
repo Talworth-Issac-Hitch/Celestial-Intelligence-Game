@@ -95,7 +95,7 @@ function GameInitialization:loadEnemyTable()
 		},
 		{ -- Slot 2, The Consistent Threat: spawns slowly, but with a high limit
 			spawnInterval = 8,
-			spawnCounter = -2,
+			spawnCounter = -20,
 			currentEnemyCount = 0,
 			spawnLimit = 25,
 			-- [[ Mad Moons 
