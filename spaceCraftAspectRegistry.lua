@@ -6,6 +6,7 @@ playerAspectDefinition = require "spacecraftAspects/playerSpecialAspect"
 circularAspectDefinition = require "spacecraftAspects/circularShapeAspect"
 
 fixedInitialSpeedAspectDefinition = require "spacecraftAspects/fixedInitialSpeedAspect"
+sinWaveFixedSpeedAspectDefinition = require "spacecraftAspects/sinWaveFixedSpeedAspect"
 acceleratingSpeedAspectDefinition = require "spacecraftAspects/acceleratingSpeedAspect"
 periodicImpulseSpeedAspectDefinition = require "spacecraftAspects/periodicImpulseSpeedAspect"
 linearDampeningSpeedAspectDefinition = require "spacecraftAspects/linearDampeningSpeedAspect"
@@ -27,6 +28,7 @@ stunningAspectDefinition = require "spacecraftAspects/stunCollisionAspect"
 SpaceCraftAspectDefinitions = {
 	-- Special Aspects
 	player = playerAspectDefinition,
+	-- TODO: Enemies that die with age
 
 	-- Shape Aspects
 	-- Default: Square
@@ -45,6 +47,7 @@ SpaceCraftAspectDefinitions = {
 	--	Aspects that govern a craft's speed or change of speed in it's direction.  
 	-- Default : No motion, but will move if collided with.
 	fixedInitialSpeed = fixedInitialSpeedAspectDefinition, -- Moves constant speed, in a line.
+	waveFixedSpeed = sinWaveFixedSpeedAspectDefinition,
 	acceleratingSpeed = acceleratingSpeedAspectDefinition, -- Unendingly accelerates toward it's facing direction.
 	periodicImpulseSpeed = periodicImpulseSpeedAspectDefinition,
 	linearDampening = linearDampeningSpeedAspectDefinition,
