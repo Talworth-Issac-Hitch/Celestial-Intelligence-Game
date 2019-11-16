@@ -13,6 +13,11 @@ JSON = require "libs/json"
 GameOver = {}
 GameOver.__index = GameOver
 
+---------------
+-- CONSTANTS --
+--------------- 
+HIGH_SCORE_LIST_LENGTH = 10
+
 -- Constructor.  Builds a new Game Over screen.
 -- @param {Table} options A table containing any post-game information that needs to be show to the player or serialized to a file.
 function GameOver:new(options)
@@ -21,7 +26,12 @@ function GameOver:new(options)
 		worldHeight = 600,
 		score = 0,
 		gameSeed = 1999,
-		playerConfig = { playerType = 0}
+		playerConfig = { playerType = 0},
+		highScores = {
+			{ name = "Twitch", score = 999},
+			{ name = "Talworth", score = 90},
+			{ name = "Clyde", score = 5}
+		}
 	}
 
 	setmetatable(gameOver, GameOver)
@@ -33,12 +43,11 @@ function GameOver:new(options)
 
 	-- Currently only humans get to pick their names.  Sorry AI friends!
 	if gameOver.playerConfig.playerType == 0 and gameOver.playerConfig.playerName then
-		playerName = gameOver.playerConfig.playerName
+		self.playerName = gameOver.playerConfig.playerName
 	elseif playerConfig.playerType ~= 0 then
-	    playerName = playerName .. " Bot " .. gameOver.playerConfig.playerType
+	    self.playerName = playerName .. " Bot " .. gameOver.playerConfig.playerType
 	end
 
-	gameOver.header = "Game Over!  You suck " .. playerName
 	gameOver.footer = "Press 'q' to quit."
 	return gameOver
 end 
@@ -48,9 +57,6 @@ end
 -- @param {number} alpha - How much alpha to draw the gameover screen with
 function GameOver:draw(gameOverTime, alpha)
 	local LINEHEIGHT = 32
-	local subHeader = "Final Score : " .. self.score .. "\nGame Seed: " .. self.gameSeed
-
-	
 
 	-- Make game over flash, to emphasize that you suck for losing.
 	local headerAlpha = math.cos(gameOverTime * 2.5 - math.pi * 0.25) + 1
@@ -58,13 +64,63 @@ function GameOver:draw(gameOverTime, alpha)
 		headerAlpha = alpha
 	end
 
+	love.graphics.setFont(self.font)
+
 	love.graphics.setColor(1, 1, 1, headerAlpha)
 	love.graphics.print(self.header, self.worldWidth / 3, LINEHEIGHT)
 
 	love.graphics.setColor(1, 1, 1, alpha)
-	love.graphics.print(subHeader, self.worldWidth / 3, LINEHEIGHT * 2)
+	love.graphics.print(self.subHeader, self.worldWidth / 3, LINEHEIGHT * 2)
+
+	love.graphics.print(self.body, self.worldWidth / 3, LINEHEIGHT * 8)
+
 	love.graphics.print(self.footer, self.worldWidth / 3, self.worldHeight - LINEHEIGHT * 2)
 	love.graphics.reset()
+end
+
+function GameOver:resolveHighScores(currentPlayerScore)
+	self.score = currentPlayerScore
+
+	local currentPlayerHighscoreObj = {name = self.playerName, score = self.score}
+
+	-- Potentially add player's score to the highscore list
+	table.insert(self.highScores, currentPlayerHighscoreObj)
+
+	self.highScores = _.sort(self.highScores, function(a, b)
+		return a.score > b.score
+	end)
+
+	self.highScores = _.first(self.highScores, HIGH_SCORE_LIST_LENGTH)
+
+	-- Return whether or not our highscore made the cut!
+	return (not _.all(self.highScores, function (highScoreObj)
+		return (highScoreObj ~= currentPlayerHighscoreObj)
+	end))
+end
+
+function GameOver:resolveEndScreenText(isNewHighscore)
+	if isNewHighscore then
+		self.header = "Game Over!  New Highscore!!! You rock " .. self.playerName
+	else
+		self.header = "Game Over!  You suck " .. self.playerName
+	end
+
+	self.subHeader = "Final Score : " .. self.score .. "\nGame Seed: " .. self.gameSeed
+	-- TODO: String pad for uniform display
+	self.body = "High Scores:\n"
+	_.eachi(self.highScores, function(highScoreObj, highScorePlace)
+		self.body = self.body ..
+		string.format("%d. %-15s %4s\n", highScorePlace, highScoreObj.name, highScoreObj.score)
+	end)
+
+	self.font = love.graphics.newFont("cour.ttf", 14)
+end
+
+-- Handler to be called when the game finishes
+function GameOver:onGameEnd(finalScore)
+	local isNewHighscore = self:resolveHighScores(finalScore)
+
+	self:resolveEndScreenText(isNewHighscore)
 end
 
 -- Love2D callback for when the player presses a key.  End the game if the user is finished looking at the game

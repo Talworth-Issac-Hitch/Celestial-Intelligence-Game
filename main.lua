@@ -242,7 +242,7 @@ function love.handlers.playerDied(killedBy)
 	print("Player killed by: " .. killedBy)
 
 	isGameOver = true
-	gameOver.score = math.ceil(score)
+	gameOver:onGameEnd(math.ceil(score))
 end
 
 -- TODO: Add a timeout where the player wins!
