@@ -16,7 +16,7 @@ GameOver.__index = GameOver
 ---------------
 -- CONSTANTS --
 --------------- 
-HIGH_SCORE_LIST_LENGTH = 10
+HIGH_SCORE_LIST_LENGTH = 5
 
 -- Constructor.  Builds a new Game Over screen.
 -- @param {Table} options A table containing any post-game information that needs to be show to the player or serialized to a file.
@@ -27,11 +27,7 @@ function GameOver:new(options)
 		score = 0,
 		gameSeed = 1999,
 		playerConfig = { playerType = 0},
-		highScores = {
-			{ name = "Twitch", score = 999},
-			{ name = "Talworth", score = 90},
-			{ name = "Clyde", score = 5}
-		}
+		highScores = {}
 	}
 
 	setmetatable(gameOver, GameOver)
@@ -78,6 +74,46 @@ function GameOver:draw(gameOverTime, alpha)
 	love.graphics.reset()
 end
 
+-- Handler to be called when the game finishes
+function GameOver:onGameEnd(finalScore)
+	self.highScores = self:getHighscores()
+
+	local isNewHighscore = self:resolveHighScores(finalScore)
+
+	if isNewHighscore then
+		self:updateHighscoresFile(self.highScores)
+	end
+
+	self:resolveEndScreenText(isNewHighscore)
+end
+
+-- Retrieves existing highscores, currently from a local file.
+function GameOver:getHighscores()
+	-- TODO: Separate highscores out by enemy config.
+	local HIGHSCORES_FILE_PATH = "community/highscores.json"
+
+	-- Check if the parent directories exist, and create them if not.
+	if love.filesystem.getInfo("community", "directory") == nil then
+		love.filesystem.createDirectory("community")
+	end
+
+	local highscoresFileInfo = love.filesystem.getInfo(HIGHSCORES_FILE_PATH)
+
+	local highscoresTable = {}
+
+	-- Fetch the highscores table, or create a blank one if it doesn't exist yet.
+	if highscoresFileInfo and highscoresFileInfo.type == "file" then
+		-- NOTE: Currently configs should only be a single line, but we iterate here for good measure.
+		for line in love.filesystem.lines(HIGHSCORES_FILE_PATH) do
+			highscoresTable = JSON.decode(line)
+		end
+	end
+
+	return highscoresTable
+end
+
+-- Resolves the player's current score with the highscore list.
+-- @returns - true if the player has achieved a new highscore, false otherwise.
 function GameOver:resolveHighScores(currentPlayerScore)
 	self.score = currentPlayerScore
 
@@ -98,6 +134,15 @@ function GameOver:resolveHighScores(currentPlayerScore)
 	end))
 end
 
+-- Persists new highscore list, currently to a local file.
+function GameOver:updateHighscoresFile(newHighscores)
+	-- TODO: Separate highscores out by enemy config.
+	local HIGHSCORES_FILE_PATH = "community/highscores.json"
+
+	love.filesystem.write(HIGHSCORES_FILE_PATH, JSON.encode(newHighscores), all)
+end
+
+-- Finalizes the end screen text to display to the player.  Currently displays highscores.
 function GameOver:resolveEndScreenText(isNewHighscore)
 	if isNewHighscore then
 		self.header = "Game Over!  New Highscore!!! You rock " .. self.playerName
@@ -113,14 +158,7 @@ function GameOver:resolveEndScreenText(isNewHighscore)
 		string.format("%d. %-15s %4s\n", highScorePlace, highScoreObj.name, highScoreObj.score)
 	end)
 
-	self.font = love.graphics.newFont("cour.ttf", 14)
-end
-
--- Handler to be called when the game finishes
-function GameOver:onGameEnd(finalScore)
-	local isNewHighscore = self:resolveHighScores(finalScore)
-
-	self:resolveEndScreenText(isNewHighscore)
+	self.font = love.graphics.newFont("assets/font/cour.ttf", 14)
 end
 
 -- Love2D callback for when the player presses a key.  End the game if the user is finished looking at the game
@@ -131,6 +169,7 @@ function GameOver:onKeyReleased(key)
 	end
 end
 
+-- End of life clean up handler.  Currently writes out a stats file for the game run.
 function GameOver:onQuiteHandler()
 	local DATA_DIRECTORY_NAME = "playData/"
 
