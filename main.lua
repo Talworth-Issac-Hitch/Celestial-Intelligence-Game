@@ -5,6 +5,7 @@ CustomExceptionHandler = require "customExceptionHandler"
 
 _ = require "libs/moses_min"
 
+MainMenu = require "mainMenu"
 GameInitialization = require "initialization"
 WorldPhysics = require "worldPhysics"
 GameOver = require "gameOver"
@@ -25,12 +26,14 @@ VIEWPORT_WIDTH = 1200
 PLAYABLE_AREA_HEIGHT = 600
 PLAYABLE_AREA_WIDTH = 800
 
-
+GAME_NOT_STARTED = 0
+GAME_ON = 1
+GAME_OVER = 2
 -------------
 -- GLOBALS --
 -------------
 
-isGameOver = false
+gameState = GAME_NOT_STARTED
 gameOverTime = 0
 
 Debug = {
@@ -54,6 +57,19 @@ function love.load()
 	-- Set the Window size.
 	love.window.setMode(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
 
+	-- Get and set our random seed.  This can be used to re-create an exact session.
+	seed = os.time()
+	print("Session initialized with game seed: " .. seed)
+	love.math.setRandomSeed(seed)
+
+	-- NOTE: DEBUG
+	mainMenu = MainMenu:new {
+		worldWidth = VIEWPORT_WIDTH,
+		worldHeight = VIEWPORT_HEIGHT
+	}
+end
+
+function loadGame()
 	-- General game initialization
 	gameInitialization = GameInitialization:new {
 		debug = Debug
@@ -84,11 +100,6 @@ function love.load()
 
 	score = 0
 
-	-- Get and set our random seed.  This can be used to re-create an exact session.
-	local seed = os.time()
-	print("Session initialized with game seed: " .. seed)
-	love.math.setRandomSeed(seed)
-
 	-- NOTE: DEBUG
 	gameOver = GameOver:new {
 		worldWidth = VIEWPORT_WIDTH,
@@ -102,7 +113,11 @@ end
 -- that callback, which we blindly call here.  Additional we manage some global counters.
 -- @param dt The time interval since the last time love.update was called.
 function love.update(dt)
-	if not isGameOver then
+	if gameState == GAME_NOT_STARTED then
+		mainMenu:update(dt)
+	elseif gameState == GAME_OVER then
+		gameOverTime = gameOverTime + dt
+	else
 		worldPhysics:update(dt)
 
 		_.each(activeCrafts, function(craft)
@@ -149,8 +164,6 @@ function love.update(dt)
 
 		-- Finally increment the score, which currently is just equal to time. 
 		score = score + dt
-	else
-		gameOverTime = gameOverTime + dt
 	end
 end
 
@@ -158,7 +171,9 @@ end
 -- which we blindly call here.
 function love.draw()
 	-- TODO: Could be a little more DRY here..
-	if isGameOver then 
+	if gameState == GAME_NOT_STARTED then
+		mainMenu:draw()
+	elseif gameState == GAME_OVER then
 		local fadeTime = 2
 
 		if gameOverTime < fadeTime then 
@@ -191,29 +206,36 @@ end
 -- Love2D callback for when the player presses a key.  Some game components have their individual implementations for that callback,
 -- so if one exists, we call it here.
 function love.keypressed(key, scancode, isrepeat, isNonPlayerAction)
+	-- TODO : Funnel all handlers to whatever is the active phase (ie. 'Main Menu', 'Game', 'GameOver')
+	if gameState == GAME_ON then
+		-- Toggle Debug View
+		if key == 'o' then
+			Debug.physicsVisual = not Debug.physicsVisual
+		elseif key == 'l' then
+			Debug.physicsLog = not Debug.physicsLog
+		end
 
-	-- Toggle Debug View
-	if key == 'o' then
-		Debug.physicsVisual = not Debug.physicsVisual
-	elseif key == 'l' then
-		Debug.physicsLog = not Debug.physicsLog
-	end
-
-	-- Call any keypresses that the 
-	if playerConfig.playerType == 0 or isNonPlayerAction then
-		_.each(activeCrafts, function(craft)
-			if _.has(craft, "onKeyPressed") then
-				craft:onKeyPressed(key)
-			end
-		end)
+		-- Call any keypresses that the player presses
+		if playerConfig.playerType == 0 or isNonPlayerAction then
+			_.each(activeCrafts, function(craft)
+				if _.has(craft, "onKeyPressed") then
+					craft:onKeyPressed(key)
+				end
+			end)
+		end
 	end
 end
 
 -- Love2D callback for when the player releases a key.  Some game components have their individual implementations for that callback,
 -- so if one exists, we call it here.
 function love.keyreleased(key, scancode, isrepeat, isNonPlayerAction)
-	if isGameOver then 
+	if gameState == GAME_OVER then
 		gameOver:onKeyReleased(key)
+	elseif gameState == GAME_NOT_STARTED then
+		if key == 'space' then
+			loadGame()
+			gameState = GAME_ON
+		end
 	else
 		if playerConfig.playerType == 0 or isNonPlayerAction then
 			_.each(activeCrafts, function(craft)
@@ -227,7 +249,7 @@ end
 
 function love.quit()
 	-- Only output playData if the game was actually over.
-	if isGameOver then 
+	if gameState == GAME_OVER then
 		gameOver:onQuiteHandler()
 	end
 
@@ -241,7 +263,7 @@ end
 function love.handlers.playerDied(killedBy)
 	print("Player killed by: " .. killedBy)
 
-	isGameOver = true
+	gameState = GAME_OVER
 	gameOver:onGameEnd(math.ceil(score))
 end
 
