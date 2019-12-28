@@ -45,7 +45,7 @@ Debug = {
 -- TODO: Create multiple types of Amps.
 -- TODO: Make Amps configurable.
 -- Variables for 'Amps' or periodic added challenges / difficulty spikes to keep things interesting.
-AMP_INTERVAL = 30
+AMP_INTERVAL = 60
 AMP_COUNTER = 0
 
 ----------------------

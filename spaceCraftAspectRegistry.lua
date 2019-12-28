@@ -15,10 +15,15 @@ randomStartingDirectionAspectDefinition = require "spacecraftAspects/randomStart
 downStartingDirectionAspectDefinition = require "spacecraftAspects/downStartingDirectionAspect"
 initialRotationAspectDefinition = require "spacecraftAspects/initialRotationAspect"
 
+lowDensityAspectDefinition = require "spacecraftAspects/lowDensityAspect"
+
 playerInputAspectDefinition = require "spacecraftAspects/playerInputMotionAspect"
 staticAspectDefinition = require "spacecraftAspects/staticMotionAspect"
-noEnemyCollisionAspectDefinition = require "spacecraftAspects/noEnemyCollisionAspect"
+
+playerBorderCollisionAspectDefinition = require "spacecraftAspects/playerBorderCollisionAspect"
 playerOnlyCollisionAspectDefinition = require "spacecraftAspects/playerOnlyCollisionAspect"
+playerAndEnemyCollisionAspectDefinition = require "spacecraftAspects/playerEnemyCollisionAspect"
+
 deadlyAspectDefinition = require "spacecraftAspects/deadlyCollisionAspect"
 stunningAspectDefinition = require "spacecraftAspects/stunCollisionAspect"
 
@@ -42,6 +47,8 @@ SpaceCraftAspectDefinitions = {
 	randomInitDir = randomStartingDirectionAspectDefinition,
 	downInitDir = downStartingDirectionAspectDefinition,
 	initRotation = initialRotationAspectDefinition,
+
+	lowDensity = lowDensityAspectDefinition,
 	
 	-- Motion - Speed Aspects:
 	--	Aspects that govern a craft's speed or change of speed in it's direction.  
@@ -68,8 +75,9 @@ SpaceCraftAspectDefinitions = {
 
 	-- Collision (detection) Aspects
 	-- Default: Collide with everything
-	noEnemyCollision = noEnemyCollisionAspectDefinition,
+	playerBorderCollision = playerBorderCollisionAspectDefinition,
 	playerOnlyCollision = playerOnlyCollisionAspectDefinition,
+	playerAndEnemyCollision = playerAndEnemyCollisionAspectDefinition,
 
 	-- Collision (resolution) Aspects
 	-- Default : Physics collision w/o game affect.

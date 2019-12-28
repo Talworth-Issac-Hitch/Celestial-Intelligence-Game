@@ -36,6 +36,7 @@ function SpaceCraft:new(options)
 		angularVelocity = 0,
 		angularDampening = 0,
 		speed = 400,
+		density = 1,
 
 		age = 0,
 		stunned = false,
@@ -43,7 +44,7 @@ function SpaceCraft:new(options)
 		world = nil,
 		bodyType = "dynamic",
 		collisionType = "non-lethal-enemy",
-		collisionCategory = CollisionConstants.CATEGORY_DEFAULT,
+		collisionCategory = CollisionConstants.CATEGORY_ENEMY,
 		collisionMask = CollisionConstants.MASK_ALL,
 		collisionGroup = CollisionConstants.GROUP_NONE,
 
@@ -205,7 +206,7 @@ end
 -- Adds the (already-initialized) Craft to the World.  
 -- We do this in Love2D by creating a new fixture.
 function SpaceCraft:spawn()
-	self.fixture = love.physics.newFixture(self.body, self.shape)
+	self.fixture = love.physics.newFixture(self.body, self.shape, self.density)
 
 	-- Setup collision-related attributes.
 	self.fixture:setFilterData(self.collisionCategory, self.collisionMask, self.collisionGroup)

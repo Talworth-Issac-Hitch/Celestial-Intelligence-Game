@@ -9,8 +9,8 @@ CollisionConstants = require "collisionConstants"
 -----------------------
 
 -- Crafts that should only collide with the player and level boundaries, NOT other enemies.
-NoEnemyCollisionAspectDefinition = {
+PlayerAndBoundaryCollisionAspectDefinition = {
 	collisionMask = CollisionConstants.MASK_PLAYER_AND_BOUNDARIES
 }
 
-return NoEnemyCollisionAspectDefinition
+return PlayerAndBoundaryCollisionAspectDefinition

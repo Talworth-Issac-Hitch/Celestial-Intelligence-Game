@@ -85,7 +85,7 @@ function GameInitialization:loadEnemyTable()
 			spawnInterval = 5,
 			spawnCounter = 5,
 			currentEnemyCount = 0,
-			spawnLimit = 10,
+			spawnLimit = 4,
 			enemyObj = {
 				name = "1st Enemy",
 				aspects = Set{"circular", "deadly"}, 
@@ -95,7 +95,7 @@ function GameInitialization:loadEnemyTable()
 		},
 		{ -- Slot 2, The Consistent Threat: spawns slowly, but with a high limit
 			spawnInterval = 8,
-			spawnCounter = -20,
+			spawnCounter = -15,
 			currentEnemyCount = 0,
 			spawnLimit = 25,
 			-- [[ Mad Moons 

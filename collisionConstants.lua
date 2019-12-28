@@ -9,6 +9,7 @@ CollisionConstants = {
 	MASK_ALL = 0xFFFF,
 	MASK_PLAYER_ONLY = 0x0004,
 	MASK_PLAYER_AND_BOUNDARIES = 0x0006, --TODO: but this together with or'ing to be more readible?
+	MASK_PLAYER_AND_ENEMY = 0x000C,
 
 	GROUP_NONE = 0
 }
