@@ -9,7 +9,6 @@ JSON = require "libs/json"
 ----------------------
 
 -- A wrapper for handling the post-game behavior drawing .  
--- Currently uses Love2D's native Phsyics engine.
 GameOver = {}
 GameOver.__index = GameOver
 
@@ -26,7 +25,9 @@ function GameOver:new(options)
 		worldHeight = 600,
 		score = 0,
 		gameSeed = 1999,
-		playerConfig = { playerType = 0},
+		gameOverTime = 0,
+		playerConfig = { playerType = 0 },
+		enemySpawnTable = {},
 		highScores = {}
 	}
 
@@ -170,22 +171,24 @@ function GameOver:onKeyReleased(key)
 end
 
 -- End of life clean up handler.  Currently writes out a stats file for the game run.
-function GameOver:onQuiteHandler()
+function GameOver:onQuitHandler()
 	local DATA_DIRECTORY_NAME = "playData/"
 
 	-- TODO: Create a more specific GUID for game data hash.  This one will currently cause probs if two players submit
 	--       data at the same instant, which is a legitmate issue at scale.
 	local gameHash = os.time()
 
+	print("" .. self.playerConfig.playerType)
+
 	-- Build a table to serialize to a data file summarizing the play through for the ML.
 	local playDataTable = {
-		playerType = playerConfig.playerType,
+		playerType = self.playerConfig.playerType,
 		score = score,
 		-- TODO: Do this... Better...
-		e1Aspects = _.keys(EnemySpawnTable[1].enemyObj.aspects),
-		e2Aspects = _.keys(EnemySpawnTable[2].enemyObj.aspects),
-		e3Aspects = _.keys(EnemySpawnTable[3].enemyObj.aspects),
-		e4Aspects = _.keys(EnemySpawnTable[4].enemyObj.aspects)
+		e1Aspects = _.keys(self.enemySpawnTable[1].enemyObj.aspects),
+		e2Aspects = _.keys(self.enemySpawnTable[2].enemyObj.aspects),
+		e3Aspects = _.keys(self.enemySpawnTable[3].enemyObj.aspects),
+		e4Aspects = _.keys(self.enemySpawnTable[4].enemyObj.aspects)
 	}
 
 	-- Ensure the data/ folder exists.

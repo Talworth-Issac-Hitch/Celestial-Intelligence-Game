@@ -8,7 +8,6 @@ _ = require "libs/moses_min"
 ----------------------
 
 -- A class for the main menu  
--- Currently uses Love2D's native Phsyics engine.
 MainMenu = {}
 MainMenu.__index = MainMenu
 
@@ -39,10 +38,6 @@ ASCII_INTELLIGENCE = " .----------------.  .-----------------. .----------------
 "| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |\n" ..
 " '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' \n"
 
--- TODO: TO FUCKING DO, generate based on game seed
--- 241 width, double spaced, 1-9 star to space ratio, 24 lines
-ASCII_STARFIELD = "    *       *     *   *         **        *    *                            **         *            **        *      *        *        *     *                  *  *  * **     *             ***  **     * **     **   *   **  *           * *   \n\n *     **          *    * *                 *                **     *                       *  *  *    *            *    *  *       *     *           *      *       *     *        *   *                        *     * *        *     **      *\n\n*     *              *    *        **  *        *     *      *         *  *       *   *               **     *   * *        * *        *  *    *             *                 *          *           **    **         *    *         *      *   \n\n          * *     *                            *   *   * *    *          *   *   *          *     **     *  *       **     *               * * *    *               *          *                                   * *       *                   \n\n       *  *     **           *   *  *            *      *      *   **            *    *  *      ** *        *          *         *     *                *                      *       *   **                         *  *        **             \n\n *  *           *              *      *       *    * *       *         **    * *             *  *   *    *    *                 *      * **  *                         * *     *     *                     ***   *            *     *  *        *\n\n***  *        *        ***      **      *         *  **        *            *     *         **                **                   *    *    **                *            * **           **     * *   ** **    *      *   *     *     *    *   \n\n *    *         *    *                    *         *        *     *   **        *          * *  * *                  *           *     *      *    *       *            *     *              *             *      *     *     *              *  \n\n                   *        ** *                       *      * *   **  *              *    *        *          *                  *             *    *                            *            *   **    *  *            *        *       **    \n\n*        * **   *             *  *  **       ***     *    *   *      *   **       * **    * * *    ** *             *         *    ** * *      *   *      **  *  *               *  *        *  **  * *    **      *      * *  * *           ** *\n\n    *                          *       *     *    *               *           *       *          *     *    *  *        *    *       **               *    *       *   *         *        *   * *  *           *            *        *      *    \n\n               ****   *         ** *   *                           ** **  **          *    *                      * *                      *      *    *                *  *                    *      *           *            *     *      *   \n\n      * *   *           *           *     *   *  **          *      ***                  *           *              **   *                *     *   * *   * *                          *   *   *        *          *     * *   *       * *       \n\n ****    *            *  *               *              *       *                   *    *    *  *    *   *  *            *   *     *   *               *     ** *    *       *                             *  *      *           *        *     \n\n       * *      * *   **          *   **         * ***          *  * *      *  *               **       *     *     *  *       *                *                *                     *             * *  *      *          * *           *    **\n\n                    *         *      *  **        *      *     *   *          *        **    **      *            *   *    *        *                         *            *                          * *                       *        *       \n\n *  *   *             *        *         *    *   *                *                                             *   *     *                    *          *   *                   *         *         * *             *            *       **   \n\n            *      * *     *           *           *  *  *      *   *              * *                 *     *        *       *  *    *   *        *      *    *           *    *             *         *               *         *              \n\n**  **         *         *  *     **    * * *                          **           *  *                                 *  *                                    * *  *       *  *          * *      * *         *           *  **       *  **   \n\n *                      *    *      *          * **   *             *            *                    * ** *         *       * *                                                       *     *                         *                     *   \n\n        *     *                       *  *   *              *        *      *       *        *                          *               *          *          *            *     *  *    **     *  ***  *           *      *               *     \n\n*        *                       *                 *        * *   *   *          *       *   *        *  *   *         *    *              *           *                  * *  **    * *      *           *        *           * *              *\n\n          *          *        **        *             *       **   **            *    *  *  *        *       *   *         *      *     *   **    * **                                  *               *             *      *      *            \n\n"
-
 -- Constructor.  Builds a new Main Menu screen.
 -- @param {Table} options A table containing basic window information.
 function MainMenu:new(options)
@@ -71,11 +66,14 @@ end
 function generateStarField() 
 	local starfield = ""
 	local BASE_DENSITY = 9
+	local FIELD_WIDTH = 241
+	local FIELD_STAR_ROWS = 24 --Actual Character height of the field is x3 this number.
+	local FIELD_NUMBER_OF_SECTIONS = 3
 
-	for i=1,24 do
-		local sectionNumber = math.ceil(i / 3)
+	for i=1,FIELD_STAR_ROWS do
+		local sectionNumber = math.ceil(i / FIELD_NUMBER_OF_SECTIONS)
 
-		for j=1,241 do
+		for j=1,FIELD_WIDTH do
 			local roll = love.math.random(1, BASE_DENSITY * sectionNumber) 
 			if roll >= (BASE_DENSITY * sectionNumber) then
 				starfield = starfield .. "*"

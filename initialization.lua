@@ -28,8 +28,7 @@ end
 -- CLASS DEFINITION -- 
 ----------------------
 
--- A wrapper for handling the post-game behavior drawing .  
--- Currently uses Love2D's native Phsyics engine.
+-- A wrapper for handling the game's initialization behavior.  
 GameInitialization = {}
 GameInitialization.__index = GameInitialization
 

@@ -35,7 +35,12 @@ function WorldPhysics:new(options)
 	worldPhysics.world = love.physics.newWorld(0, 0, true)
 
 	-- Set collision callbacks to govern what happens for collisions
-	worldPhysics.world:setCallbacks(beginContactHandler, endContactHandler, preSolveHandler, postSolveHandler)
+	worldPhysics.world:setCallbacks(
+		_.bind(beginContactHandler, worldPhysics),
+		_.bind(endContactHandler, worldPhysics),
+		_.bind(preSolveHandler, worldPhysics),
+		_.bind(postSolveHandler, worldPhysics)
+	)
 	worldPhysics.collisionDebugText = ""
 	worldPhysics.persisting = 0
 
@@ -127,7 +132,7 @@ end
 
 -- Callback for anytime 2 Fixtures initially come into contact with one another.
 -- Here we evaluate game logic involving player collisons.
-function beginContactHandler(fixtureA, fixtureB, coll)
+function beginContactHandler(worldPhysics, fixtureA, fixtureB, coll)
 	-- Log out information about the collision.
 	if worldPhysics.debug.physicsLog then
 		x,y = coll:getNormal()
@@ -151,7 +156,7 @@ function beginContactHandler(fixtureA, fixtureB, coll)
 end
 
 -- Callback for anytime 2 Fixtures initially come into contact with one another.  Currently we only log some information.
-function endContactHandler(fixtureA, fixtureB, coll)
+function endContactHandler(worldPhysics, fixtureA, fixtureB, coll)
 	if worldPhysics.debug.physicsLog then
 		worldPhysics.persisting = 0
 		worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. "\n" .. fixtureA:getUserData().type .. " uncolliding with " .. fixtureB:getUserData().type
@@ -160,7 +165,7 @@ end
 
 -- Callback for before the resulting forces from the collision for each Fixture have been calculated.
 -- Currently we just log out debug info, but I'm guessing here is where we could have game-logic / game-data, overule / impact physics.
-function preSolveHandler(fixtureA, fixtureB, coll)
+function preSolveHandler(worldPhysics, fixtureA, fixtureB, coll)
 	if worldPhysics.debug.physicsLog then
 		if worldPhysics.persisting == 0 then
 			worldPhysics.collisionDebugText = worldPhysics.collisionDebugText .. "\n" .. fixtureA:getUserData().type .. " touching " .. fixtureB:getUserData().type
@@ -174,7 +179,7 @@ end
 
 -- Callback for after the resulting forces from the collision for each Fixture have been calculated.
 -- Currently we do nothing, but could add or remove force / impulse here I'm guessing?
-function postSolveHandler(fixtureA, fixtureB, coll, normalImpluse, tangentImpulse)
+function postSolveHandler(worldPhysics, fixtureA, fixtureB, coll, normalImpluse, tangentImpulse)
 	-- Unused 
 end
 
