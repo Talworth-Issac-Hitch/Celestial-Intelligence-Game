@@ -189,7 +189,7 @@ end
 
 -- Love2D callback for when the player presses a key.  Some game components have their individual implementations for that callback,
 -- so if one exists, we call it here.
-function Game:keypressed(key, scancode, isrepeat, isNonPlayerAction, gameState)
+function Game:keypressed(key, scancode, isrepeat, isNonPlayerAction)
 		-- Toggle Debug View
 		if key == 'o' then
 			self.debug.physicsVisual = not self.debug.physicsVisual
@@ -209,7 +209,7 @@ end
 
 -- Love2D callback for when the player releases a key.  Some game components have their individual implementations for that callback,
 -- so if one exists, we call it here.
-function Game:keyreleased(key, scancode, isrepeat, isNonPlayerAction, gameState)
+function Game:keyreleased(key, scancode, isrepeat, isNonPlayerAction)
 	if self.gameState == GAME_OVER then
 		self.gameOver:onKeyReleased(key)
 	else

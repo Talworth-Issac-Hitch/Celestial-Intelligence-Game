@@ -4,18 +4,6 @@
 _ = require "libs/moses_min"
 JSON = require "libs/json"
 
------------
--- UTILS --
------------
--- TODO: Move global Utils to their own file.
-
--- Creates a set, aka a table where the identifiers are keys
-function Set (list)
-	local set = {}
-	for _, l in ipairs(list) do set[l] = true end
-	return set
-end
-
 function PrintKeysAndValues(table)
 	for k,v in pairs(table) do
 		print(k)

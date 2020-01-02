@@ -48,6 +48,8 @@ function SpaceCraft:new(options)
 		collisionMask = CollisionConstants.MASK_ALL,
 		collisionGroup = CollisionConstants.GROUP_NONE,
 
+		-- TODO: Travel and collision sounds?
+
 		beforeBodySetupFuncs = {},
 		onUpdateFuncs = {},
 		onSpawnFinishedFuncs = {},
@@ -226,6 +228,11 @@ function SpaceCraft:spawn()
 	self.finishedSpawn = true
 end
 
+function SpaceCraft:destroy()
+	self.body:destroy()
+
+	-- TODO: Have an onDestroy hook, for things like decrementing the enemyTable's count.
+end
 
 -------------
 -- DRAWING --
@@ -322,6 +329,7 @@ function SpaceCraft:onSpawnFinished()
 	end)
 end
 
+-- TODO: An onDestroy hook!
 
 -------------
 -- Getters --

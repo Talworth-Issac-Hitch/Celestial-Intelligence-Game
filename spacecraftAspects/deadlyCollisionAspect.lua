@@ -3,6 +3,7 @@
 -----------------------
 
 -- Crafts that kill the player if they touch them
+-- TODO: Change collision sounds?
 DeadlyCraftAspectDefinition = {
 	scalingTable = {
 		sizeX = 0.5,

@@ -5,17 +5,24 @@ CustomExceptionHandler = require "customExceptionHandler"
 
 _ = require "libs/moses_min"
 
-GameWrapper = require "gameWrapper"
-
 MainMenu = require "mainMenu"
-GameInitialization = require "initialization"
-WorldPhysics = require "worldPhysics"
-GameOver = require "gameOver"
-
-SpaceCraft = require "spaceCraft"
+GameWrapper = require "gameWrapper"
+Editor = require "editor"
 
 function getDirectionInRadiansFromVector(vectorXComponet, vectorYComponent)
 	return math.atan2(vectorYComponent, vectorXComponet)
+end
+
+-----------
+-- UTILS --
+-----------
+-- TODO: Move global Utils to their own file.
+
+-- Creates a set, aka a table where the identifiers are keys
+function Set (list)
+	local set = {}
+	for _, l in ipairs(list) do set[l] = true end
+	return set
 end
 
 ---------------
@@ -27,12 +34,16 @@ VIEWPORT_WIDTH = 1200
 GAME_NOT_STARTED = 0
 GAME_ON = 1
 GAME_OVER = 2
+
+VIEW_MAIN_MENU = 0
+VIEW_GAME = 1
+VIEW_EDITOR = 2
+
 -------------
 -- GLOBALS --
 -------------
 
-gameState = GAME_NOT_STARTED
-gameOverTime = 0
+activeView = VIEW_MAIN_MENU
 
 Debug = {
 	physicsVisual = false,
@@ -56,7 +67,10 @@ function love.load()
 	-- NOTE: DEBUG
 	mainMenu = MainMenu:new {
 		worldWidth = VIEWPORT_WIDTH,
-		worldHeight = VIEWPORT_HEIGHT
+		worldHeight = VIEWPORT_HEIGHT,
+		gameStartHandler = loadGame,
+		editorStartHandler = loadEditor
+
 	}
 end
 
@@ -67,24 +81,38 @@ function loadGame()
 		gameSeed = seed,
 		debug = Debug,
 	}
+	activeView = VIEW_GAME
+end
+
+function loadEditor()
+	editor = Editor:new {
+		worldWidth = VIEWPORT_WIDTH,
+		worldHeight = VIEWPORT_HEIGHT,
+		debug = Debug,
+	}
+	activeView = VIEW_EDITOR
 end
 
 -- The Love2D callback for time passing in the game.  Most game components have their individual implementations for
 -- that callback, which we blindly call here.  Additional we manage some global counters.
 -- @param dt The time interval since the last time love.update was called.
 function love.update(dt)
-	if gameState == GAME_NOT_STARTED then
+	if activeView == VIEW_MAIN_MENU then
 		mainMenu:update(dt)
+	elseif activeView == VIEW_EDITOR then
+		editor:update(dt)
 	else
-		game:update(dt, gameState)
+		game:update(dt)
 	end
 end
 
 -- Love2D callback for graphics drawing.  Most game components have their individual implementations for that callback,
 -- which we blindly call here.
 function love.draw()
-	if gameState == GAME_NOT_STARTED then
+	if activeView == VIEW_MAIN_MENU then
 		mainMenu:draw()
+	elseif activeView == VIEW_EDITOR then
+		editor:draw()
 	else
 		game:draw()
 	end
@@ -93,27 +121,30 @@ end
 -- Love2D callback for when the player presses a key.  Some game components have their individual implementations for that callback,
 -- so if one exists, we call it here.
 function love.keypressed(key, scancode, isrepeat, isNonPlayerAction)
-	-- TODO : Funnel all handlers to whatever is the active phase (ie. 'Main Menu', 'Game', 'GameOver')
-	if gameState ~= GAME_NOT_STARTED then
-		game:keypressed(key, scancode, isrepeat, isNonPlayerAction, gameState)
+	-- TODO : Funnel all handlers to whatever is the active view (ie. 'Main Menu', 'Game', 'GameOver')
+	if activeView == VIEW_GAME then
+		game:keypressed(key, scancode, isrepeat, isNonPlayerAction)
+	elseif activeView == VIEW_EDITOR then
+		editor:keypressed(key, scancode, isrepeat)
 	end
 end
 
 -- Love2D callback for when the player releases a key.  Some game components have their individual implementations for that callback,
 -- so if one exists, we call it here.
 function love.keyreleased(key, scancode, isrepeat, isNonPlayerAction)
-	if gameState == GAME_NOT_STARTED then
-		if key == 'space' then
-			loadGame()
-			gameState = GAME_ON
-		end
-	else
+	if activeView == VIEW_MAIN_MENU then
+		mainMenu:onKeyReleased(key, scancode, isrepeat, isNonPlayerAction)
+	elseif activeView == VIEW_GAME then
 		game:keyreleased(key, scancode, isrepeat, isNonPlayerAction)
+	elseif activeView == VIEW_EDITOR then
+		editor:keyreleased(key, scancode, isrepeat)
 	end
 end
 
 function love.quit()
-	game:onQuitHandler()
+	if game then
+		game:onQuitHandler()
+	end
 
 	return false
 end

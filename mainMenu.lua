@@ -47,7 +47,8 @@ function MainMenu:new(options)
 		time = 0,
 		starcounter = 0,
 		font = nil,
-		gameStartHandler = nil
+		gameStartHandler = nil,
+		editorStartHandler = nil
 	}
 
 	setmetatable(mainMenu, MainMenu)
@@ -117,7 +118,7 @@ function MainMenu:draw()
 
 	love.graphics.setFont(self.footerFont)
 	love.graphics.setColor(1, 1, 1, footerAlpha)
-	love.graphics.print("Press Space to begin.", self.worldWidth / 3, self.worldHeight - LINEHEIGHT * 2)
+	love.graphics.print("Press Space to begin playing.\n\nPress Enter to begin Editing.", self.worldWidth / 3, self.worldHeight - LINEHEIGHT * 2)
 	love.graphics.reset()
 end
 
@@ -126,6 +127,8 @@ end
 function MainMenu:onKeyReleased(key)
 	if key == 'space' then
 		self.gameStartHandler()
+	elseif key == 'return' then
+		self.editorStartHandler()
 	end
 end
 
