@@ -15,6 +15,8 @@ randomStartingDirectionAspectDefinition = require "spacecraftAspects/randomStart
 downStartingDirectionAspectDefinition = require "spacecraftAspects/downStartingDirectionAspect"
 initialRotationAspectDefinition = require "spacecraftAspects/initialRotationAspect"
 
+periodicAngularImpulseSpeedAspectDefinition = require "spacecraftAspects/periodicAngularImpulseSpeedAspect"
+
 lowDensityAspectDefinition = require "spacecraftAspects/lowDensityAspect"
 
 playerInputAspectDefinition = require "spacecraftAspects/playerInputMotionAspect"
@@ -47,6 +49,7 @@ SpaceCraftAspectDefinitions = {
 	randomInitDir = randomStartingDirectionAspectDefinition,
 	downInitDir = downStartingDirectionAspectDefinition,
 	initRotation = initialRotationAspectDefinition,
+	periodicAngularImpulse = periodicAngularImpulseSpeedAspectDefinition,
 
 	lowDensity = lowDensityAspectDefinition,
 	

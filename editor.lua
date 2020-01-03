@@ -96,34 +96,37 @@ function Editor:keypressed(key, scancode, isrepeat)
 	-- TODO: Gotta be a better, more growth-tolerant way
 	-- TODO: SHould be able to toggle
 	if key == '0' then
-		self.draftCraftAspects["fixedInitialSpeed"] = true
+		self.draftCraftAspects["fixedInitialSpeed"] = not self.draftCraftAspects["fixedInitialSpeed"]
 		self:respawnDraftCraft()
 	elseif key == '1' then
-		self.draftCraftAspects["downInitDir"] = true
+		self.draftCraftAspects["downInitDir"] = not self.draftCraftAspects["downInitDir"]
 		self:respawnDraftCraft()
 	elseif key == '2' then
-		self.draftCraftAspects["randomInitDir"] = true
+		self.draftCraftAspects["randomInitDir"] = not self.draftCraftAspects["randomInitDir"]
 		self:respawnDraftCraft()
 	elseif key == '3' then
-		self.draftCraftAspects["acceleratingSpeed"] = true
+		self.draftCraftAspects["acceleratingSpeed"] = not self.draftCraftAspects["acceleratingSpeed"]
 		self:respawnDraftCraft()
 	elseif key == '4' then
-		self.draftCraftAspects["linearDampening"] = true
+		self.draftCraftAspects["linearDampening"] = not self.draftCraftAspects["linearDampening"]
 		self:respawnDraftCraft()
 	elseif key == '5' then
-		self.draftCraftAspects["waveFixedSpeed"] = true
+		self.draftCraftAspects["waveFixedSpeed"] = not self.draftCraftAspects["waveFixedSpeed"]
 		self:respawnDraftCraft()
 	elseif key == '6' then
-		self.draftCraftAspects["deadly"] = true
+		self.draftCraftAspects["deadly"] = not self.draftCraftAspects["deadly"]
 		self:respawnDraftCraft()
 	elseif key == '7' then
-		self.draftCraftAspects["initRotation"] = true
+		self.draftCraftAspects["initRotation"] = not self.draftCraftAspects["initRotation"]
 		self:respawnDraftCraft()
 	elseif key == '8' then
-		self.draftCraftAspects["periodicImpulseSpeed"] = true
+		self.draftCraftAspects["periodicImpulseSpeed"] = not self.draftCraftAspects["periodicImpulseSpeed"]
 		self:respawnDraftCraft()
 	elseif key == '9' then
-		self.draftCraftAspects["playerInputMotion"] = true
+		self.draftCraftAspects["playerInputMotion"] = not self.draftCraftAspects["playerInputMotion"]
+		self:respawnDraftCraft()
+	elseif key == '-' then
+		self.draftCraftAspects["periodicAngularImpulse"] = not self.draftCraftAspects["periodicAngularImpulse"]
 		self:respawnDraftCraft()
 	elseif key == 'r' then
 		self:respawnDraftCraft()

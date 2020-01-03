@@ -73,23 +73,25 @@ function SpaceCraft:new(options)
 
 	-- For each aspect the SpaceCraft has, apply that aspect's initial paremters.  Remember here that aspect lists are Sets, not tables
 	--  so we need to index by the AspectName, not the value
-	_.each(spaceCraft.aspects, function(aspectVal, aspectName) 
-		-- For each the parameters that Aspect Definition has 
-		_.each(SpaceCraftAspectDefinitions[aspectName], function(aspectPropertyValue, aspectPropertyName)
-			-- For the scaling factors, combine them all into one table.  For other properties and functions, simply
-			-- overwrite or add.
-			-- TODO: Better handling of Aspects that set the same property.  Currently they simply overwrite, last wins..
-			if aspectPropertyName == "scalingTable" then
-				_.each(aspectPropertyValue, function(scalingFactor, scalingFieldName) 
-					allAspectsScalingTable[scalingFieldName] = allAspectsScalingTable[scalingFieldName] * scalingFactor
-				end)
-			elseif aspectPropertyName == "beforeBodySetup" or aspectPropertyName == "onUpdate" or aspectPropertyName == "onSpawnFinished" then
-				-- TODO: Make above check more generic... ...within reason.
-				table.insert(spaceCraft[aspectPropertyName .. "Funcs"], aspectPropertyValue)
-			else 
-				spaceCraft[aspectPropertyName] = aspectPropertyValue
-			end
-		end)
+	_.each(spaceCraft.aspects, function(aspectVal, aspectName)
+		if aspectVal then
+			-- For each the parameters that Aspect Definition has
+			_.each(SpaceCraftAspectDefinitions[aspectName], function(aspectPropertyValue, aspectPropertyName)
+				-- For the scaling factors, combine them all into one table.  For other properties and functions, simply
+				-- overwrite or add.
+				-- TODO: Better handling of Aspects that set the same property.  Currently they simply overwrite, last wins..
+				if aspectPropertyName == "scalingTable" then
+					_.each(aspectPropertyValue, function(scalingFactor, scalingFieldName)
+						allAspectsScalingTable[scalingFieldName] = allAspectsScalingTable[scalingFieldName] * scalingFactor
+					end)
+				elseif aspectPropertyName == "beforeBodySetup" or aspectPropertyName == "onUpdate" or aspectPropertyName == "onSpawnFinished" then
+					-- TODO: Make above check more generic... ...within reason.
+					table.insert(spaceCraft[aspectPropertyName .. "Funcs"], aspectPropertyValue)
+				else
+					spaceCraft[aspectPropertyName] = aspectPropertyValue
+				end
+			end)
+		end
 	end)
 
 	spaceCraft:applyScaling(allAspectsScalingTable)
