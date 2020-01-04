@@ -3,7 +3,11 @@
 -------------
 playerAspectDefinition = require "spacecraftAspects/playerSpecialAspect"
 
+waveFadingVisualAspectDefinition = require "spacecraftAspects/waveFadingVisualAspect"
+
 circularAspectDefinition = require "spacecraftAspects/circularShapeAspect"
+
+periodicRandomTeleportMotionAspectDefinition = require "spacecraftAspects/periodicRandomTeleportMotionAspect"
 
 fixedInitialSpeedAspectDefinition = require "spacecraftAspects/fixedInitialSpeedAspect"
 sinWaveFixedSpeedAspectDefinition = require "spacecraftAspects/sinWaveFixedSpeedAspect"
@@ -37,11 +41,17 @@ SpaceCraftAspectDefinitions = {
 	player = playerAspectDefinition,
 	-- TODO: Enemies that die with age
 
+	-- Visual Aspects
+	waveFadingVisibility = waveFadingVisualAspectDefinition,
+
 	-- Shape Aspects
 	-- Default: Square
 	circular = circularAspectDefinition,
 
 	-- Motion Aspects
+
+	-- Motion - Positional Aspects:
+	randomTeleport = periodicRandomTeleportMotionAspectDefinition,
 
 	-- Motion - Directional Aspects:
 	--	Aspects that govern the craft's direction of motion, and change in direction.

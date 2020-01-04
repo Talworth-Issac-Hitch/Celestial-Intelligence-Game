@@ -43,8 +43,12 @@ CircularCraftAspectDefinition = {
 	-------------
 
 	-- Gets the point from which the Craft should be drawn (in terms of Graphics).  We draw from the center of our circle.
-	getDrawingAnchor = function(self)
-		return self:getCenterPoint()
+	getDrawingAnchor = function(self, fromPoints)
+		if fromPoints then
+			return fromPoints.x, fromPoints.y
+		else
+			return self:getCenterPoint()
+		end
 	end
 }
 

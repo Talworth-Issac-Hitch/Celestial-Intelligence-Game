@@ -130,6 +130,7 @@ function GameInitialization:loadEnemyTable()
 	-- If a config file exists, Load enemy aspects from a file.	File could either be user made (manually or in 
 	--an 'admin' interace), or Machine Learning generated.	
 	-- TODO: Load configs from a server instead of locally.
+	-- TO-FUCKING-DO: Allow level configs to apply aspects to the player as well.
 	if configFileInfo and configFileInfo.type == "file"  then
 
 		local aspectOverrides = {

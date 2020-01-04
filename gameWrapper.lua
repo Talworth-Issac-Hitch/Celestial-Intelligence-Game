@@ -79,7 +79,7 @@ function Game:new(options)
 			yPosition = 50, 
 			age = 2, 
 			aspects = Set{"player"}, 
-			world = game.worldPhysics:getWorld(),
+			world = game.worldPhysics,
 			debug = game.debug
 		}
 	}
@@ -136,7 +136,7 @@ function Game:update(dt)
 						-- New enemies are randomly places in valid bounds in the world
 						xPosition = love.math.random(SPAWN_BUFFER_DISTANCE, self.worldWidth - SPAWN_BUFFER_DISTANCE), 
 						yPosition = love.math.random(SPAWN_BUFFER_DISTANCE, self.worldHeight - SPAWN_BUFFER_DISTANCE),
-						world = self.worldPhysics:getWorld()
+						world = self.worldPhysics
 					}
 
 					newEnemyInstanceParameters = _.extend(newEnemyInstanceParameters, spawnParameters.enemyObj)

@@ -22,8 +22,10 @@ function SpaceCraft:new(options)
 	-- Initialize our spaceCraft with defaults
 	local spaceCraft = {
 		name = "Chaotic Entity",
+
 		imagePath = "assets/head.png", 
 		imageRotationOffset = 0, -- TODO: Also allow the image's center point to be offset from 'collision' frame center.
+		currentAlpha = 1,
 
 		sizeX = 64, 
 		sizeY = 64,
@@ -128,25 +130,26 @@ function SpaceCraft:update(dt)
 end
 
 -- The Love2D callback for each drawing frame. Draw our craft's image, and potentially debugging frames.
-function SpaceCraft:draw(alpha)
+function SpaceCraft:draw(globalAlpha)
 	local blinkInterval = 7
 
 	-- Enemies blink before they are finished spawning, to indicator that they cannot be interacted with.
 	if (self.finishedSpawn and not self.stunned) or math.ceil(self.age * blinkInterval) % 2 == 0 then
-		self:drawImage(alpha)
+		self:drawImage(globalAlpha)
+		self:onDrawImage(globalAlpha)
 	end
 
 	-- If we're debugging, draw collision board. Color of boarder indicates collsion type.
 	if self.debug.physicsVisual and self.finishedSpawn then
-		self:debugDrawCenter(alpha)
+		self:debugDrawCenter(globalAlpha)
 
-		self:debugDrawFacing(alpha)
+		self:debugDrawFacing(globalAlpha)
 
-		self:debugDrawCollisionBorder(alpha)
+		self:debugDrawCollisionBorder(globalAlpha)
 
 		-- Additionally if the craft currently has a velocity. draw a velocity indicator line
 		if self.speed > 0 then
-			self:debugDrawVelocityIndicator(alpha)
+			self:debugDrawVelocityIndicator(globalAlpha)
 		end
 	end
 end
@@ -167,7 +170,7 @@ end
 -- Loads the SpaceCraft's image, and sets related properties
 function SpaceCraft:loadImageAndAttrs()
 	-- TODO: consider caching a table of images to avoid repeat loading in here
-	--       as more spaceCraft (potentially with the same image) are spawned during the game
+	--	   as more spaceCraft (potentially with the same image) are spawned during the game
 	self.image = love.graphics.newImage(self.imagePath)
 
 	-- TODO: Get images that are properly sized to avoid scaling
@@ -192,7 +195,7 @@ function SpaceCraft:initializeBody()
 	self:beforeBodySetup()
 
 	-- Set up the space craft's Love2D Physics objects
-	local body = love.physics.newBody(self.world, self.xPosition, self.yPosition, self.bodyType)
+	local body = love.physics.newBody(self.world:getWorld(), self.xPosition, self.yPosition, self.bodyType)
 	body:setAngle(self.facingAngle)
 	body:setAngularVelocity(self.angularVelocity)
 	body:setAngularDamping(self.angularDampening)
@@ -241,9 +244,20 @@ end
 -------------
 
 -- Render the SpaceCraft's image to the screen, if one exists.
-function SpaceCraft:drawImage(alpha)
-	local drawX, drawY = self:getDrawingAnchor()
-	love.graphics.setColor(self.craftColor, alpha)
+function SpaceCraft:drawImage(globalAlpha, fromPoints)
+	if not globalAlpha then
+		globalAlpha = 1
+	end
+
+	-- Make a copy of our color table so we don't permanently modify it with our passed-in ALpha.
+	local colorCopy = {}
+	for origColorKey, origColorValue in pairs(self.craftColor) do
+		colorCopy[origColorKey] = origColorValue
+	end
+	table.insert(colorCopy, self.currentAlpha * globalAlpha)
+
+	local drawX, drawY = self:getDrawingAnchor(fromPoints)
+	love.graphics.setColor(colorCopy)
 	love.graphics.draw(self.image, drawX, drawY, self:getImageDrawAngle() + self.imageRotationOffset, self.imgSX, self.imgSY, self.imgOX, self.imgOY)
 
 	love.graphics.reset()
@@ -331,6 +345,11 @@ function SpaceCraft:onSpawnFinished()
 	end)
 end
 
+-- Hook for any SpaceCraft Behavior that should occur onDraw
+-- TODO: Make a list like the others!
+function SpaceCraft:onDrawImage()
+end
+
 -- TODO: An onDestroy hook!
 
 -------------
@@ -343,8 +362,21 @@ function SpaceCraft:getCenterPoint()
 end
 
 -- Gets the point from which the Craft should be drawn (in terms of Graphics)
-function SpaceCraft:getDrawingAnchor()
-	return self.body:getWorldPoints(self.shape:getPoints())
+function SpaceCraft:getDrawingAnchor(fromPoints)
+	if fromPoints then
+		local origAnchorX, origAnchorY = self.body:getWorldPoints(self.shape:getPoints())
+		local origCenterX = self.body:getX()
+		local origCenterY = self.body:getY()
+
+		-- Compute a vector between old center and anchor point.
+		local centerAnchorTranslationVectorX = origAnchorX - origCenterX
+		local centerAnchorTranslationVectorY = origAnchorY - origCenterY
+
+		-- Apply the vector to our new center to compute the new achor point.
+		return centerAnchorTranslationVectorX + fromPoints.x, centerAnchorTranslationVectorY + fromPoints.y
+	else
+		return self.body:getWorldPoints(self.shape:getPoints())
+	end
 end
 
 -- Gets the angle (in terms of Graphics) that the drawn image be rotated.  Applied through a transformation.

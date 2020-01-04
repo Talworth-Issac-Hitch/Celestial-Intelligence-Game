@@ -141,6 +141,14 @@ function love.keyreleased(key, scancode, isrepeat, isNonPlayerAction)
 	end
 end
 
+-- Love2D callback for when the player clicks the mouse.  Some game components have their individual implementations for that callback,
+-- so if one exists, we call it here.
+function love.mousepressed(x, y, button, istouch, presses)
+	if activeView == VIEW_EDITOR then
+		editor:mousepressed(x, y, button, istouch, presses)
+	end
+end
+
 function love.quit()
 	if game then
 		game:onQuitHandler()

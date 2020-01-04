@@ -6,6 +6,7 @@ _ = require "libs/moses_min"
 WorldPhysics = require "worldPhysics"
 SpaceCraft = require "spaceCraft"
 
+Button = require "button"
 SpaceCraftAspectDefinitions = require "spaceCraftAspectRegistry"
 
 
@@ -25,7 +26,16 @@ function Editor:new(options)
 		worldHeight = 600,
 		time = 0,
 		activeCrafts = {},
-		draftCraftAspects = Set{"circular"},
+		buttons = {
+			Button:new {
+				x = 100,
+				y = 500,
+				width = 50,
+				height = 50,
+				active = false,
+			}
+		},
+		draftCraftAspects = Set{"circular", "randomTeleport", "waveFadingVisibility"},
 		worldPhysics = {},
 		debug = {
 			physicsVisual = false,
@@ -54,7 +64,7 @@ function Editor:new(options)
 			yPosition = editor.worldHeight / 2, 
 			age = 0, 
 			aspects = editor.draftCraftAspects, 
-			world = editor.worldPhysics:getWorld(),
+			world = editor.worldPhysics,
 			debug = editor.debug
 		}
 	}
@@ -69,6 +79,11 @@ function Editor:update(dt)
 	_.each(self.activeCrafts, function(craft)
 		craft:update(dt)
 	end)
+
+	self.buttons[1].onClick = function(active) 
+		self.draftCraftAspects["fixedInitialSpeed"] = not self.draftCraftAspects["fixedInitialSpeed"]
+		self:respawnDraftCraft()
+	end
 end
 
 -- The Love2D callback for each drawing frame. Draw our menu text
@@ -87,6 +102,10 @@ function Editor:draw()
 	-- Draw our custom spacecraft objects
 	_.each(self.activeCrafts, function(craft)
 		craft:draw()
+	end)
+
+	_.each(self.buttons, function(button)
+		button:draw()
 	end)
 end
 
@@ -153,6 +172,16 @@ function Editor:keyreleased(key, scancode, isrepeat)
 	end)
 end
 
+-- Love2D callback for when the player clicks the mouse.  Some game components have their individual implementations for that callback,
+-- so if one exists, we call it here.
+function Editor:mousepressed(x, y, button, istouch, presses)
+	_.each(self.buttons, function(button)
+		button:checkClick(x, y, button, istouch, presses)
+	end)
+end
+
+
+-- Respawns the draft craft.
 function Editor:respawnDraftCraft()
 	-- Destroy and remove all current crafts from the physical world
 	_.each(self.activeCrafts, function(craft)
@@ -166,7 +195,7 @@ function Editor:respawnDraftCraft()
 			yPosition = self.worldHeight / 2, 
 			age = 0, 
 			aspects = self.draftCraftAspects, 
-			world = self.worldPhysics:getWorld(),
+			world = self.worldPhysics,
 			debug = self.debug
 		}
 	}
