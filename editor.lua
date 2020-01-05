@@ -27,7 +27,13 @@ function Editor:new(options)
 		time = 0,
 		activeCrafts = {},
 		buttons = {},
-		draftCraftAspects = Set{},
+		draftCraftNumber = 1,
+		draftCraftAspects = {
+			Set{},
+			Set{},
+			Set{},
+			Set{},
+		},
 		worldPhysics = {},
 		debug = {
 			physicsVisual = false,
@@ -55,7 +61,7 @@ function Editor:new(options)
 			xPosition = editor.worldWidth / 2, 
 			yPosition = editor.worldHeight / 2, 
 			age = 0, 
-			aspects = editor.draftCraftAspects, 
+			aspects = editor.draftCraftAspects[editor.draftCraftNumber],
 			world = editor.worldPhysics,
 			debug = editor.debug
 		}
@@ -67,6 +73,7 @@ function Editor:new(options)
 end 
 
 function Editor:initializeButtons()
+	-- Add Aspect Buttons
 	local buttonNumber = 1
 	_.each(SpaceCraftAspectDefinitions, function(definition, defName)
 		if(defMame ~= "player") then
@@ -76,7 +83,7 @@ function Editor:initializeButtons()
 				buttonImagePath = definition.buttonImage
 			end
 
-			self.buttons[buttonNumber] = Button:new {
+			self.buttons[defName] = Button:new {
 				imagePath = buttonImagePath,
 				x = -20 + (buttonNumber * 40),
 				y = self.worldHeight - 100,
@@ -84,7 +91,7 @@ function Editor:initializeButtons()
 				height = 32,
 				active = false,
 				onClick = function(active)
-					self.draftCraftAspects[defName] = not self.draftCraftAspects[defName]
+					self.draftCraftAspects[self.draftCraftNumber][defName] = not self.draftCraftAspects[self.draftCraftNumber][defName]
 					self:respawnDraftCraft()
 				end
 			}
@@ -92,6 +99,38 @@ function Editor:initializeButtons()
 			buttonNumber = buttonNumber + 1
 		end
 	end)
+
+	-- Add enemy number buttons
+	for i=1,4 do
+		self.buttons[i] = Button:new {
+			imagePath = "assets/dice-" .. i .. ".png",
+			x = -20 + (i * 40),
+			y = self.worldHeight - 60,
+			width = 32,
+			height = 32,
+			active = i == 1,
+			onClick = function(active)
+				self.draftCraftNumber = i
+
+				-- Reset all buttons
+				_.each(self.buttons, function(button)
+					button.active = false
+				end)
+
+				-- Reset the active Aspects to be the one's for this # draftCraft
+				_.each(self.draftCraftAspects[self.draftCraftNumber], function(isAspectApplied, aspectName)
+					if isAspectApplied then
+						self.buttons[aspectName].active = true
+					end
+				end)
+
+				-- Fianlly, re-active this button, and spawn the associated craft.
+				self.buttons[i].active = true
+
+				self:respawnDraftCraft()
+			end
+		}
+	end
 end
 
 -- The Love2D callback for each time interval
@@ -129,42 +168,7 @@ end
 -- Love2D callback for when the player presses a key.  Some game components have their individual implementations for that callback,
 -- so if one exists, we call it here.
 function Editor:keypressed(key, scancode, isrepeat)
-	-- TODO: Gotta be a better, more growth-tolerant way
-	-- TODO: SHould be able to toggle
-	if key == '0' then
-		self.draftCraftAspects["fixedInitialSpeed"] = not self.draftCraftAspects["fixedInitialSpeed"]
-		self:respawnDraftCraft()
-	elseif key == '1' then
-		self.draftCraftAspects["downInitDir"] = not self.draftCraftAspects["downInitDir"]
-		self:respawnDraftCraft()
-	elseif key == '2' then
-		self.draftCraftAspects["randomInitDir"] = not self.draftCraftAspects["randomInitDir"]
-		self:respawnDraftCraft()
-	elseif key == '3' then
-		self.draftCraftAspects["acceleratingSpeed"] = not self.draftCraftAspects["acceleratingSpeed"]
-		self:respawnDraftCraft()
-	elseif key == '4' then
-		self.draftCraftAspects["linearDampening"] = not self.draftCraftAspects["linearDampening"]
-		self:respawnDraftCraft()
-	elseif key == '5' then
-		self.draftCraftAspects["waveFixedSpeed"] = not self.draftCraftAspects["waveFixedSpeed"]
-		self:respawnDraftCraft()
-	elseif key == '6' then
-		self.draftCraftAspects["deadly"] = not self.draftCraftAspects["deadly"]
-		self:respawnDraftCraft()
-	elseif key == '7' then
-		self.draftCraftAspects["initRotation"] = not self.draftCraftAspects["initRotation"]
-		self:respawnDraftCraft()
-	elseif key == '8' then
-		self.draftCraftAspects["periodicImpulseSpeed"] = not self.draftCraftAspects["periodicImpulseSpeed"]
-		self:respawnDraftCraft()
-	elseif key == '9' then
-		self.draftCraftAspects["playerInputMotion"] = not self.draftCraftAspects["playerInputMotion"]
-		self:respawnDraftCraft()
-	elseif key == '-' then
-		self.draftCraftAspects["periodicAngularImpulse"] = not self.draftCraftAspects["periodicAngularImpulse"]
-		self:respawnDraftCraft()
-	elseif key == 'r' then
+	if key == 'r' then
 		self:respawnDraftCraft()
 	elseif key == 'o' then
 		self.debug.physicsVisual = not self.debug.physicsVisual
@@ -211,7 +215,7 @@ function Editor:respawnDraftCraft()
 			xPosition = self.worldWidth / 2, 
 			yPosition = self.worldHeight / 2, 
 			age = 0, 
-			aspects = self.draftCraftAspects, 
+			aspects = self.draftCraftAspects[self.draftCraftNumber],
 			world = self.worldPhysics,
 			debug = self.debug
 		}
