@@ -26,16 +26,8 @@ function Editor:new(options)
 		worldHeight = 600,
 		time = 0,
 		activeCrafts = {},
-		buttons = {
-			Button:new {
-				x = 100,
-				y = 500,
-				width = 50,
-				height = 50,
-				active = false,
-			}
-		},
-		draftCraftAspects = Set{"circular", "randomTeleport", "waveFadingVisibility"},
+		buttons = {},
+		draftCraftAspects = Set{},
 		worldPhysics = {},
 		debug = {
 			physicsVisual = false,
@@ -69,8 +61,31 @@ function Editor:new(options)
 		}
 	}
 
+	editor:initializeButtons()
+
 	return editor
 end 
+
+function Editor:initializeButtons()
+	local buttonNumber = 1
+	_.each(SpaceCraftAspectDefinitions, function(definition, defName)
+		if(defMame ~= "player") then
+			self.buttons[buttonNumber] = Button:new {
+				x = -20 + (buttonNumber * 40),
+				y = self.worldHeight - 100,
+				width = 32,
+				height = 32,
+				active = false,
+				onClick = function(active)
+					self.draftCraftAspects[defName] = not self.draftCraftAspects[defName]
+					self:respawnDraftCraft()
+				end
+			}
+
+			buttonNumber = buttonNumber + 1
+		end
+	end)
+end
 
 -- The Love2D callback for each time interval
 function Editor:update(dt)
@@ -79,11 +94,6 @@ function Editor:update(dt)
 	_.each(self.activeCrafts, function(craft)
 		craft:update(dt)
 	end)
-
-	self.buttons[1].onClick = function(active) 
-		self.draftCraftAspects["fixedInitialSpeed"] = not self.draftCraftAspects["fixedInitialSpeed"]
-		self:respawnDraftCraft()
-	end
 end
 
 -- The Love2D callback for each drawing frame. Draw our menu text

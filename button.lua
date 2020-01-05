@@ -66,7 +66,6 @@ function Button:checkClick(x, y, button, istouch, presses)
 	if x >= self.x and x <= x2 and y >= self.y and y <= y2 then
 		self.active = not self.active
 		self.onClick(self.active)
-		-- TODO: Actually perform the button's assigned task
 	end
 end
 
