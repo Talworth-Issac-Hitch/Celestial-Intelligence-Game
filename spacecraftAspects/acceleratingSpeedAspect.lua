@@ -4,6 +4,7 @@
 
 -- For Craft which will continuously accelate in the direction it is facing.
 AcceleratingSpeedAspectDefinition = {
+	buttonImage = "assets/pounce.png",
 	-- A hook for any custom behavior to occur during the Love2D update callback.
 	-- Adds force to the spacecraft's body each second to create acceleration.
 	onUpdate = function(self, dt)

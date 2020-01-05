@@ -5,6 +5,7 @@
 -- Crafts that temporarily stun, but not kill, the player when crashed into.
 -- TODO: Change collision sounds?
 StunningCraftAspectDefinition = {
+	buttonImage = "assets/stoned-skull.png",
 	collisionType = "stun",
 	collisionDebugColor = {0.9, 0.9, 0.05},
 	scalingTable = {

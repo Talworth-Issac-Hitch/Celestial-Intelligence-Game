@@ -5,6 +5,8 @@
 -- An aspect that makes a craft move according to when the player hits the WASD, or Arrow keys.
 -- TODO: Maybe make these enemies movable with separate keys from the player motion, to work on Michael skills?
 PlayerInputMotionAspectDefinition = {
+	buttonImage = "assets/telepathy.png",
+
 	scalingTable = {
 		sizeX = 1.2,
 		sizeY = 1.2,

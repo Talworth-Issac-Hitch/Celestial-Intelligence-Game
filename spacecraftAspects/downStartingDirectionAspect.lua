@@ -4,6 +4,8 @@
 
 -- For Craft which move start facing down rather than right, but otherwise have no angluar accelaration of their own.
 DownStartingtAspectDefinition = {
+	buttonImage = "assets/plain-arrow.png",
+	
 	-- Hook for any special modifications that need to be initially made to the Craft's Physics Body.
 	-- We set a random facing angle, which differs from default, axis-aligned crafts.
 	beforeBodySetup = function(self) 

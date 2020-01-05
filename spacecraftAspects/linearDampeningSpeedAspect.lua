@@ -4,6 +4,7 @@
 
 -- For Craft which naturally slow down their linear motion, but move faster to compensate
 LinearDampeningSpeedAspectDefinition = {
+	buttonImage = "assets/tornado-discs.png",
 	scalingTable = {
 		speed = 3
 	},

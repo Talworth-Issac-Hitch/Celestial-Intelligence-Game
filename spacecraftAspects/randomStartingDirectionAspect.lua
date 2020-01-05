@@ -4,6 +4,8 @@
 
 -- For Craft which move start facing a random direction, but otherwise have no angluar accelaration of their own.
 RandomStartingtAspectDefinition = {
+	buttonImage = "assets/uncertainty.png",
+
 	-- Hook for any special modifications that need to be initially made to the Craft's Physics Body.
 	-- We set a random facing angle, which differs from default, axis-aligned crafts.
 	beforeBodySetup = function(self) 

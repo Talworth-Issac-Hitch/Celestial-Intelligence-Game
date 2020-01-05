@@ -4,6 +4,7 @@
 
 -- For Crafts which should be less dense
 LowDensityAspectDefinition = {
+	buttonImage = "assets/feather.png",
 	-- A hook for any SpaceCraft Behavior that should occur on spawn.
 	-- Set up our density.
 	beforeBodySetup = function(self)	

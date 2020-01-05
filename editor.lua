@@ -70,7 +70,14 @@ function Editor:initializeButtons()
 	local buttonNumber = 1
 	_.each(SpaceCraftAspectDefinitions, function(definition, defName)
 		if(defMame ~= "player") then
+			local buttonImagePath = nil
+
+			if definition.buttonImage then
+				buttonImagePath = definition.buttonImage
+			end
+
 			self.buttons[buttonNumber] = Button:new {
+				imagePath = buttonImagePath,
 				x = -20 + (buttonNumber * 40),
 				y = self.worldHeight - 100,
 				width = 32,

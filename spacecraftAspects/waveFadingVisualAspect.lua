@@ -4,6 +4,7 @@
 
 -- For Craft which will continuously ossilate it's opacity, from fully visible to fully invisible.
 WaveFadingVisualAspectDefinition = {
+	buttonImage = "assets/cloak-dagger.png",
 	scalingTable = {
 		sizeX = 1.2,
 		sizeY = 1.2,

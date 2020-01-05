@@ -4,6 +4,7 @@
 
 -- For Craft which will a periodically have it's speed relative to it's direction ossilate in a fixed manner.
 SinWaveFixedSpeedAspectDefinition = {
+	buttonImage = "assets/return-arrow.png",
 	-- A hook for any custom behavior to occur during the Love2D update callback.
 	-- Fixes the craft's speed in the direction it's facing
 	onUpdate = function(self, dt)

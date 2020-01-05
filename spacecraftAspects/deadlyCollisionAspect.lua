@@ -5,6 +5,7 @@
 -- Crafts that kill the player if they touch them
 -- TODO: Change collision sounds?
 DeadlyCraftAspectDefinition = {
+	buttonImage = "assets/pirate-grave.png",
 	scalingTable = {
 		sizeX = 0.5,
 		sizeY = 0.5,

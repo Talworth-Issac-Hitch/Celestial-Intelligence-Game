@@ -4,6 +4,7 @@
 
 -- For Craft which will intermittedly have an angular impulse.
 PeriodicAngularImpulseSpeedAspectDefinition = {
+	buttonImage = "assets/backward-time.png",
 	-- A hook for any custom behavior to occur during the Love2D update callback.
 	-- Adds rotational to the spacecraft's body each second to create acceleration.
 	onUpdate = function(self, dt)

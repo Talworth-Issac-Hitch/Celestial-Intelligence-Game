@@ -4,6 +4,7 @@
 
 -- For Craft which begins it's life moving in one direction, and doesn't (of it's own volition) accelarate otherwise.
 FixedInitialSpeedAspectDefinition = {
+	buttonImage = "assets/fall-down.png",
 	-- A hook for any SpaceCraft Behavior that should occur on spawn.
 	-- Set up our initial velocity, based on our speed and facing angle.
 	onSpawnFinished = function(self)	

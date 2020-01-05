@@ -8,6 +8,7 @@ CircularCraftAspectDefinition = {
 	-- VISUAL --
 	------------
 	imagePath = "assets/cyber-eye.png",
+	buttonImage = "assets/cyber-eye.png",
 
 	-----------------------------
 	-- GENERIC CRAFT BEHAVIORS --

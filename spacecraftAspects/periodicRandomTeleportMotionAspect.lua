@@ -4,6 +4,7 @@
 
 -- For Craft which will intermittedly teleport to a random position.
 PeriodicRandomTeleportMotionAspectDefinition = {
+	buttonImage = "assets/teleport.png",
 	scalingTable = {
 		speed = 0.6
 	},
