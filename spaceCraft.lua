@@ -57,7 +57,7 @@ function SpaceCraft:new(options)
 		onSpawnFinishedFuncs = {},
 
 		debug = nil,
-		craftColor = {1, 1, 1},
+		craftColor = nil,
 		collisionDebugColor = {0.05, 0.05, 0.9}
 	}
 
@@ -250,8 +250,13 @@ function SpaceCraft:drawImage(globalAlpha, fromPoints)
 	end
 
 	-- Make a copy of our color table so we don't permanently modify it with our passed-in ALpha.
+	local drawColor = self.craftColor
+	if not drawColor then
+		drawColor = self.collisionDebugColor
+	end
+
 	local colorCopy = {}
-	for origColorKey, origColorValue in pairs(self.craftColor) do
+	for origColorKey, origColorValue in pairs(drawColor) do
 		colorCopy[origColorKey] = origColorValue
 	end
 	table.insert(colorCopy, self.currentAlpha * globalAlpha)

@@ -76,7 +76,6 @@ function GameInitialization:loadEnemyTable()
 			enemyObj = {
 				name = "1st Enemy",
 				aspects = Set{"circular", "deadly"}, 
-				craftColor = {0, 0.8, 0},
 				debug = self.debug
 			}
 		},
@@ -89,7 +88,6 @@ function GameInitialization:loadEnemyTable()
 			enemyObj = {
 				name = "2nd Enemy",
 				aspects = Set{"circular", "enemyStatic"}, 
-				craftColor = {0, 0, 0.8},
 				debug = self.debug
 			} --]]
 
@@ -104,7 +102,6 @@ function GameInitialization:loadEnemyTable()
 			enemyObj = {
 				name = "3rd Enemy",
 				aspects = Set{"noEnemyCollision", "circular", "stun"}, 
-				craftColor = {0.8, 0, 0},
 				debug = self.debug
 			} --]]
 		},

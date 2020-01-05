@@ -79,6 +79,7 @@ function Game:new(options)
 			yPosition = 50, 
 			age = 2, 
 			aspects = Set{"player"}, 
+			craftColor = {1, 1, 1},
 			world = game.worldPhysics,
 			debug = game.debug
 		}

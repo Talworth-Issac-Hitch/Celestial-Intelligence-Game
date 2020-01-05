@@ -79,6 +79,7 @@ SpaceCraftAspectDefinitions = {
 	enemyStatic = staticAspectDefinition, -- Will never move.  A Wall
 	playerInputMotion = playerInputAspectDefinition, -- Currently Governs speed and direction.
 
+
 	-- Motion - Misc: 
 	--	Miscellaneous aspects that do not interfere with other motion aspects.
 	-- TODO: Teleporting enemy static.  Use a spining arc/circle that fills out to indicate location and timing.
