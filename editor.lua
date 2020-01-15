@@ -34,6 +34,7 @@ function Editor:new(options)
 			Set{},
 			Set{},
 		},
+		savingCounter = 0,
 		worldPhysics = {},
 		debug = {
 			physicsVisual = false,
@@ -47,6 +48,9 @@ function Editor:new(options)
 
 	editor.font = love.graphics.newFont("assets/font/cour.ttf", 24)
 	editor.title = "Editor"
+
+	editor.subTitleFont = love.graphics.newFont("assets/font/cour.ttf", 16)
+	editor.subTitle = ""
 
 	-- Initialize our physics
 	editor.worldPhysics = WorldPhysics:new {
@@ -131,6 +135,22 @@ function Editor:initializeButtons()
 			end
 		}
 	end
+
+	-- Finally add a save button
+	self.buttons["save"] = Button:new {
+		imagePath = "assets/save.png",
+		x = 20,
+		y = self.worldHeight - 140,
+		width = 32,
+		height = 32,
+		active = false,
+		onClick = function(active)
+			-- TODO: Actually save
+			self.subTitle = "Saving"
+			self.savingCounter = 4
+			self.buttons["save"].active = false
+		end
+	}
 end
 
 -- The Love2D callback for each time interval
@@ -140,6 +160,16 @@ function Editor:update(dt)
 	_.each(self.activeCrafts, function(craft)
 		craft:update(dt)
 	end)
+
+	if self.savingCounter > 0 then
+		self.savingCounter = self.savingCounter - dt
+
+		if self.savingCounter < 1 then
+			self.subTitle = "Saved"
+		end
+	elseif self.savingCounter < 0 then
+		self.savingCounter = 0
+	end
 end
 
 -- The Love2D callback for each drawing frame. Draw our menu text
@@ -148,10 +178,21 @@ function Editor:draw()
 	local LINEHEIGHT = 32 
 	local FONT_SIZE = 24
 
+	-- Title
 	love.graphics.setFont(self.font)
-
 	love.graphics.setColor(1, 1, 1)
 	love.graphics.print(self.title, (self.worldWidth / 2) - (string.len(self.title) * FONT_SIZE * 0.5), LINEHEIGHT)
+
+	if self.savingCounter > 0 then
+		local saveAlpha = 1
+		if self.savingCounter > 1 then
+			saveAlpha = math.cos(self.savingCounter * 5.4) + 1
+		end
+
+		love.graphics.setFont(self.subTitleFont)
+		love.graphics.setColor(1, 1, 1, saveAlpha)
+		love.graphics.print(self.subTitle, (self.worldWidth / 2) - (string.len(self.subTitle) * FONT_SIZE * 0.5), LINEHEIGHT * 2 + 12)
+	end
 
 	self.worldPhysics:draw()
 
