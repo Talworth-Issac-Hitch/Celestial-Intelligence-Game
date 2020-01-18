@@ -145,10 +145,10 @@ function Editor:initializeButtons()
 		height = 32,
 		active = false,
 		onClick = function(active)
-			-- TODO: Actually save
 			self.subTitle = "Saving"
 			self.savingCounter = 4
 			self.buttons["save"].active = false
+			self:saveConfig()
 		end
 	}
 end
@@ -261,6 +261,31 @@ function Editor:respawnDraftCraft()
 			debug = self.debug
 		}
 	}
+end
+
+function Editor:saveConfig()
+	local CONFIG_DIR_PATH = "config/"
+	local CONFIG_FILE_PATH = "config/enemyConfig.json"
+
+		-- Ensure the data/ folder exists.
+	local configFolder = love.filesystem.getInfo(CONFIG_DIR_PATH)
+
+	if not configFolder or configFolder.type ~= "directory"  then
+		love.filesystem.createDirectory(CONFIG_DIR_PATH)
+	end
+
+	-- Prep the text to write
+	-- Build a table to serialize to a data file summarizing the play through for the ML.
+	local enemyConfigTable = {
+		-- TODO: Do this... Better...
+		e1Aspects = _.keys(self.draftCraftAspects[1]),
+		e2Aspects = _.keys(self.draftCraftAspects[2]),
+		e3Aspects = _.keys(self.draftCraftAspects[3]),
+		e4Aspects = _.keys(self.draftCraftAspects[4])
+	}
+
+	-- Write the config file.
+	love.filesystem.write(CONFIG_FILE_PATH, JSON.encode(enemyConfigTable), all)
 end
 
 return Editor

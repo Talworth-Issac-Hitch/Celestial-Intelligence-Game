@@ -38,24 +38,39 @@ function GameInitialization:new(options)
 end 
 
 function GameInitialization:loadPlayerData()
-	-- NOTE: Currently it assumes this file was manually created, and won't make one if it doesn't find it.
+	local CONFIG_DIR_PATH = "config/"
 	local CONFIG_FILE_PATH = "config/playerConfig.json"
+	
+
+	-- Ensure the data/ folder exists.
+	local configFolder = love.filesystem.getInfo(CONFIG_DIR_PATH)
+
+	if not configFolder or configFolder.type ~= "directory"  then
+		love.filesystem.createDirectory(CONFIG_DIR_PATH)
+	end
 
 	local configFileInfo = love.filesystem.getInfo(CONFIG_FILE_PATH)
 
 	-- If a config file exists, player name and type	
 	-- TODO: Load configs from a server instead of locally.
 	if configFileInfo and configFileInfo.type == "file"  then
-
-		local aspectOverrides = {
-		}
-
 		-- NOTE: Currently configs should only be a single line, but we iterate here for good measure.
 		for line in love.filesystem.lines(CONFIG_FILE_PATH) do
 			local config = JSON.decode(line)
 
 			self.playerConfig = config
 		end
+	else
+		-- Create a default config file.
+		local defaultPlayerConfig = {
+			playerName = "Unknown Player",
+			playerType = 0
+		}
+
+		-- Save config to a file to avoid needing to create it next run
+		love.filesystem.write(CONFIG_FILE_PATH, JSON.encode(defaultPlayerConfig), all)
+
+		self.playerConfig = defaultPlayerConfig
 	end
 
 	return self.playerConfig
@@ -72,10 +87,10 @@ function GameInitialization:loadEnemyTable()
 			spawnInterval = 5,
 			spawnCounter = 5,
 			currentEnemyCount = 0,
-			spawnLimit = 4,
+			spawnLimit = 5,
 			enemyObj = {
 				name = "1st Enemy",
-				aspects = Set{"circular", "deadly"}, 
+				aspects = Set{"circular", "deadly", "fixedInitialSpeed"}, 
 				debug = self.debug
 			}
 		},
@@ -83,11 +98,11 @@ function GameInitialization:loadEnemyTable()
 			spawnInterval = 8,
 			spawnCounter = -15,
 			currentEnemyCount = 0,
-			spawnLimit = 25,
+			spawnLimit = 20,
 			-- [[ Mad Moons 
 			enemyObj = {
 				name = "2nd Enemy",
-				aspects = Set{"circular", "enemyStatic"}, 
+				aspects = Set{"enemyStatic"}, 
 				debug = self.debug
 			} --]]
 
@@ -101,7 +116,7 @@ function GameInitialization:loadEnemyTable()
 			-- [[ Stun-Nado
 			enemyObj = {
 				name = "3rd Enemy",
-				aspects = Set{"noEnemyCollision", "circular", "stun"}, 
+				aspects = Set{"noEnemyCollision", "circular", "stun", "fixedInitialSpeed"}, 
 				debug = self.debug
 			} --]]
 		},
@@ -112,7 +127,7 @@ function GameInitialization:loadEnemyTable()
 			spawnLimit = 100,
 			enemyObj = { 
 				name = "4th Enemy",
-				aspects = Set{"enemyStatic", "deadly"}, 
+				aspects = Set{"playerInputMotion", "waveFadingVisibility", "linearDampening"}, 
 				debug = self.debug
 			}
 		}
