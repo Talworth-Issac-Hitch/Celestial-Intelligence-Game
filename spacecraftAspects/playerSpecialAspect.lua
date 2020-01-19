@@ -1,7 +1,7 @@
 -------------
 -- IMPORTS --
 -------------
-CollisionConstants = require "collisionConstants"
+CollisionConstants = require "general/collisionConstants"
 
 -----------------------
 -- ASPECT DEFINITION --

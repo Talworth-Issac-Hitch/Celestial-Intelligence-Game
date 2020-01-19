@@ -6,8 +6,8 @@ CustomExceptionHandler = require "customExceptionHandler"
 _ = require "libs/moses_min"
 
 MainMenu = require "mainMenu"
-GameWrapper = require "gameWrapper"
-Editor = require "editor"
+GameWrapper = require "game/gameWrapper"
+Editor = require "editor/editor"
 
 function getDirectionInRadiansFromVector(vectorXComponet, vectorYComponent)
 	return math.atan2(vectorYComponent, vectorXComponet)
