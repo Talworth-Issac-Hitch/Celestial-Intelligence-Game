@@ -1,7 +1,7 @@
 -------------
 -- IMPORTS --
 -------------
-CollisionConstants = require "general/collisionConstants"
+CollisionConstants = require "physics/collisionConstants"
 
 
 -----------------------

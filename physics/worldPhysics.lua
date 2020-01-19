@@ -2,7 +2,7 @@
 -- IMPORTS --
 -------------
 _ = require "libs/moses_min"
-CollisionConstants = require "general/collisionConstants"
+CollisionConstants = require "physics/collisionConstants"
 
 ----------------------
 -- CLASS DEFINITION -- 

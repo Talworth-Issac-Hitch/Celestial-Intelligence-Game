@@ -1,37 +1,37 @@
 -------------
 -- IMPORTS --
 -------------
-playerAspectDefinition = require "spacecraftAspects/playerSpecialAspect"
+playerAspectDefinition = require "spacecraft/aspects/playerSpecialAspect"
 
-waveFadingVisualAspectDefinition = require "spacecraftAspects/waveFadingVisualAspect"
+waveFadingVisualAspectDefinition = require "spacecraft/aspects/waveFadingVisualAspect"
 
-circularAspectDefinition = require "spacecraftAspects/circularShapeAspect"
+circularAspectDefinition = require "spacecraft/aspects/circularShapeAspect"
 
-periodicRandomTeleportMotionAspectDefinition = require "spacecraftAspects/periodicRandomTeleportMotionAspect"
+periodicRandomTeleportMotionAspectDefinition = require "spacecraft/aspects/motion/periodicRandomTeleportMotionAspect"
 
-fixedInitialSpeedAspectDefinition = require "spacecraftAspects/fixedInitialSpeedAspect"
-sinWaveFixedSpeedAspectDefinition = require "spacecraftAspects/sinWaveFixedSpeedAspect"
-acceleratingSpeedAspectDefinition = require "spacecraftAspects/acceleratingSpeedAspect"
-periodicImpulseSpeedAspectDefinition = require "spacecraftAspects/periodicImpulseSpeedAspect"
-linearDampeningSpeedAspectDefinition = require "spacecraftAspects/linearDampeningSpeedAspect"
+fixedInitialSpeedAspectDefinition = require "spacecraft/aspects/motion/fixedInitialSpeedAspect"
+sinWaveFixedSpeedAspectDefinition = require "spacecraft/aspects/motion/sinWaveFixedSpeedAspect"
+acceleratingSpeedAspectDefinition = require "spacecraft/aspects/motion/acceleratingSpeedAspect"
+periodicImpulseSpeedAspectDefinition = require "spacecraft/aspects/motion/periodicImpulseSpeedAspect"
+linearDampeningSpeedAspectDefinition = require "spacecraft/aspects/motion/linearDampeningSpeedAspect"
 
-randomStartingDirectionAspectDefinition = require "spacecraftAspects/randomStartingDirectionAspect"
-downStartingDirectionAspectDefinition = require "spacecraftAspects/downStartingDirectionAspect"
-initialRotationAspectDefinition = require "spacecraftAspects/initialRotationAspect"
+randomStartingDirectionAspectDefinition = require "spacecraft/aspects/randomStartingDirectionAspect"
+downStartingDirectionAspectDefinition = require "spacecraft/aspects/downStartingDirectionAspect"
+initialRotationAspectDefinition = require "spacecraft/aspects/motion/initialRotationAspect"
 
-periodicAngularImpulseSpeedAspectDefinition = require "spacecraftAspects/periodicAngularImpulseSpeedAspect"
+periodicAngularImpulseSpeedAspectDefinition = require "spacecraft/aspects/motion/periodicAngularImpulseSpeedAspect"
 
-lowDensityAspectDefinition = require "spacecraftAspects/lowDensityAspect"
+lowDensityAspectDefinition = require "spacecraft/aspects/lowDensityAspect"
 
-playerInputAspectDefinition = require "spacecraftAspects/playerInputMotionAspect"
-staticAspectDefinition = require "spacecraftAspects/staticMotionAspect"
+playerInputAspectDefinition = require "spacecraft/aspects/motion/playerInputMotionAspect"
+staticAspectDefinition = require "spacecraft/aspects/motion/staticMotionAspect"
 
-playerBorderCollisionAspectDefinition = require "spacecraftAspects/playerBorderCollisionAspect"
-playerOnlyCollisionAspectDefinition = require "spacecraftAspects/playerOnlyCollisionAspect"
-playerAndEnemyCollisionAspectDefinition = require "spacecraftAspects/playerEnemyCollisionAspect"
+playerBorderCollisionAspectDefinition = require "spacecraft/aspects/collision/playerBorderCollisionAspect"
+playerOnlyCollisionAspectDefinition = require "spacecraft/aspects/collision/playerOnlyCollisionAspect"
+playerAndEnemyCollisionAspectDefinition = require "spacecraft/aspects/collision/playerEnemyCollisionAspect"
 
-deadlyAspectDefinition = require "spacecraftAspects/deadlyCollisionAspect"
-stunningAspectDefinition = require "spacecraftAspects/stunCollisionAspect"
+deadlyAspectDefinition = require "spacecraft/aspects/collision/deadlyCollisionAspect"
+stunningAspectDefinition = require "spacecraft/aspects/collision/stunCollisionAspect"
 
 
 -- A table of Aspect names to Aspect definitions/modules.

@@ -3,11 +3,13 @@
 -------------
 _ = require "libs/moses_min"
 
-WorldPhysics = require "general/worldPhysics"
-SpaceCraft = require "general/spaceCraft"
+WorldPhysics = require "physics/worldPhysics"
+
+SpaceCraft = require "spacecraft/spaceCraft"
+SpaceCraftAspectDefinitions = require "spacecraft/spaceCraftAspectRegistry"
 
 Button = require "editor/button"
-SpaceCraftAspectDefinitions = require "general/spaceCraftAspectRegistry"
+
 
 
 ----------------------

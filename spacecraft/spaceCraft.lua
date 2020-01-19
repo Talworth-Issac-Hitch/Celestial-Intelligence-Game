@@ -2,8 +2,8 @@
 -- IMPORTS --
 -------------
 _ = require "libs/moses_min"
-CollisionConstants = require "general/collisionConstants"
-SpaceCraftAspectDefinitions = require "general/spaceCraftAspectRegistry"
+CollisionConstants = require "physics/collisionConstants"
+SpaceCraftAspectDefinitions = require "spacecraft/spaceCraftAspectRegistry"
 
 
 ----------------------

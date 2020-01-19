@@ -5,10 +5,10 @@ _ = require "libs/moses_min"
 
 -- Game Components
 GameInitialization = require "game/initialization"
-WorldPhysics = require "general/worldPhysics"
+WorldPhysics = require "physics/worldPhysics"
 GameOver = require "game/gameOver"
 
-SpaceCraft = require "general/spaceCraft"
+SpaceCraft = require "spacecraft/spaceCraft"
 
 ----------------------
 -- CLASS DEFINITION -- 
