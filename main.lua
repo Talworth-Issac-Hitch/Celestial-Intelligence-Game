@@ -78,6 +78,7 @@ function love.load()
 	}
 end
 
+-- Initializes and switches to the Game view.
 function loadGame()
 	game = GameWrapper:new {
 		worldWidth = VIEWPORT_WIDTH,
@@ -90,6 +91,7 @@ function loadGame()
 	music:stop()
 end
 
+-- -- Initializes and switches to the Editor view.
 function loadEditor()
 	editor = Editor:new {
 		worldWidth = VIEWPORT_WIDTH,
@@ -155,6 +157,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 	end
 end
 
+-- Love2D callback for when the game closes
 function love.quit()
 	if game then
 		game:onQuitHandler()

@@ -64,6 +64,8 @@ function MainMenu:new(options)
 	return mainMenu
 end 
 
+-- Creates random ASCII starfield
+-- @return {String} - A 241x72 ASCCII Starfield 
 function generateStarField() 
 	local starfield = ""
 	local BASE_DENSITY = 9

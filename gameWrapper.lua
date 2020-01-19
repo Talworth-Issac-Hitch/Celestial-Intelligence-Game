@@ -231,6 +231,7 @@ function Game:onPlayerDeath(killedBy)
 	self.gameOver:onGameEnd(math.ceil(self.score))
 end
 
+-- A handler for when the game (application) ends.
 function Game:onQuitHandler()
 	-- Only output playData if the game was actually over.
 	if self.gameState == GAME_OVER then

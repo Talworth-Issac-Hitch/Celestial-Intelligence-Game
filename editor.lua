@@ -76,6 +76,7 @@ function Editor:new(options)
 	return editor
 end 
 
+-- Creates a tray of config buttons for the Editor
 function Editor:initializeButtons()
 	-- Add Aspect Buttons
 	local buttonNumber = 1
@@ -263,6 +264,7 @@ function Editor:respawnDraftCraft()
 	}
 end
 
+-- Saves the currrent configuration to the "enemyConfig.json" file.  This configuration can then be used in Game mode.
 function Editor:saveConfig()
 	local CONFIG_DIR_PATH = "config/"
 	local CONFIG_FILE_PATH = "config/enemyConfig.json"

@@ -37,6 +37,7 @@ function GameInitialization:new(options)
 	return gameInitialization
 end 
 
+-- Load player data for the current session from a local file.
 function GameInitialization:loadPlayerData()
 	local CONFIG_DIR_PATH = "config/"
 	local CONFIG_FILE_PATH = "config/playerConfig.json"
