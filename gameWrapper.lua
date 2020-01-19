@@ -110,7 +110,6 @@ function Game:update(dt)
 			craft:update(dt)
 		end)
 
-		-- TODO: Break the following counters and logic into a general "gameLogic" module.
 		-- Update our Amp counter, and apply a global hazard effect if it is time.
 		self.ampCounter.count = self.ampCounter.count + dt
 

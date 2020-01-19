@@ -62,7 +62,7 @@ function WorldPhysics:update(dt)
 	self.world:update(dt)
 
 	-- cleanup when 'text' gets too long
-	-- TODO: Add a physics log for each session that we flush removed to text to.
+	-- TODO: Add a physics log file for each session that we flush removed to text to.
 	if string.len(self.collisionDebugText) > 768 then
 		self.collisionDebugText = "" 
 	end
@@ -147,7 +147,7 @@ function beginContactHandler(worldPhysics, fixtureA, fixtureB, coll)
 	local bData = fixtureB:getUserData()
 
 	-- Currently we only have game-logic that gets tripped when the plyer is involved in a collision.
-	-- TODO: Separate Game Logic, from the purely physics module?
+	-- TODO: Separate Game Logic, from the purely physics module?  Or better yet, have collision behaviors hit callbacks defined in game code.
 	if  aData.type == "player" then 
 		handlePlayerCollision(aData, bData)
 	elseif bData.type == "player" then

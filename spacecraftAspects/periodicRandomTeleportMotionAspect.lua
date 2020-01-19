@@ -17,7 +17,7 @@ PeriodicRandomTeleportMotionAspectDefinition = {
 
 			-- If this is whole second, and a third second
 			if roundedAge > math.ceil(self.age - dt) and roundedAge % 6 == 0 then
-				self.currentAlpha = 1 --TODO: Chain alpha like scaling table?
+				self.currentAlpha = 1
 				self.body:setX(self.nextX) 
 				self.body:setY(self.nextY)
 				self.nextX, self.nextY = nil

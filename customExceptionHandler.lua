@@ -18,11 +18,8 @@ local function error_output_playdata()
 	if not dataFolder or dataFolder.type ~= "directory"  then
 		love.filesystem.createDirectory(DATA_DIRECTORY_NAME)
 	end
-	-- TODO: Make game data output no matter what.  Currently only logs data if player hits 'Q' at the end.  
-	--       Maybe can hook into an event?
+
 	love.filesystem.write(DATA_DIRECTORY_NAME .. "playData-" .. gameHash .. ".json", '{"error": "error"}', all)
-
-
 end
 -- CUSTOM END --
  

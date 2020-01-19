@@ -24,7 +24,7 @@ function SpaceCraft:new(options)
 		name = "Chaotic Entity",
 
 		imagePath = "assets/head.png", 
-		imageRotationOffset = 0, -- TODO: Also allow the image's center point to be offset from 'collision' frame center.
+		imageRotationOffset = 0,
 		currentAlpha = 1,
 
 		sizeX = 64, 
@@ -55,6 +55,7 @@ function SpaceCraft:new(options)
 		beforeBodySetupFuncs = {},
 		onUpdateFuncs = {},
 		onSpawnFinishedFuncs = {},
+		onDrawImageFuncs = {},
 
 		debug = nil,
 		craftColor = nil,
@@ -79,14 +80,14 @@ function SpaceCraft:new(options)
 		if aspectVal then
 			-- For each the parameters that Aspect Definition has
 			_.each(SpaceCraftAspectDefinitions[aspectName], function(aspectPropertyValue, aspectPropertyName)
-				-- For the scaling factors, combine them all into one table.  For other properties and functions, simply
-				-- overwrite or add.
-				-- TODO: Better handling of Aspects that set the same property.  Currently they simply overwrite, last wins..
+				-- For the scaling factors, combine them all into one table.  
+				-- For properties  simply add or overwrite.
+				-- For select functions, add to a list of layered functions so all fire.
 				if aspectPropertyName == "scalingTable" then
 					_.each(aspectPropertyValue, function(scalingFactor, scalingFieldName)
 						allAspectsScalingTable[scalingFieldName] = allAspectsScalingTable[scalingFieldName] * scalingFactor
 					end)
-				elseif aspectPropertyName == "beforeBodySetup" or aspectPropertyName == "onUpdate" or aspectPropertyName == "onSpawnFinished" then
+				elseif aspectPropertyName == "beforeBodySetup" or aspectPropertyName == "onUpdate" or aspectPropertyName == "onSpawnFinished" or aspectPropertyName == "onDrawImage" then
 					-- TODO: Make above check more generic... ...within reason.
 					table.insert(spaceCraft[aspectPropertyName .. "Funcs"], aspectPropertyValue)
 				else
@@ -276,7 +277,6 @@ end
 function SpaceCraft:debugDrawCenter(alpha)
 	local debugX, debugY = self.body:getPosition()
 
-	--TODO: Find a way to slot in alpha that doesn't permanently change self.collisionDebugColor.
 	self.collisionDebugColor[4] = alpha
 	love.graphics.setColor(self.collisionDebugColor)
 	love.graphics.circle("fill", debugX, debugY, 5)
@@ -293,7 +293,7 @@ function SpaceCraft:debugDrawFacing(alpha)
 	local facingVectorX = math.cos(facingAngle) * 0.75 * self.sizeX
 	local facingVectorY = math.sin(facingAngle) * 0.75 * self.sizeY
 
-	-- TODO: Make a debug color constants tab
+	-- TODO: Make a debug color constants table
 	love.graphics.setColor(0.6, 0.05, 0.6, alpha)
 	love.graphics.line(centerX, centerY, centerX + facingVectorX, centerY + facingVectorY)
 
@@ -303,7 +303,6 @@ end
 -- Draws the shape that the Spacecraft is considered for collisions.
 -- By default, Crafts are squares, so we simple draw the same 4 points of our square Shape object.
 function SpaceCraft:debugDrawCollisionBorder(alpha)
-	--TODO: Find a way to slot in alpha that doesn't permanently change self.collisionDebugColor.
 	self.collisionDebugColor[4] = alpha
 	love.graphics.setColor(self.collisionDebugColor)
 	love.graphics.polygon("line", self.body:getWorldPoints(self.shape:getPoints()))
@@ -312,6 +311,7 @@ end
 
 -- Draws a line to indicat direct and speed of an object.  Speed is represented by length of the line.
 -- TODO: Speed being represented by line-length, likely can't keep scaling well.  Perhaps increase thickness, or add more lines?
+--        Will need experiement after adding Global Speed limit.
 function SpaceCraft:debugDrawVelocityIndicator(alpha)
 	local INDICATOR_LENGTH_FACTOR = 0.2
 	local centerX, centerY = self:getCenterPoint()
@@ -351,8 +351,10 @@ function SpaceCraft:onSpawnFinished()
 end
 
 -- Hook for any SpaceCraft Behavior that should occur onDraw
--- TODO: Make a list like the others!
 function SpaceCraft:onDrawImage()
+	_.each(self.onDrawImageFuncs, function(onDrawImageFunc)
+		onDrawImageFunc(self)
+	end)
 end
 
 -- TODO: An onDestroy hook!

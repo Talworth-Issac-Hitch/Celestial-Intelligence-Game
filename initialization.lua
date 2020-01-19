@@ -76,7 +76,7 @@ function GameInitialization:loadPlayerData()
 	return self.playerConfig
 end
 
--- TODO: Comment
+-- Load the enemy crafts spawn parameters
 function GameInitialization:loadEnemyTable()
 	-- Initialize the table with the defaults
 

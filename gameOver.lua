@@ -152,7 +152,7 @@ function GameOver:resolveEndScreenText(isNewHighscore)
 	end
 
 	self.subHeader = "Final Score : " .. self.score .. "\nGame Seed: " .. self.gameSeed
-	-- TODO: String pad for uniform display
+	-- String pad for uniform display
 	self.body = "High Scores:\n"
 	_.eachi(self.highScores, function(highScoreObj, highScorePlace)
 		self.body = self.body ..
@@ -183,13 +183,14 @@ function GameOver:onQuitHandler()
 	-- Build a table to serialize to a data file summarizing the play through for the ML.
 	local playDataTable = {
 		playerType = self.playerConfig.playerType,
-		score = score,
-		-- TODO: Do this... Better...
-		e1Aspects = _.keys(self.enemySpawnTable[1].enemyObj.aspects),
-		e2Aspects = _.keys(self.enemySpawnTable[2].enemyObj.aspects),
-		e3Aspects = _.keys(self.enemySpawnTable[3].enemyObj.aspects),
-		e4Aspects = _.keys(self.enemySpawnTable[4].enemyObj.aspects)
+		score = score
 	}
+
+	-- Add all the enemy spawns
+	_.eachi(self.enemySpawnTable, function(spawnTableEntry, index)
+		local aspectList = spawnTableEntry.enemyObj.aspects
+		playDataTable["e" .. index .. "Aspects"] = _.keys(aspectList)
+	end)
 
 	-- Ensure the data/ folder exists.
 	local dataFolder = love.filesystem.getInfo(DATA_DIRECTORY_NAME)

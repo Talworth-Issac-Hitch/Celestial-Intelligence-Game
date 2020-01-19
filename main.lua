@@ -170,5 +170,3 @@ end
 function love.handlers.playerDied(killedBy)
 	game:onPlayerDeath(killedBy)
 end
-
--- TODO: Add a timeout where the player wins!

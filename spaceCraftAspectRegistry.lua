@@ -35,14 +35,15 @@ stunningAspectDefinition = require "spacecraftAspects/stunCollisionAspect"
 
 
 -- A table of Aspect names to Aspect definitions/modules.
--- TODO: Make multiple nested tables to handle the mutally exclusive aspects
 SpaceCraftAspectDefinitions = {
 	-- Special Aspects
 	player = playerAspectDefinition,
 	-- TODO: Enemies that die with age
+	-- TODO: Enemies that die with a certain number of collisions
 
 	-- Visual Aspects
 	waveFadingVisibility = waveFadingVisualAspectDefinition,
+	-- TODO: Also allow the image's center point to be offset from 'collision' frame center.
 
 	-- Shape Aspects
 	-- Default: Square

@@ -276,14 +276,12 @@ function Editor:saveConfig()
 
 	-- Prep the text to write
 	-- Build a table to serialize to a data file summarizing the play through for the ML.
-	local enemyConfigTable = {
-		-- TODO: Do this... Better...
-		e1Aspects = _.keys(self.draftCraftAspects[1]),
-		e2Aspects = _.keys(self.draftCraftAspects[2]),
-		e3Aspects = _.keys(self.draftCraftAspects[3]),
-		e4Aspects = _.keys(self.draftCraftAspects[4])
-	}
+	local enemyConfigTable = {}
 
+	_.eachi(self.draftCraftAspects, function(aspectList, index)
+		enemyConfigTable["e" .. index .. "Aspects"] = _.keys(aspectList)
+	end)
+	
 	-- Write the config file.
 	love.filesystem.write(CONFIG_FILE_PATH, JSON.encode(enemyConfigTable), all)
 end
