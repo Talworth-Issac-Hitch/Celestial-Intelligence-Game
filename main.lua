@@ -58,6 +58,10 @@ Debug = {
 function love.load()
 	-- Set the Window size.
 	love.window.setMode(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+	love.window.setTitle("Celestial Intelligence")
+
+	music = love.audio.newSource("assets/audio/Ahornberg-ligh appears out of the darkness-Clip.mp3", "stream")
+	music:play()
 
 	-- Get and set our random seed.  This can be used to re-create an exact session.
 	seed = os.time()
@@ -82,6 +86,8 @@ function loadGame()
 		debug = Debug,
 	}
 	activeView = VIEW_GAME
+
+	music:stop()
 end
 
 function loadEditor()
