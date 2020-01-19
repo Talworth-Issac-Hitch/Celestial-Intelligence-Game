@@ -78,7 +78,8 @@ SpaceCraftAspectDefinitions = {
 	--	Special Motion aspects that are override aspects of other motion aspects.
 	enemyStatic = staticAspectDefinition, -- Will never move.  A Wall
 	playerInputMotion = playerInputAspectDefinition, -- Currently Governs speed and direction.
-
+	-- TODO: Seperate WASD motion and arrow keys motion into separate aspects.  Because reasons :3
+	-- TODO: Add a secondary player motion aspect, for rotate & accelerate facing motion. 
 
 	-- Motion - Misc: 
 	--	Miscellaneous aspects that do not interfere with other motion aspects.
@@ -102,8 +103,10 @@ SpaceCraftAspectDefinitions = {
 	-- TODO: Enemy that can exert gravity / repulsion.
 	-- TODO: An enemy with totally static collisions, but very high initial velocity.
 	-- TODO: Enemy that teleports the player to a random(?) location on collision. Not necessarily mutually exclusive with stun :3
-	-- TODO: A stun variant that just/also makes you invisible.  It was a bug, but horrifying.
+	-- TODO: A collision variant that just/also makes you invisible.  It was a bug, but horrifying.
 	--       Maybe that'd be a challenging Amp
+	-- TODO: Mutator Collision type that adds a random aspect on collsions.  Fun for both players and enemies.
+	-- TODO: Simplifier Collision type - Removes a random aspect on impact. 
 	-- TODO: Could we have static objects with >1 restitution, aka, accelerator walls?
 
 }
