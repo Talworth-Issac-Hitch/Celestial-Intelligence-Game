@@ -139,6 +139,22 @@ function Editor:initializeButtons()
 		}
 	end
 
+	-- Create a button 
+	self.buttons["add"] = Button:new {
+		imagePath = "assets/heart-plus.png",
+		x = -20 + (5 * 40),
+		y = self.worldHeight - 60,
+		width = 32,
+		height = 32,
+		active = i == 1,
+		onClick = function(active)
+			-- Fianlly, re-active this button, and spawn the associated craft.
+			self.buttons["add"].active = false
+
+			self:spawnAdditionalCraft()
+		end
+	}
+
 	-- Finally add a save button
 	self.buttons["save"] = Button:new {
 		imagePath = "assets/save.png",
@@ -264,6 +280,22 @@ function Editor:respawnDraftCraft()
 			debug = self.debug
 		}
 	}
+end
+
+-- Respawns the draft craft.
+function Editor:spawnAdditionalCraft()
+	local SPAWN_BUFFER_DISTANCE = 50
+
+	-- Create our test craft
+	table.insert(self.activeCrafts, SpaceCraft:new { 
+			xPosition = love.math.random(SPAWN_BUFFER_DISTANCE, self.worldWidth - SPAWN_BUFFER_DISTANCE), 
+			yPosition = love.math.random(SPAWN_BUFFER_DISTANCE, self.worldHeight - SPAWN_BUFFER_DISTANCE),
+			age = 0, 
+			aspects = self.draftCraftAspects[self.draftCraftNumber],
+			world = self.worldPhysics,
+			debug = self.debug
+		}
+	)
 end
 
 -- Saves the currrent configuration to the "enemyConfig.json" file.  This configuration can then be used in Game mode.
