@@ -189,7 +189,7 @@ function GameOver:onQuitHandler()
 	-- Add all the enemy spawns
 	_.eachi(self.enemySpawnTable, function(spawnTableEntry, index)
 		local aspectList = spawnTableEntry.enemyObj.aspects
-		playDataTable["e" .. index .. "Aspects"] = _.keys(aspectList)
+		playDataTable["e" .. index .. "Aspects"] = SetToArray(aspectList)
 	end)
 
 	-- Ensure the data/ folder exists.

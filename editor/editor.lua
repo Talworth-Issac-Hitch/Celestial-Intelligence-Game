@@ -283,7 +283,7 @@ function Editor:saveConfig()
 	local enemyConfigTable = {}
 
 	_.eachi(self.draftCraftAspects, function(aspectList, index)
-		enemyConfigTable["e" .. index .. "Aspects"] = _.keys(aspectList)
+		enemyConfigTable["e" .. index .. "Aspects"] = SetToArray(aspectList)
 	end)
 	
 	-- Write the config file.

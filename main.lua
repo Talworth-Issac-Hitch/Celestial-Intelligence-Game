@@ -25,6 +25,17 @@ function Set (list)
 	return set
 end
 
+-- Returns an array of the values of a set.  Any key set as 'false' is omitted.
+function SetToArray(set)
+	local keys = {}
+	for key, exists in pairs(set) do
+		if exists then
+			keys[#keys+1] = key
+		end
+	end
+	return keys
+end
+
 ---------------
 -- CONSTANTS --
 --------------- 
