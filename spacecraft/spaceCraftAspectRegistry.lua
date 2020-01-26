@@ -40,6 +40,7 @@ SpaceCraftAspectDefinitions = {
 	player = playerAspectDefinition,
 	-- TODO: Enemies that die with age
 	-- TODO: Enemies that die with a certain number of collisions
+	-- TODO: Win object enemy?
 
 	-- Visual Aspects
 	waveFadingVisibility = waveFadingVisualAspectDefinition,
@@ -48,6 +49,9 @@ SpaceCraftAspectDefinitions = {
 	-- Shape Aspects
 	-- Default: Square
 	circular = circularAspectDefinition,
+	-- TODO: Growing or shrinking
+
+	-- TODO: Swap places with the player.
 
 	-- Motion Aspects
 
@@ -94,6 +98,7 @@ SpaceCraftAspectDefinitions = {
 	playerBorderCollision = playerBorderCollisionAspectDefinition,
 	playerOnlyCollision = playerOnlyCollisionAspectDefinition,
 	playerAndEnemyCollision = playerAndEnemyCollisionAspectDefinition,
+	-- TODO: Enemies that only collide sometimes.
 
 	-- Collision (resolution) Aspects
 	-- Default : Physics collision w/o game affect.
