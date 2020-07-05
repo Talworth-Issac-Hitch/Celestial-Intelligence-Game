@@ -3,6 +3,7 @@
 -------------
 _ = require "libs/moses_min"
 CollisionConstants = require "physics/collisionConstants"
+CraftConstants = require "spacecraft/craftConstants"
 SpaceCraftAspectDefinitions = require "spacecraft/spaceCraftAspectRegistry"
 
 
@@ -128,6 +129,8 @@ function SpaceCraft:update(dt)
 	end
 
 	self:onUpdate(dt)
+
+	self:postUpdate()
 end
 
 -- The Love2D callback for each drawing frame. Draw our craft's image, and potentially debugging frames.
@@ -176,6 +179,7 @@ function SpaceCraft:loadImageAndAttrs()
 
 	-- TODO: Get images that are properly sized to avoid scaling
 	-- TODO2: Draw characters procedurally based on parameters rather using images
+	-- NOTE: Maybe not? Introduced scaling, so that might be a moving target anyway.
 	self.imgSX = self.sizeX / self.image:getWidth()
 	self.imgSY = self.sizeY / self.image:getHeight()
 
@@ -211,14 +215,13 @@ function SpaceCraft:initializeShape()
 	return love.physics.newRectangleShape(self.sizeX, self.sizeY)
 end
 
--- Adds the (already-initialized) Craft to the World.  
--- We do this in Love2D by creating a new fixture.
-function SpaceCraft:spawn()
-	self.fixture = love.physics.newFixture(self.body, self.shape, self.density)
+-- Initializes the SpaceCrafts fixture in the world for the purposes of physics and collisions.
+function SpaceCraft:initializeFixture()
+	local newFixture = love.physics.newFixture(self.body, self.shape, self.density)
 
 	-- Setup collision-related attributes.
-	self.fixture:setFilterData(self.collisionCategory, self.collisionMask, self.collisionGroup)
-	self.fixture:setUserData({
+	newFixture:setFilterData(self.collisionCategory, self.collisionMask, self.collisionGroup)
+	newFixture:setUserData({
 		type = self.collisionType,
 		craft = self
 	})
@@ -226,8 +229,62 @@ function SpaceCraft:spawn()
 	-- preserve all linear momentum for now.  Set restitution to 1 since perfect elasticity 
 	-- conservers momentum in a head-on collision, and friction to 0 to prevent linear velocity
 	-- becoming angular velocity.
-	self.fixture:setRestitution(1) 
-	self.fixture:setFriction(0) 
+	newFixture:setRestitution(1)
+	newFixture:setFriction(0)
+
+	return newFixture
+end
+
+-- Returns whether or not the passed-in size is valid for the current physical world.
+-- @param craftArea - The phsyical area (size) to check.
+-- @return - True if the size is valid for the current physical world, false otherwise.
+function SpaceCraft:isSizeValid(craftArea)
+	if craftArea < CraftConstants.MIN_SIZE_AREA then
+		return false
+	elseif craftArea > self.world.worldWidth * self.world.worldHeight * CraftConstants.MAX_SIZE_LIMIT_FACTOR then
+		return false
+	else
+		return true
+	end
+end
+
+-- Grows or shrinks the shape based on scaling factor
+-- By default scales the rectangle shape in all directions.
+function SpaceCraft:scaleShape(scalingFactor)
+	if self:isSizeValid((self.sizeX * scalingFactor) * (self.sizeY * scalingFactor)) then
+		local fixtureShape = self.fixture:getShape()
+		local rectPoints = fixtureShape:getPoints()
+		rectPoints = rectPoints * scalingFactor
+
+		self.sizeX = self.sizeX * scalingFactor
+		self.sizeY = self.sizeY * scalingFactor
+		self.imgSX = self.imgSX * scalingFactor
+		self.imgSY = self.imgSY * scalingFactor
+
+		-- WARNING : For default square crafts, this isn't efficient to call multiple times in rapid succession
+		self:initializeFixture()
+	end
+end
+
+-- Grows or shrinks the shape based on a fixed amount of units
+-- By default scales the rectangle shape in all directions.
+function SpaceCraft:addShapeSize(lengthToAdd)
+	if self:isSizeValid((self.sizeX + lengthToAdd) * (self.sizeY + lengthToAdd)) then
+		self.sizeX = self.sizeX + lengthToAdd
+		self.sizeY = self.sizeY + lengthToAdd
+		self.imgSX = self.sizeX / self.image:getWidth()
+		self.imgSY = self.sizeY / self.image:getHeight()
+
+		-- WARNING : For default square crafts, this isn't efficient to call multiple times in rapid succession
+		self.shape = self:initializeShape()
+		self:initializeFixture()
+	end
+end
+
+-- Adds the (already-initialized) Craft to the World.  
+-- We do this in Love2D by creating a new fixture.
+function SpaceCraft:spawn()
+	self.fixture = self:initializeFixture()
 
 	self:onSpawnFinished()
 
@@ -324,6 +381,25 @@ function SpaceCraft:debugDrawVelocityIndicator(alpha)
 	love.graphics.reset()
 end
 
+-- A final postUpdate hook.  Current applies the physics speed limit
+-- WOOP WOOP THAT"S THE SOUND OF DA POLICE
+function SpaceCraft:postUpdate()
+	-- TODO: Make speed limiting it's own subfunction.
+	local worldLength = math.max(self.world.worldWidth, self.world.worldHeight)
+	local speedLimit = worldLength * CraftConstants.MAX_SPEED_LIMIT_FACTOR
+
+	local velocityX, velocityY = self.body:getLinearVelocity()
+
+	-- TODO: This math can likely be more efficient.
+	local currentSpeed = math.sqrt((velocityX * velocityX) + (velocityY * velocityY))
+
+	if (velocityX * velocityX) + (velocityY * velocityY) > speedLimit * speedLimit then
+		self.xVelocity = math.cos(self.body:getAngle()) * speedLimit
+		self.yVelocity = math.sin(self.body:getAngle()) * speedLimit
+
+		self.body:setLinearVelocity(self.xVelocity, self.yVelocity)
+	end
+end
 
 --------------------------
 -- SpaceCraft Hooks --

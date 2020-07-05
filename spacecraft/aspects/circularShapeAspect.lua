@@ -26,6 +26,38 @@ CircularCraftAspectDefinition = {
 		return love.physics.newCircleShape(self.sizeX / 2)
 	end,
 
+	-- Grows or shrinks the shape based on scaling factor
+	-- By default scales the rectangle shape in all directions.
+	scaleShape = function(self, scalingFactor)
+		if self:isSizeValid((self.sizeX * scalingFactor) * (self.sizeX * scalingFactor) * math.pi) then
+			local fixtureShape = self.fixture:getShape()
+			local scaledRadius = fixtureShape:getRadius() * scalingFactor
+			fixtureShape:setRadius(scaledRadius)
+
+			self.sizeX = self.sizeX * scalingFactor
+			self.imgSX = self.imgSX * scalingFactor
+			self.imgSY = self.imgSY * scalingFactor
+		end
+	end,
+
+	-- Grows or shrinks the shape by a fixed amount
+	-- By default change the circle shape's radius.
+	addShapeSize = function(self, sizeToAdd)
+		if self:isSizeValid((self.sizeX + sizeToAdd / 2) * (self.sizeX + sizeToAdd / 2) * math.pi) then
+			local fixtureShape = self.fixture:getShape()
+			local originalRadius = fixtureShape:getRadius()
+			local newRadius = originalRadius + (sizeToAdd / 2)
+			fixtureShape:setRadius(newRadius)
+
+			self.sizeX = self.sizeX + sizeToAdd
+
+			local scalingFactor = newRadius / originalRadius
+
+			self.imgSX = self.imgSX * scalingFactor
+			self.imgSY = self.imgSY * scalingFactor
+		end
+	end,
+
 	-------------------
 	-- DEBUG DRAWING --
 	-------------------

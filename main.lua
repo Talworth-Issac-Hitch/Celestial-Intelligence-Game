@@ -36,6 +36,15 @@ function SetToArray(set)
 	return keys
 end
 
+function TableToStr(table)
+	local tableStr = "{"
+	for key, value in pairs(table) do
+		tableStr = tableStr .. key .. ":" .. value .. ", "
+	end
+	tableStr = tableStr:sub(1, -2) .. "}"
+	return tableStr
+end
+
 ---------------
 -- CONSTANTS --
 --------------- 

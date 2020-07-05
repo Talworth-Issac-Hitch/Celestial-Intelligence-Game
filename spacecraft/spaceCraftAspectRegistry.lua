@@ -6,6 +6,9 @@ playerAspectDefinition = require "spacecraft/aspects/playerSpecialAspect"
 waveFadingVisualAspectDefinition = require "spacecraft/aspects/waveFadingVisualAspect"
 
 circularAspectDefinition = require "spacecraft/aspects/circularShapeAspect"
+linearGrowthShapeAspectDefinition = require "spacecraft/aspects/linearGrowthShapeAspect"
+quadraticGrowthShapeAspectDefinition = require "spacecraft/aspects/quadraticGrowthShapeAspect"
+ossilationSizeShapeAspectDefinition = require "spacecraft/aspects/ossilatingSizeShapeAspect"
 
 periodicRandomTeleportMotionAspectDefinition = require "spacecraft/aspects/motion/periodicRandomTeleportMotionAspect"
 
@@ -49,6 +52,9 @@ SpaceCraftAspectDefinitions = {
 	-- Shape Aspects
 	-- Default: Square
 	circular = circularAspectDefinition,
+	linearGrowth = linearGrowthShapeAspectDefinition,
+	quadraticGrowth = quadraticGrowthShapeAspectDefinition,
+	ossilatingShape = ossilationSizeShapeAspectDefinition,
 	-- TODO: Growing or shrinking
 
 	-- TODO: Swap places with the player.
@@ -104,6 +110,7 @@ SpaceCraftAspectDefinitions = {
 	-- Default : Physics collision w/o game affect.
 	deadly = deadlyAspectDefinition,
 	stun = stunningAspectDefinition
+	-- TODO: Grow other craft on collision.
 	-- TODO: Player-friendly unit that kills other units, to clear out the map
 	-- TODO: Enemy that hides other ships it collides with / overlaps
 	-- TODO: Enemy that can exert gravity / repulsion.
